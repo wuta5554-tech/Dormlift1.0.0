@@ -455,7 +455,10 @@ app.post('/api/get-profile', (req, res) => {
     });
   });
 });
-
+// 🚩 你刚加的测试路由在这里
+app.get('/', (req, res) => {
+  res.send('🎉 服务器通了！');
+});
 // 启动服务器
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
