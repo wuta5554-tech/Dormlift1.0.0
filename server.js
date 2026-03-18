@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 // 关键：Railway 强制用这个端口，不用纠结数字
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // 全局变量
 let storedCode = null;
@@ -16,15 +16,17 @@ let db = null;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+// ========== 新增：托管当前文件夹的静态文件（index.html） ==========
+app.use(express.static(__dirname));
+// ========== 新增结束 ==========
 // 1. 健康检查接口（Railway 必过）
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-// 2. 根路由测试
+// 2. 根路由（修改：返回 index.html 而不是文字）
 app.get('/', (req, res) => {
-  res.send('🎉 服务器已正常运行！所有接口可用');
+  res.sendFile(__dirname + '/index.html'); // 关键：返回你的前端页面
 });
 
 // 3. 连接数据库（启动后立即执行，但不阻塞）
