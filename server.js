@@ -470,8 +470,9 @@ app.get('/', (req, res) => {
 });
 
 // ========== 核心修改：先启动服务器，再异步连接数据库 ==========
-app.listen(PORT, async () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0',async () => {
+ console.log(`✅ 服务器监听地址：0.0.0.0，端口：${PORT}`);
+  console.log(`✅ Railway 外部访问地址：https://你的域名.railway.app`);
   // 异步连接数据库，不阻塞服务器启动
   try {
     await connectDatabase();
