@@ -1,4 +1,4 @@
-// 完整可运行的最终版代码（包含你所有业务功能 + 适配Railway）
+// 完整可运行的最终版代码（包含所有业务功能 + 适配Railway）
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 // 关键：Railway 强制用这个端口，不用纠结数字
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 // 全局变量
 let storedCode = null;
@@ -16,17 +16,17 @@ let db = null;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// ========== 新增：托管当前文件夹的静态文件（index.html） ==========
+// 托管当前文件夹的静态文件（index.html）
 app.use(express.static(__dirname));
-// ========== 新增结束 ==========
+
 // 1. 健康检查接口（Railway 必过）
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-// 2. 根路由（修改：返回 index.html 而不是文字）
+// 2. 根路由（返回 index.html 而不是文字）
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html'); // 关键：返回你的前端页面
+  res.sendFile(__dirname + '/index.html');
 });
 
 // 3. 连接数据库（启动后立即执行，但不阻塞）
@@ -76,7 +76,7 @@ function initTables() {
   });
 }
 
-// ========== 你的所有业务接口（完整保留） ==========
+// ========== 所有业务接口（完整保留） ==========
 // 发送验证码
 app.post('/api/send-verification-code', async (req, res) => {
   const { phone } = req.body;
@@ -93,14 +93,15 @@ app.post('/api/send-verification-code', async (req, res) => {
 
 // 注册
 app.post('/api/register', async (req, res) => {
-  const { givenName, firstName, studentId, gender, phone, verifyCode, anonymousName, password, confirmPassword } = req.body;
+  const { givenName, firstName, studentId, gender, phone, verifyCode, anonymousName, password } = req.body;
   
-  if (!givenName || !firstName || !studentId || !gender || !phone || !verifyCode || !anonymousName || !password || !confirmPassword) {
+  if (!givenName || !firstName || !studentId || !gender || !phone || !verifyCode || !anonymousName || !password) {
     return res.json({ success: false, message: 'All fields are required' });
   }
-  
-  if (password !== confirmPassword) {
-    return res.json({ success: false, message: 'Passwords do not match' });
+
+  // 验证验证码
+  if (!storedCode || storedCode.phone !== phone || storedCode.code !== verifyCode || Date.now() > storedCode.expireTime) {
+    return res.json({ success: false, message: 'Invalid or expired verification code' });
   }
 
   db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, row) => {
@@ -280,8 +281,7 @@ app.post('/api/get-profile', (req, res) => {
     });
   });
 });
-// 在 app.listen 前面加
-app.use(express.static('public')); // 托管前端页面
+
 // ========== 启动服务器（核心：先启动，再连数据库） ==========
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ 服务器已启动：http://0.0.0.0:${PORT}`);
