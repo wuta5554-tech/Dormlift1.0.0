@@ -11,7 +11,16 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+// ========== 新增：健康检查接口（Railway 会优先访问这个接口） ==========
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', port: PORT });
+});
+// ========== 健康检查接口结束 ==========
 
+// 全局变量：存储验证码（内存中，重启后丢失，仅测试用）
+let storedCode = null;
+// 数据库实例（全局）
+let db = null;
 // 全局变量：存储验证码（内存中，重启后丢失，仅测试用）
 let storedCode = null;
 // 数据库实例（全局）
@@ -480,4 +489,6 @@ app.listen(PORT, '0.0.0.0',async () => {
   } catch (err) {
     console.error('❌ 数据库连接失败，但服务器仍可运行', err.message);
   }
+   }, 2000); // 延迟2秒，确保健康检查先通过
+  // ========== 延迟逻辑结束 ==========
 });
