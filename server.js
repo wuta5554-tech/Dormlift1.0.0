@@ -12,18 +12,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// 连接SQLite数据库
-const db = new sqlite3.Database('./dormlift.db', (err) => {
-  if (err) {
-    console.error('Database connection error:', err.message);
-  } else {
-    console.log('Connected to SQLite database successfully');
-    initDatabase(); // 初始化数据库表
-  }
-});
-
 // 全局变量：存储验证码（内存中，重启后丢失，仅测试用）
 let storedCode = null;
+// 数据库实例（全局）
+let db = null;
 
 // 初始化数据库表结构
 function initDatabase() {
@@ -61,6 +53,22 @@ function initDatabase() {
   `, (err) => {
     if (err) console.error('Error creating moving_requests table:', err.message);
     else console.log('Moving requests table initialized');
+  });
+}
+
+// 连接SQLite数据库（单独函数）
+function connectDatabase() {
+  return new Promise((resolve, reject) => {
+    db = new sqlite3.Database('./dormlift.db', (err) => {
+      if (err) {
+        console.error('Database connection error:', err.message);
+        reject(err);
+      } else {
+        console.log('Connected to SQLite database successfully');
+        initDatabase(); // 初始化数据库表
+        resolve();
+      }
+    });
   });
 }
 
@@ -455,40 +463,20 @@ app.post('/api/get-profile', (req, res) => {
     });
   });
 });
-// 🚩 你刚加的测试路由在这里
-app.get('/', (req, res) => {
-  res.send('🎉 服务器通了！');
-});
-// 启动服务器
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
-// 把数据库代码移到 listen 之后执行，避免启动超时
-  try {
-    console.log('🔍 开始初始化数据库...');
-    const sqlite3 = require('sqlite3').verbose();
-    
-    // 1. 测试数据库连接（加超时）
-    const db = new sqlite3.Database('./test.db', (err) => {
-      if (err) {
-        console.error('❌ 数据库连接失败：', err.message);
-        return;
-      }
-      console.log('✅ 数据库连接成功');
-      
-      // 2. 测试表初始化（加日志）
-      const createUsersSql = 'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY)';
-      db.run(createUsersSql, (err) => {
-        if (err) {
-          console.error('❌ 创建users表失败：', err.message);
-          return;
-        }
-        console.log('✅ users表初始化成功');
-      });
-      
-      // 3. 其他表初始化同理，每一步都加日志
-    });
-  } catch (e) {
-    console.error('❌ 数据库初始化异常：', e.message);
-  }
 
+// 根路由测试
+app.get('/', (req, res) => {
+  res.send('🎉 服务器通了！所有接口均可正常访问');
+});
+
+// ========== 核心修改：先启动服务器，再异步连接数据库 ==========
+app.listen(PORT, async () => {
+  console.log(`✅ Server running on http://localhost:${PORT}`);
+  // 异步连接数据库，不阻塞服务器启动
+  try {
+    await connectDatabase();
+    console.log('✅ 数据库初始化完成，所有接口可用');
+  } catch (err) {
+    console.error('❌ 数据库连接失败，但服务器仍可运行', err.message);
+  }
+});
