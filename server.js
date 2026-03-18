@@ -21,10 +21,7 @@ app.get('/health', (req, res) => {
 let storedCode = null;
 // 数据库实例（全局）
 let db = null;
-// 全局变量：存储验证码（内存中，重启后丢失，仅测试用）
-let storedCode = null;
-// 数据库实例（全局）
-let db = null;
+
 
 // 初始化数据库表结构
 function initDatabase() {
