@@ -463,3 +463,32 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+// 把数据库代码移到 listen 之后执行，避免启动超时
+  try {
+    console.log('🔍 开始初始化数据库...');
+    const sqlite3 = require('sqlite3').verbose();
+    
+    // 1. 测试数据库连接（加超时）
+    const db = new sqlite3.Database('./test.db', (err) => {
+      if (err) {
+        console.error('❌ 数据库连接失败：', err.message);
+        return;
+      }
+      console.log('✅ 数据库连接成功');
+      
+      // 2. 测试表初始化（加日志）
+      const createUsersSql = 'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY)';
+      db.run(createUsersSql, (err) => {
+        if (err) {
+          console.error('❌ 创建users表失败：', err.message);
+          return;
+        }
+        console.log('✅ users表初始化成功');
+      });
+      
+      // 3. 其他表初始化同理，每一步都加日志
+    });
+  } catch (e) {
+    console.error('❌ 数据库初始化异常：', e.message);
+  }
+});
