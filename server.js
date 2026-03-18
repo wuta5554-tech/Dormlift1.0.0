@@ -468,7 +468,7 @@ app.post('/api/get-profile', (req, res) => {
 app.get('/', (req, res) => {
   res.send('🎉 服务器通了！所有接口均可正常访问');
 });
-const PORT = process.env.PORT; 
+
 // ========== 核心修改：先启动服务器，再异步连接数据库 ==========
 app.listen(PORT, '0.0.0.0',async () => {
  console.log(`✅ 服务器监听地址：0.0.0.0，端口：${PORT}`);
