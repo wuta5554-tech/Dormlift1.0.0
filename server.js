@@ -278,7 +278,8 @@ app.post('/api/get-profile', (req, res) => {
     });
   });
 });
-
+// 在 app.listen 前面加
+app.use(express.static('public')); // 托管前端页面
 // ========== 启动服务器（核心：先启动，再连数据库） ==========
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ 服务器已启动：http://0.0.0.0:${PORT}`);
