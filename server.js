@@ -1,16 +1,19 @@
 /**
- * DormLift 后端服务 - 修复SQLite COMMENT语法 + 邮箱超时问题
- * 适配SQLite语法，简化邮箱配置（测试模式）
+ * DormLift 后端服务 - Railway适配最终版
+ * 修复：SQLite COMMENT语法 + 端口动态配置 + 语法闭合完整
+ * 测试模式：验证码打印在控制台，无需Outlook邮箱连接
  */
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
+const path = require('path'); // 新增：处理路径
 
 // 创建Express应用
 const app = express();
-const PORT = process.env.PORT || 8080;
+// 🔥 关键：Railway动态端口（优先读取环境变量）
+const PORT = process.env.PORT || 3000;
 
 // ===================== 中间件配置 =====================
 // 跨域配置
@@ -27,15 +30,13 @@ app.use(bodyParser.urlencoded({
   limit: '1mb'
 }));
 
-// 服务前端静态文件
-// 🔥 关键修改：无需public文件夹，直接指向项目根目录
-const path = require('path');
-// 静态文件服务指向当前目录（server.js所在目录）
+// 🔥 静态文件配置：index.html和server.js同级（无需public文件夹）
 app.use(express.static(__dirname));
-// 根路径直接返回同级的index.html
+// 强制根路径返回index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
-}
+});
+
 // ===================== 数据库配置 =====================
 const db = new sqlite3.Database('./dormlift.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
   if (err) {
@@ -53,9 +54,8 @@ let storedVerificationCode = {
   expireTime: 0
 };
 
-// ===================== 邮箱配置（简化版，兼容测试） =====================
-// 测试模式：即使邮箱连接失败，也生成验证码（控制台输出）
-const EMAIL_TEST_MODE = true; // 开启测试模式
+// ===================== 邮箱配置（测试模式） =====================
+const EMAIL_TEST_MODE = true;
 
 const emailTransporter = nodemailer.createTransport({
   host: 'smtp.office365.com',
@@ -71,7 +71,7 @@ const emailTransporter = nodemailer.createTransport({
   }
 });
 
-// 测试邮箱连接（不阻塞启动）
+// 测试邮箱连接（不阻塞）
 emailTransporter.verify((error, success) => {
   if (error) {
     console.log('【邮箱提示】连接失败，已启用测试模式（验证码将打印在控制台）');
@@ -80,14 +80,11 @@ emailTransporter.verify((error, success) => {
   }
 });
 
-// ===================== 数据库表初始化（移除COMMENT） =====================
-/**
- * 修复：SQLite不支持COMMENT，移除所有注释语法
- */
+// ===================== 数据库表初始化（无COMMENT） =====================
 function initDatabase() {
   console.log('【数据库初始化】开始创建/检查表结构...');
 
-  // 1. 用户表（移除COMMENT）
+  // 1. 用户表
   const createUsersTable = `
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,7 +109,7 @@ function initDatabase() {
     }
   });
 
-  // 2. 搬家请求表（移除COMMENT）
+  // 2. 搬家请求表
   const createMovingRequestsTable = `
     CREATE TABLE IF NOT EXISTS moving_requests (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -138,7 +135,7 @@ function initDatabase() {
     }
   });
 
-  // 3. 任务分配表（移除COMMENT）
+  // 3. 任务分配表
   const createTaskAssignmentsTable = `
     CREATE TABLE IF NOT EXISTS task_assignments (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -172,17 +169,12 @@ function generateVerificationCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-/**
- * 修复：邮箱发送函数（兼容测试模式）
- */
 async function sendEmailVerificationCode(toEmail, code) {
-  // 测试模式：直接返回成功，控制台打印验证码
   if (EMAIL_TEST_MODE) {
     console.log(`【测试模式】验证码：${code}（发送到 ${toEmail}）`);
     return true;
   }
 
-  // 生产模式：真实发送邮箱
   const mailOptions = {
     from: `"DormLift" <${process.env.OUTLOOK_EMAIL || 'test@outlook.com'}>`,
     to: toEmail,
@@ -197,13 +189,12 @@ async function sendEmailVerificationCode(toEmail, code) {
     return true;
   } catch (error) {
     console.error(`【邮箱发送失败】${toEmail}:`, error.message);
-    // 失败时仍返回成功（测试用）
     console.log(`【备用方案】验证码：${code}`);
     return true;
   }
 }
 
-// ===================== 接口 - 验证码相关 =====================
+// ===================== 接口 - 验证码 =====================
 app.post('/api/send-verification-code', async (req, res) => {
   try {
     const { email } = req.body;
@@ -225,7 +216,6 @@ app.post('/api/send-verification-code', async (req, res) => {
     const verificationCode = generateVerificationCode();
     const expireTime = Date.now() + 5 * 60 * 1000;
 
-    // 发送验证码（兼容测试模式）
     await sendEmailVerificationCode(email, verificationCode);
 
     storedVerificationCode = {
@@ -249,7 +239,7 @@ app.post('/api/send-verification-code', async (req, res) => {
   }
 });
 
-// ===================== 接口 - 用户注册/登录 =====================
+// ===================== 接口 - 注册/登录 =====================
 app.post('/api/register', (req, res) => {
   try {
     const {
@@ -291,7 +281,6 @@ app.post('/api/register', (req, res) => {
       });
     }
 
-    // 验证验证码（兼容测试模式）
     if (!storedVerificationCode || 
         storedVerificationCode.email !== email || 
         storedVerificationCode.code !== verifyCode || 
@@ -302,7 +291,6 @@ app.post('/api/register', (req, res) => {
       });
     }
 
-    // 检查学生ID是否已注册
     db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, studentRow) => {
       if (err) {
         console.error('【数据库错误】查询学生ID失败:', err.message);
@@ -319,7 +307,6 @@ app.post('/api/register', (req, res) => {
         });
       }
 
-      // 检查邮箱是否已注册
       db.get('SELECT * FROM users WHERE email = ?', [email], (err, emailRow) => {
         if (err) {
           console.error('【数据库错误】查询邮箱失败:', err.message);
@@ -336,7 +323,6 @@ app.post('/api/register', (req, res) => {
           });
         }
 
-        // 检查手机号是否已注册
         db.get('SELECT * FROM users WHERE phone = ?', [phone], (err, phoneRow) => {
           if (err) {
             console.error('【数据库错误】查询手机号失败:', err.message);
@@ -353,7 +339,6 @@ app.post('/api/register', (req, res) => {
             });
           }
 
-          // 插入新用户
           const insertUserSql = `
             INSERT INTO users (
               student_id, given_name, first_name, gender,
@@ -372,7 +357,6 @@ app.post('/api/register', (req, res) => {
               });
             }
 
-            // 清空验证码
             storedVerificationCode = {
               email: '',
               code: '',
@@ -444,7 +428,7 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-// ===================== 接口 - 搬家任务管理 =====================
+// ===================== 接口 - 任务管理 =====================
 app.post('/api/post-request', (req, res) => {
   try {
     const {
@@ -988,7 +972,7 @@ app.listen(PORT, () => {
   console.log(`============================================`);
 });
 
-// 进程退出处理
+// ===================== 进程退出处理 =====================
 process.on('SIGINT', () => {
   console.log('\n【服务器关闭】开始关闭数据库连接...');
   db.close((err) => {
