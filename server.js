@@ -1,4 +1,3 @@
-// ====================== 1. 核心依赖引入 ======================
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
@@ -7,488 +6,539 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
 
-// ====================== 2. 基础配置（适配容器/本地） ======================
+// 初始化Express应用
 const app = express();
-// 动态端口：优先用环境变量（Railway），兜底8080（本地）
 const PORT = process.env.PORT || 8080;
-// 数据库路径：容器用/tmp（有写权限），本地用当前目录
-const DB_DIR = process.env.NODE_ENV === 'production' ? '/tmp/campusmove' : './campusmove';
+
+// 跨域+解析配置
+app.use(cors());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(__dirname)); // 托管静态文件
+
+// ====================== 核心配置 ======================
+// 1. 数据库配置（兼容生产/开发环境）
+const DB_DIR = process.env.NODE_ENV === 'production' ? '/tmp/campusmove' : path.join(__dirname, 'db');
 const DB_PATH = path.join(DB_DIR, 'campusmove.db');
-
-// 跨域配置（生产建议限定前端域名，此处兼容开发）
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGIN || '*',
-  credentials: true,
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
-}));
-
-// 请求体解析（限制大小，防止恶意请求）
-app.use(bodyParser.json({ limit: '1mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
-
-// 静态文件托管（前端页面）
-app.use(express.static(__dirname));
-
-// ====================== 3. 邮箱配置（环境变量注入，安全无硬编码） ======================
-const emailTransporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || 'gmail', // 邮箱服务商（gmail/qq/163等）
-  auth: {
-    user: process.env.EMAIL_USER, // 你的邮箱账号（Railway配置）
-    pass: process.env.EMAIL_PASS  // 邮箱授权码（不是登录密码，Railway配置）
-  }
-});
-
-// ====================== 4. 数据库初始化（健壮性处理） ======================
-let db;
-
-// 创建数据库目录（防止不存在）
+// 创建数据库目录
 if (!fs.existsSync(DB_DIR)) {
   fs.mkdirSync(DB_DIR, { recursive: true });
+  console.log(`✅ 数据库目录创建成功: ${DB_DIR}`);
 }
-
-// 连接数据库（错误兜底，数据库失败则退出服务）
-db = new sqlite3.Database(DB_PATH, (err) => {
+// 连接数据库
+const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) {
     console.error('❌ 数据库连接失败:', err.message);
     process.exit(1);
-  } else {
-    console.log(`✅ 数据库连接成功（路径：${DB_PATH}）`);
-    initDatabaseTables();
   }
+  console.log('✅ 数据库连接成功');
+  initDatabase(); // 初始化表结构
 });
 
-// 初始化数据表（带字段约束和外键）
-function initDatabaseTables() {
-  // 用户表（核心：email唯一，phone仅存储）
-  const userTableSql = `
+// 2. Outlook邮件发送配置（核心！适配POST请求，无AADSTS900561错误）
+const transporter = nodemailer.createTransport({
+  host: 'smtp.office365.com', // Outlook官方SMTP服务器
+  port: 587, // 固定端口（587=STARTTLS，465=SSL，Outlook优先587）
+  secure: false, // 587端口必须为false，465为true
+  auth: {
+    user: process.env.EMAIL_USER, // Outlook邮箱（如：xxx@outlook.com）
+    pass: process.env.EMAIL_PASS  // Outlook登录密码（无需授权码）
+  },
+  tls: {
+    ciphers: 'SSLv3', // 解决微软TLS兼容问题
+    rejectUnauthorized: false // 避免证书验证错误
+  },
+  connectionTimeout: 10000 // 超时时间（避免卡死）
+});
+
+// 3. 验证码存储（绑定邮箱，带过期时间）
+const verifyCodeMap = {};
+const CODE_EXPIRE = 5 * 60 * 1000; // 5分钟过期
+
+// ====================== 数据库初始化 ======================
+function initDatabase() {
+  // 1. 用户表（手机号仅存储，无验证）
+  const createUserTable = `
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      student_id TEXT UNIQUE NOT NULL,
-      given_name TEXT NOT NULL,
-      first_name TEXT NOT NULL,
-      gender TEXT NOT NULL,
-      anonymous_name TEXT NOT NULL,
-      phone TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
+      student_id TEXT UNIQUE NOT NULL COMMENT '学生ID',
+      first_name TEXT NOT NULL COMMENT '名字',
+      gender TEXT NOT NULL COMMENT '性别',
+      email TEXT UNIQUE NOT NULL COMMENT '邮箱（验证用）',
+      phone TEXT NOT NULL COMMENT '手机号（仅联系）',
+      anonymous_name TEXT NOT NULL COMMENT '匿名昵称',
+      password TEXT NOT NULL COMMENT '密码',
+      create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+    );
   `;
-
-  // 搬家请求表（外键关联用户）
-  const requestTableSql = `
-    CREATE TABLE IF NOT EXISTS moving_requests (
+  // 2. 搬家任务表
+  const createTaskTable = `
+    CREATE TABLE IF NOT EXISTS moving_tasks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      student_id TEXT NOT NULL,
-      move_date TEXT NOT NULL,
-      location TEXT NOT NULL,
-      helpers_needed TEXT NOT NULL,
-      items TEXT NOT NULL,
-      compensation TEXT NOT NULL,
-      helper_assigned TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      student_id TEXT NOT NULL COMMENT '发布者ID',
+      move_date TEXT NOT NULL COMMENT '搬家时间',
+      location TEXT NOT NULL COMMENT '搬家地点',
+      helpers_needed INTEGER NOT NULL COMMENT '需要帮手数',
+      items TEXT NOT NULL COMMENT '搬运物品',
+      compensation TEXT NOT NULL COMMENT '报酬',
+      helper_assigned TEXT DEFAULT NULL COMMENT '接单者ID',
+      create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
       FOREIGN KEY (student_id) REFERENCES users(student_id)
-    )
+    );
   `;
 
-  // 执行表初始化
-  db.run(userTableSql, (err) => {
-    if (err) console.error('❌ 用户表初始化失败:', err.message);
-    else console.log('✅ 用户表初始化完成');
+  // 执行建表
+  db.run(createUserTable, (err) => {
+    if (err) console.error('❌ 创建用户表失败:', err.message);
+    else console.log('✅ 用户表初始化成功');
   });
-
-  db.run(requestTableSql, (err) => {
-    if (err) console.error('❌ 搬家请求表初始化失败:', err.message);
-    else console.log('✅ 搬家请求表初始化完成');
+  db.run(createTaskTable, (err) => {
+    if (err) console.error('❌ 创建任务表失败:', err.message);
+    else console.log('✅ 任务表初始化成功');
   });
 }
 
-// ====================== 5. 工具函数（复用+校验） ======================
+// ====================== 核心接口 ======================
 /**
- * 格式化新西兰手机号（仅格式处理，不验证）
- * @param {string} phone - 原始手机号
- * @returns {string} 格式化后的手机号（+64开头）
+ * 1. 健康检查接口（Railway部署验证）
  */
-function normalizeNZPhone(phone) {
-  if (!phone) return '';
-  const digits = phone.replace(/\D/g, '');
-  if (digits.startsWith('02')) return `+64${digits.slice(1)}`;
-  if (digits.startsWith('64')) return `+${digits}`;
-  return phone;
-}
-
-/**
- * 校验新西兰手机号格式
- * @param {string} phone - 格式化后的手机号
- * @returns {boolean} 是否有效
- */
-function isValidNZPhone(phone) {
-  if (!phone) return false;
-  return /^\+642\d{7,9}$/.test(phone);
-}
-
-/**
- * 校验邮箱格式
- * @param {string} email - 邮箱地址
- * @returns {boolean} 是否有效
- */
-function isValidEmail(email) {
-  if (!email) return false;
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-// ====================== 6. 核心业务接口（纯邮箱验证，手机号仅联系） ======================
-// 健康检查接口（Railway/容器探针用）
 app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    port: PORT,
-    db_connected: !!db,
-    timestamp: new Date().toISOString()
-  });
-});
-
-// 根路由返回前端页面
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.status(200).json({ status: 'ok', time: new Date().toISOString() });
 });
 
 /**
- * 发送邮箱验证码接口
- * 核心：仅给邮箱发验证码，手机号仅格式校验和存储
+ * 2. 发送Outlook验证码（仅绑定邮箱，无手机号验证）
  */
 app.post('/api/send-verification-code', async (req, res) => {
   try {
-    const { email, phone } = req.body;
-
-    // 1. 基础校验
-    if (!isValidEmail(email)) {
-      return res.status(400).json({ success: false, message: 'Invalid email format! (e.g. your@email.com)' });
+    const { email } = req.body;
+    // 基础验证
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: '请输入有效的Outlook邮箱（如：xxx@outlook.com）'
+      });
     }
-    const normalizedPhone = normalizeNZPhone(phone);
-    if (!isValidNZPhone(normalizedPhone)) {
-      return res.status(400).json({ success: false, message: 'Invalid NZ mobile number! (must start with 02/+642)' });
-    }
-
-    // 2. 生成6位验证码
+    // 生成6位验证码
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // 3. 存储验证码（按邮箱关联，不是手机号！）
-    global.verificationCodes = global.verificationCodes || {};
-    global.verificationCodes[email] = {
+    // 存储验证码（覆盖旧的，防止重复发送）
+    verifyCodeMap[email] = {
       code: verifyCode,
-      expireTime: Date.now() + 5 * 60 * 1000 // 5分钟过期
+      expire: Date.now() + CODE_EXPIRE
+    };
+    console.log(`📧 准备发送验证码到 ${email}: ${verifyCode}`);
+
+    // 发送Outlook邮件
+    const mailOptions = {
+      from: `"CampusMove" <${process.env.EMAIL_USER}>`, // 发件人（必须和EMAIL_USER一致）
+      to: email, // 收件人
+      subject: 'CampusMove 注册验证码', // 主题
+      text: `你的注册验证码是：${verifyCode}\n有效期5分钟，请勿泄露给他人！`, // 纯文本内容
+      html: `<div style="padding:20px;background:#f5f7fa;border-radius:8px;">
+        <h3 style="color:#2563eb;">CampusMove 注册验证码</h3>
+        <p style="font-size:16px;margin:10px 0;">你的验证码是：<strong style="color:#dc2626;font-size:20px;">${verifyCode}</strong></p>
+        <p style="font-size:12px;color:#666;">有效期5分钟，请勿泄露给他人！</p>
+      </div>` // HTML内容（更友好）
     };
 
-    // 4. 发送验证码到邮箱（核心：仅邮箱，不碰手机号）
-    await emailTransporter.sendMail({
-      from: `CampusMove <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'CampusMove - Your Verification Code',
-      text: `Your verification code is: ${verifyCode}\nValid for 5 minutes.`,
-      html: `<h3>CampusMove Verification Code</h3>
-             <p>Your 6-digit code: <strong>${verifyCode}</strong></p>
-             <p>This code is valid for 5 minutes.</p>
-             <p>If you didn't request this, please ignore this email.</p>`
+    // 执行发送
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ 验证码发送到 ${email} 成功`);
+    res.status(200).json({
+      success: true,
+      message: '验证码已发送到你的Outlook邮箱，请查收（含垃圾邮件文件夹）'
     });
-
-    console.log(`📧 验证码已发送到邮箱: ${email}`);
-    res.json({ success: true, message: 'Verification code sent to your email successfully!' });
   } catch (error) {
     console.error('❌ 发送验证码失败:', error.message);
-    res.status(500).json({ success: false, message: `Failed to send code: ${error.message}` });
+    res.status(500).json({
+      success: false,
+      message: `发送失败：${error.message}（请检查Outlook账号/密码是否正确）`
+    });
   }
 });
 
 /**
- * 注册接口
- * 核心：验证邮箱验证码，手机号仅存储
+ * 3. 注册接口（仅验证邮箱验证码，手机号仅存储）
  */
 app.post('/api/register', (req, res) => {
-  const { givenName, firstName, studentId, gender, email, phone, verifyCode, anonymousName, password } = req.body;
+  try {
+    const { firstName, studentId, gender, email, phone, verifyCode, anonymousName, password } = req.body;
+    // 必传项验证
+    const requiredFields = [firstName, studentId, gender, email, phone, verifyCode, anonymousName, password];
+    if (requiredFields.some(field => !field)) {
+      return res.status(400).json({
+        success: false,
+        message: '请填写所有必填项'
+      });
+    }
+    // 验证码验证
+    const codeRecord = verifyCodeMap[email];
+    if (!codeRecord) {
+      return res.status(400).json({
+        success: false,
+        message: '请先获取验证码'
+      });
+    }
+    if (codeRecord.expire < Date.now()) {
+      delete verifyCodeMap[email]; // 清理过期验证码
+      return res.status(400).json({
+        success: false,
+        message: '验证码已过期，请重新获取'
+      });
+    }
+    if (codeRecord.code !== verifyCode) {
+      return res.status(400).json({
+        success: false,
+        message: '验证码错误，请核对'
+      });
+    }
 
-  // 1. 全量入参校验
-  if (!givenName || !firstName || !studentId || !gender || !email || !phone || !verifyCode || !anonymousName || !password) {
-    return res.status(400).json({ success: false, message: 'All fields are required!' });
-  }
-
-  // 2. 格式校验
-  if (!isValidEmail(email)) {
-    return res.status(400).json({ success: false, message: 'Invalid email format!' });
-  }
-  const normalizedPhone = normalizeNZPhone(phone);
-  if (!isValidNZPhone(normalizedPhone)) {
-    return res.status(400).json({ success: false, message: 'Invalid NZ mobile number!' });
-  }
-  if (verifyCode.length !== 6) {
-    return res.status(400).json({ success: false, message: 'Verification code must be 6 digits!' });
-  }
-
-  // 3. 验证邮箱验证码（核心：按邮箱查，不是手机号）
-  const storedCode = (global.verificationCodes || {})[email];
-  if (!storedCode) {
-    return res.status(400).json({ success: false, message: 'No verification code sent to this email! Please get a code first.' });
-  }
-  if (storedCode.code !== verifyCode) {
-    return res.status(400).json({ success: false, message: 'Incorrect verification code!' });
-  }
-  if (Date.now() > storedCode.expireTime) {
-    return res.status(400).json({ success: false, message: 'Verification code expired! Please get a new one.' });
-  }
-
-  // 4. 查重（学号/邮箱/手机号）
-  db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, studentRow) => {
-    if (err) return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
-    if (studentRow) return res.status(409).json({ success: false, message: 'Student ID already registered!' });
-
-    db.get('SELECT * FROM users WHERE email = ?', [email], (err, emailRow) => {
-      if (err) return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
-      if (emailRow) return res.status(409).json({ success: false, message: 'Email already registered!' });
-
-      db.get('SELECT * FROM users WHERE phone = ?', [normalizedPhone], (err, phoneRow) => {
-        if (err) return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
-        if (phoneRow) return res.status(409).json({ success: false, message: 'Phone number already registered!' });
-
-        // 5. 插入用户数据（注册成功）
-        db.run(`INSERT INTO users (
-          student_id, given_name, first_name, gender, anonymous_name, phone, email, password
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [studentId, givenName, firstName, gender, anonymousName, normalizedPhone, email, password],
-        (err) => {
-          if (err) return res.status(500).json({ success: false, message: 'Registration failed: ' + err.message });
-          
-          // 清除已使用的验证码
-          delete global.verificationCodes[email];
-          console.log(`✅ 用户注册成功: ${studentId} (邮箱: ${email})`);
-          res.json({ success: true, message: 'Registration successful! Please login.' });
+    // 插入用户数据（手机号仅存储，无验证）
+    const insertSql = `
+      INSERT INTO users (student_id, first_name, gender, email, phone, anonymous_name, password)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    db.run(insertSql, [studentId, firstName, gender, email, phone, anonymousName, password], function (err) {
+      if (err) {
+        console.error('❌ 注册失败:', err.message);
+        return res.status(400).json({
+          success: false,
+          message: err.message.includes('UNIQUE') ? '学生ID/邮箱已存在' : '注册失败，请重试'
         });
+      }
+      // 注册成功，清理验证码
+      delete verifyCodeMap[email];
+      console.log(`✅ 用户 ${studentId} 注册成功`);
+      res.status(200).json({
+        success: true,
+        message: '注册成功！请登录'
       });
     });
-  });
+  } catch (error) {
+    console.error('❌ 注册接口异常:', error.message);
+    res.status(500).json({
+      success: false,
+      message: '服务器异常，请重试'
+    });
+  }
 });
 
 /**
- * 登录接口
+ * 4. 登录接口
  */
 app.post('/api/login', (req, res) => {
-  const { studentId, password } = req.body;
-
-  // 入参校验
-  if (!studentId || !password) {
-    return res.status(400).json({ success: false, message: 'Student ID and password are required!' });
-  }
-
-  // 验证用户
-  db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, row) => {
-    if (err) return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
-    if (!row) return res.status(404).json({ success: false, message: 'Student ID not found!' });
-    if (row.password !== password) return res.status(401).json({ success: false, message: 'Incorrect password!' });
-
-    console.log(`✅ 用户登录成功: ${studentId}`);
-    res.json({
-      success: true,
-      message: 'Login successful!',
-      anonymousName: row.anonymous_name
+  try {
+    const { studentId, password } = req.body;
+    if (!studentId || !password) {
+      return res.status(400).json({
+        success: false,
+        message: '请输入学生ID和密码'
+      });
+    }
+    // 查询用户
+    const querySql = `SELECT * FROM users WHERE student_id = ? AND password = ?`;
+    db.get(querySql, [studentId, password], (err, user) => {
+      if (err) {
+        console.error('❌ 登录查询失败:', err.message);
+        return res.status(500).json({
+          success: false,
+          message: '登录失败，请重试'
+        });
+      }
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: '学生ID或密码错误'
+        });
+      }
+      // 登录成功，返回用户信息（隐藏敏感字段）
+      const userInfo = {
+        studentId: user.student_id,
+        anonymousName: user.anonymous_name,
+        email: user.email,
+        phone: user.phone
+      };
+      console.log(`✅ 用户 ${studentId} 登录成功`);
+      res.status(200).json({
+        success: true,
+        message: '登录成功',
+        data: userInfo
+      });
     });
-  });
-});
-
-/**
- * 发布搬家请求接口
- */
-app.post('/api/post-request', (req, res) => {
-  const { studentId, moveDate, location, helpersNeeded, items, compensation } = req.body;
-
-  // 入参校验
-  if (!studentId || !moveDate || !location || !helpersNeeded || !items || !compensation) {
-    return res.status(400).json({ success: false, message: 'All fields are required!' });
+  } catch (error) {
+    console.error('❌ 登录接口异常:', error.message);
+    res.status(500).json({
+      success: false,
+      message: '服务器异常，请重试'
+    });
   }
-
-  // 发布请求
-  db.run(`INSERT INTO moving_requests (
-    student_id, move_date, location, helpers_needed, items, compensation
-  ) VALUES (?, ?, ?, ?, ?, ?)`,
-  [studentId, moveDate, location, helpersNeeded, items, compensation],
-  (err) => {
-    if (err) return res.status(500).json({ success: false, message: 'Post failed: ' + err.message });
-    console.log(`✅ 搬家请求发布成功: ${studentId} - ${location}`);
-    res.json({ success: true, message: 'Moving request posted successfully!' });
-  });
 });
 
 /**
- * 获取所有可用任务（未被接受的）
+ * 5. 发布搬家任务接口
+ */
+app.post('/api/post-task', (req, res) => {
+  try {
+    const { studentId, moveDate, location, helpersNeeded, items, compensation } = req.body;
+    if (!studentId || !moveDate || !location || !helpersNeeded || !items || !compensation) {
+      return res.status(400).json({
+        success: false,
+        message: '请填写所有任务信息'
+      });
+    }
+    // 插入任务
+    const insertSql = `
+      INSERT INTO moving_tasks (student_id, move_date, location, helpers_needed, items, compensation)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    db.run(insertSql, [studentId, moveDate, location, helpersNeeded, items, compensation], function (err) {
+      if (err) {
+        console.error('❌ 发布任务失败:', err.message);
+        return res.status(400).json({
+          success: false,
+          message: '发布失败，请重试'
+        });
+      }
+      console.log(`✅ 用户 ${studentId} 发布任务成功（ID: ${this.lastID}）`);
+      res.status(200).json({
+        success: true,
+        message: '任务发布成功',
+        data: { taskId: this.lastID }
+      });
+    });
+  } catch (error) {
+    console.error('❌ 发布任务接口异常:', error.message);
+    res.status(500).json({
+      success: false,
+      message: '服务器异常，请重试'
+    });
+  }
+});
+
+/**
+ * 6. 获取所有可用任务（未被接单的）
  */
 app.get('/api/get-tasks', (req, res) => {
-  db.all('SELECT * FROM moving_requests WHERE helper_assigned IS NULL', (err, rows) => {
-    if (err) return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
-    res.json({ success: true, tasks: rows });
-  });
+  try {
+    const querySql = `
+      SELECT t.*, u.anonymous_name AS publisher_name
+      FROM moving_tasks t
+      LEFT JOIN users u ON t.student_id = u.student_id
+      WHERE t.helper_assigned IS NULL
+      ORDER BY t.create_time DESC
+    `;
+    db.all(querySql, (err, tasks) => {
+      if (err) {
+        console.error('❌ 获取任务失败:', err.message);
+        return res.status(500).json({
+          success: false,
+          message: '获取任务失败，请重试'
+        });
+      }
+      res.status(200).json({
+        success: true,
+        data: tasks
+      });
+    });
+  } catch (error) {
+    console.error('❌ 获取任务接口异常:', error.message);
+    res.status(500).json({
+      success: false,
+      message: '服务器异常，请重试'
+    });
+  }
 });
 
 /**
- * 接受任务接口
+ * 7. 接受任务接口
  */
 app.post('/api/accept-task', (req, res) => {
-  const { taskId, helperId } = req.body;
-
-  // 入参校验
-  if (!taskId || !helperId) {
-    return res.status(400).json({ success: false, message: 'Task ID and Helper ID are required!' });
+  try {
+    const { taskId, helperId } = req.body;
+    if (!taskId || !helperId) {
+      return res.status(400).json({
+        success: false,
+        message: '参数错误'
+      });
+    }
+    // 更新任务接单者
+    const updateSql = `
+      UPDATE moving_tasks
+      SET helper_assigned = ?
+      WHERE id = ? AND helper_assigned IS NULL
+    `;
+    db.run(updateSql, [helperId, taskId], function (err) {
+      if (err) {
+        console.error('❌ 接受任务失败:', err.message);
+        return res.status(400).json({
+          success: false,
+          message: '接受失败，请重试'
+        });
+      }
+      if (this.changes === 0) {
+        return res.status(400).json({
+          success: false,
+          message: '任务已被他人接单'
+        });
+      }
+      console.log(`✅ 用户 ${helperId} 接受任务 ${taskId} 成功`);
+      res.status(200).json({
+        success: true,
+        message: '接受任务成功'
+      });
+    });
+  } catch (error) {
+    console.error('❌ 接受任务接口异常:', error.message);
+    res.status(500).json({
+      success: false,
+      message: '服务器异常，请重试'
+    });
   }
-
-  // 接受任务（仅更新未被分配的任务）
-  db.run('UPDATE moving_requests SET helper_assigned = ? WHERE id = ? AND helper_assigned IS NULL',
-  [helperId, taskId],
-  function (err) {
-    if (err) return res.status(500).json({ success: false, message: 'Accept failed: ' + err.message });
-    if (this.changes === 0) return res.status(409).json({ success: false, message: 'Task already assigned to someone else!' });
-    
-    console.log(`✅ 任务被接受: ID-${taskId} (helper: ${helperId})`);
-    res.json({ success: true, message: 'Task accepted successfully!' });
-  });
 });
 
 /**
- * 获取我的发布任务
+ * 8. 获取用户发布的任务
  */
 app.post('/api/my-posted-tasks', (req, res) => {
-  const { studentId } = req.body;
-
-  if (!studentId) {
-    return res.status(400).json({ success: false, message: 'Student ID is required!' });
+  try {
+    const { studentId } = req.body;
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: '请先登录'
+      });
+    }
+    const querySql = `
+      SELECT * FROM moving_tasks
+      WHERE student_id = ?
+      ORDER BY create_time DESC
+    `;
+    db.all(querySql, [studentId], (err, tasks) => {
+      if (err) {
+        console.error('❌ 获取发布任务失败:', err.message);
+        return res.status(500).json({
+          success: false,
+          message: '获取失败，请重试'
+        });
+      }
+      res.status(200).json({
+        success: true,
+        data: tasks
+      });
+    });
+  } catch (error) {
+    console.error('❌ 获取发布任务接口异常:', error.message);
+    res.status(500).json({
+      success: false,
+      message: '服务器异常，请重试'
+    });
   }
-
-  db.all('SELECT * FROM moving_requests WHERE student_id = ?', [studentId], (err, rows) => {
-    if (err) return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
-    res.json({ success: true, tasks: rows });
-  });
 });
 
 /**
- * 获取我的接受任务
+ * 9. 获取用户接受的任务
  */
 app.post('/api/my-accepted-tasks', (req, res) => {
-  const { helperId } = req.body;
-
-  if (!helperId) {
-    return res.status(400).json({ success: false, message: 'Helper ID is required!' });
+  try {
+    const { helperId } = req.body;
+    if (!helperId) {
+      return res.status(400).json({
+        success: false,
+        message: '请先登录'
+      });
+    }
+    const querySql = `
+      SELECT t.*, u.anonymous_name AS publisher_name
+      FROM moving_tasks t
+      LEFT JOIN users u ON t.student_id = u.student_id
+      WHERE t.helper_assigned = ?
+      ORDER BY create_time DESC
+    `;
+    db.all(querySql, [helperId], (err, tasks) => {
+      if (err) {
+        console.error('❌ 获取接受任务失败:', err.message);
+        return res.status(500).json({
+          success: false,
+          message: '获取失败，请重试'
+        });
+      }
+      res.status(200).json({
+        success: true,
+        data: tasks
+      });
+    });
+  } catch (error) {
+    console.error('❌ 获取接受任务接口异常:', error.message);
+    res.status(500).json({
+      success: false,
+      message: '服务器异常，请重试'
+    });
   }
-
-  db.all('SELECT * FROM moving_requests WHERE helper_assigned = ?', [helperId], (err, rows) => {
-    if (err) return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
-    res.json({ success: true, tasks: rows });
-  });
 });
 
 /**
- * 获取个人信息
+ * 10. 获取用户个人信息
  */
 app.post('/api/get-profile', (req, res) => {
-  const { studentId } = req.body;
-
-  if (!studentId) {
-    return res.status(400).json({ success: false, message: 'Student ID is required!' });
-  }
-
-  db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, row) => {
-    if (err) return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
-    if (!row) return res.status(404).json({ success: false, message: 'User not found!' });
-
-    res.json({
-      success: true,
-      user: {
-        given_name: row.given_name,
-        first_name: row.first_name,
-        student_id: row.student_id,
-        gender: row.gender,
-        anonymous_name: row.anonymous_name,
-        phone: row.phone,
-        email: row.email
+  try {
+    const { studentId } = req.body;
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: '请先登录'
+      });
+    }
+    const querySql = `
+      SELECT student_id, first_name, gender, email, phone, anonymous_name
+      FROM users
+      WHERE student_id = ?
+    `;
+    db.get(querySql, [studentId], (err, user) => {
+      if (err) {
+        console.error('❌ 获取个人信息失败:', err.message);
+        return res.status(500).json({
+          success: false,
+          message: '获取失败，请重试'
+        });
       }
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: '用户不存在'
+        });
+      }
+      res.status(200).json({
+        success: true,
+        data: user
+      });
     });
-  });
-});
-
-/**
- * 删除我的发布任务
- */
-app.post('/api/delete-task', (req, res) => {
-  const { taskId, studentId } = req.body;
-
-  if (!taskId || !studentId) {
-    return res.status(400).json({ success: false, message: 'Task ID and Student ID are required!' });
-  }
-
-  db.run('DELETE FROM moving_requests WHERE id = ? AND student_id = ?', [taskId, studentId], function (err) {
-    if (err) return res.status(500).json({ success: false, message: 'Delete failed: ' + err.message });
-    if (this.changes === 0) return res.status(404).json({ success: false, message: 'Task not found or not yours!' });
-    
-    console.log(`❌ 任务被删除: ID-${taskId} (poster: ${studentId})`);
-    res.json({ success: true, message: 'Task deleted successfully!' });
-  });
-});
-
-/**
- * 取消我的接受任务
- */
-app.post('/api/cancel-task', (req, res) => {
-  const { taskId, helperId } = req.body;
-
-  if (!taskId || !helperId) {
-    return res.status(400).json({ success: false, message: 'Task ID and Helper ID are required!' });
-  }
-
-  db.run('UPDATE moving_requests SET helper_assigned = NULL WHERE id = ? AND helper_assigned = ?', [taskId, helperId], function (err) {
-    if (err) return res.status(500).json({ success: false, message: 'Cancel failed: ' + err.message });
-    if (this.changes === 0) return res.status(404).json({ success: false, message: 'Task not found or not accepted by you!' });
-    
-    console.log(`✅ 任务被取消: ID-${taskId} (helper: ${helperId})`);
-    res.json({ success: true, message: 'Task cancelled successfully!' });
-  });
-});
-
-// ====================== 7. 服务器启动 + 优雅退出（核心稳定保障） ======================
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ 服务器已启动：http://0.0.0.0:${PORT}`);
-  if (process.env.RAILWAY_STATIC_URL) {
-    console.log(`🌐 公网访问地址：https://${process.env.RAILWAY_STATIC_URL}`);
+  } catch (error) {
+    console.error('❌ 获取个人信息接口异常:', error.message);
+    res.status(500).json({
+      success: false,
+      message: '服务器异常，请重试'
+    });
   }
 });
 
-// 处理容器终止信号（SIGTERM）- 避免Railway报SIGTERM错误
+// ====================== 启动服务 ======================
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ 服务器启动成功: http://0.0.0.0:${PORT}`);
+  console.log(`🔍 健康检查地址: http://0.0.0.0:${PORT}/health`);
+});
+
+// ====================== 优雅退出 ======================
 process.on('SIGTERM', () => {
-  console.log('\n📤 接收到容器终止信号（SIGTERM），开始优雅退出...');
-  server.close(() => {
-    console.log('✅ HTTP服务器已关闭');
-    db.close((err) => {
-      if (err) console.error('❌ 数据库关闭失败:', err.message);
-      else console.log('✅ 数据库连接已关闭');
-      process.exit(0);
-    });
+  console.log('\n📤 收到退出信号，正在关闭服务器...');
+  db.close((err) => {
+    if (err) console.error('❌ 数据库关闭失败:', err.message);
+    else console.log('✅ 数据库连接关闭成功');
+    process.exit(0);
   });
 });
 
-// 处理本地退出信号（Ctrl+C）
-process.on('SIGINT', () => {
-  console.log('\n📤 接收到手动退出信号（SIGINT），开始优雅退出...');
-  server.close(() => {
-    db.close((err) => {
-      if (err) console.error('❌ 数据库关闭失败:', err.message);
-      else console.log('✅ 数据库连接已关闭');
-      process.exit(0);
-    });
-  });
-});
-
-// 全局未捕获异常处理（防止服务崩溃）
+// 捕获未处理的异常
 process.on('uncaughtException', (err) => {
-  console.error('❌ 未捕获异常:', err.message);
-  db.close(() => process.exit(1));
-});
-
-process.on('unhandledRejection', (err) => {
-  console.error('❌ 未处理的Promise拒绝:', err.message);
+  console.error('❌ 未处理的异常:', err.message);
   db.close(() => process.exit(1));
 });
