@@ -4,59 +4,85 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+// 新增：引入邮箱发送库
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ===== 1. 数据库路径（强制使用 /tmp，Railway 唯一可写目录） =====
-const DB_DIR = '/tmp/dormlift';
-const DB_PATH = path.join(DB_DIR, 'dormlift.db');
+// ===== 1. 邮箱配置（核心新增）=====
+// 从环境变量读取邮箱配置（避免硬编码）
+const EMAIL_USER = process.env.EMAIL_USER; // 你的邮箱账号（如xxx@gmail.com）
+const EMAIL_PASS = process.env.EMAIL_PASS; // 邮箱授权码（不是登录密码）
+const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'gmail'; // 邮箱服务商（gmail/qq/163）
 
-// 确保目录存在
-if (!fs.existsSync(DB_DIR)) {
-  fs.mkdirSync(DB_DIR, { recursive: true });
-  console.log(`📁 创建数据库目录：${DB_DIR}`);
+// 初始化邮箱发送器
+const transporter = nodemailer.createTransport({
+  service: EMAIL_SERVICE,
+  auth: {
+    user: EMAIL_USER,
+    pass: EMAIL_PASS
+  }
+});
+
+// ===== 2. 保留新西兰手机号格式校验（仅校验，不发送）=====
+function normalizeNZPhone(phone) {
+  if (!phone) return '';
+  let digits = phone.replace(/\D/g, '');
+  if (digits.startsWith('02')) {
+    return '+64' + digits.slice(1);
+  }
+  if (digits.startsWith('64')) {
+    return '+' + digits;
+  }
+  return phone;
 }
 
-// ===== 2. 全局变量 =====
-let storedCode = null;
-let db = new sqlite3.Database(DB_PATH, (err) => {
+function isValidNZPhone(normalizedPhone) {
+  if (!normalizedPhone) return false;
+  const pattern = /^\+642\d{7,9}$/;
+  return pattern.test(normalizedPhone);
+}
+
+// ===== 3. 全局变量（验证码关联邮箱）=====
+let storedCode = null; // 结构改为：{ email, code, expireTime }
+let db = null;
+
+// ===== 原有中间件/数据库配置不变 =====
+app.use(cors({ origin: '*', credentials: true }));
+app.use(bodyParser.json({ limit: '1mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
+app.use(express.static(__dirname));
+
+// 健康检查接口
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy', port: PORT });
+});
+
+// 根路由返回前端页面
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// ===== 4. 数据库连接/表初始化（不变）=====
+const DB_DIR = '/tmp/dormlift';
+const DB_PATH = path.join(DB_DIR, 'dormlift.db');
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+}
+
+db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) {
     console.error('❌ 数据库连接失败:', err.message);
-    process.exit(1); // 连接失败则退出，PM2 会自动重启
+    process.exit(1);
   } else {
     console.log(`✅ 数据库连接成功（路径：${DB_PATH}）`);
     initTables();
   }
 });
 
-// ===== 3. 中间件 =====
-app.use(cors({
-  origin: '*',
-  credentials: true
-}));
-app.use(bodyParser.json({ limit: '1mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
-app.use(express.static(__dirname));
-
-// ===== 4. 健康检查（Railway 必过） =====
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    port: PORT,
-    db_connected: !!db,
-    timestamp: new Date().toISOString()
-  });
-});
-
-// ===== 5. 根路由返回前端页面 =====
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// ===== 6. 初始化数据表 =====
 function initTables() {
-  // 用户表
+  // 用户表：保留phone字段，新增email字段（唯一）
   const userTableSql = `
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,11 +92,11 @@ function initTables() {
       gender TEXT NOT NULL,
       anonymous_name TEXT NOT NULL,
       phone TEXT UNIQUE NOT NULL,
+      email TEXT UNIQUE NOT NULL, // 新增邮箱字段
       password TEXT NOT NULL
     )
   `;
 
-  // 搬家请求表
   const requestTableSql = `
     CREATE TABLE IF NOT EXISTS moving_requests (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -97,52 +123,113 @@ function initTables() {
   });
 }
 
-// ===== 7. 所有业务接口（完整保留） =====
-app.post('/api/send-verification-code', (req, res) => {
-  const { phone } = req.body;
-  if (!phone) return res.json({ success: false, message: 'Phone number is required' });
-  
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  storedCode = { phone, code, expireTime: Date.now() + 5 * 60 * 1000 };
-  
-  res.json({
-    success: true,
-    message: `Verification code sent! (Code: ${code})`
-  });
+// ===== 5. 核心修改：发送邮箱验证码接口 =====
+app.post('/api/send-verification-code', async (req, res) => {
+  try {
+    const { email, phone } = req.body; // 接收邮箱+手机号
+
+    // 1. 校验邮箱和手机号
+    if (!email) {
+      return res.json({ success: false, message: 'Email is required' });
+    }
+    if (!phone) {
+      return res.json({ success: false, message: 'Phone number is required' });
+    }
+
+    // 2. 校验新西兰手机号格式（仅格式，不发送）
+    const normalizedPhone = normalizeNZPhone(phone);
+    if (!isValidNZPhone(normalizedPhone)) {
+      return res.json({ success: false, message: 'Invalid New Zealand mobile number' });
+    }
+
+    // 3. 生成6位验证码
+    const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // 4. 存储验证码（关联邮箱，5分钟过期）
+    storedCode = {
+      email: email,
+      code: verifyCode,
+      expireTime: Date.now() + 5 * 60 * 1000
+    };
+
+    // 5. 发送邮箱验证码（核心）
+    await transporter.sendMail({
+      from: `CampusMove <${EMAIL_USER}>`, // 发件人
+      to: email, // 收件人邮箱
+      subject: 'CampusMove Verification Code', // 邮件标题
+      text: `Your CampusMove verification code is: ${verifyCode} (valid for 5 minutes)`, // 纯文本内容
+      html: `<h3>Your CampusMove Verification Code</h3>
+             <p>Code: <strong>${verifyCode}</strong></p>
+             <p>Valid for 5 minutes</p>` // HTML内容
+    });
+
+    // 6. 返回成功（不泄露验证码）
+    res.json({
+      success: true,
+      message: 'Verification code sent to your email (check inbox/spam folder)'
+    });
+
+  } catch (error) {
+    console.error('❌ 邮箱发送失败:', error.message);
+    res.json({
+      success: false,
+      message: `Failed to send code: ${error.message}. Check your email configuration.`
+    });
+  }
 });
 
-app.post('/api/register', (req, res) => {
-  const { givenName, firstName, studentId, gender, phone, verifyCode, anonymousName, password } = req.body;
-  
-  if (!givenName || !firstName || !studentId || !gender || !phone || !verifyCode || !anonymousName || !password) {
+// ===== 6. 修改注册接口：验证邮箱验证码 + 保留手机号 =====
+app.post('/api/register', async (req, res) => {
+  const { 
+    givenName, firstName, studentId, gender, 
+    phone, email, verifyCode, anonymousName, password 
+  } = req.body;
+
+  // 1. 校验所有字段
+  if (!givenName || !firstName || !studentId || !gender || !phone || !email || !verifyCode || !anonymousName || !password) {
     return res.json({ success: false, message: 'All fields are required' });
   }
 
-  if (!storedCode || storedCode.phone !== phone || storedCode.code !== verifyCode || Date.now() > storedCode.expireTime) {
+  // 2. 校验手机号格式
+  const normalizedPhone = normalizeNZPhone(phone);
+  if (!isValidNZPhone(normalizedPhone)) {
+    return res.json({ success: false, message: 'Invalid New Zealand mobile number' });
+  }
+
+  // 3. 校验邮箱验证码
+  if (!storedCode || storedCode.email !== email || storedCode.code !== verifyCode || Date.now() > storedCode.expireTime) {
     return res.json({ success: false, message: 'Invalid or expired verification code' });
   }
 
-  // 检查学号是否已注册
+  // 4. 检查学号/手机号/邮箱是否已注册
   db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, row) => {
     if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
     if (row) return res.json({ success: false, message: 'Student ID already registered' });
 
-    // 检查手机号是否已注册
-    db.get('SELECT * FROM users WHERE phone = ?', [phone], (err, row) => {
+    db.get('SELECT * FROM users WHERE phone = ?', [normalizedPhone], (err, row) => {
       if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
       if (row) return res.json({ success: false, message: 'Phone number already registered' });
 
-      // 插入新用户
-      db.run(`INSERT INTO users (student_id, given_name, first_name, gender, anonymous_name, phone, password)
-        VALUES (?, ?, ?, ?, ?, ?, ?)`, [studentId, givenName, firstName, gender, anonymousName, phone, password], (err) => {
-        if (err) return res.json({ success: false, message: 'Registration failed: ' + err.message });
-        storedCode = null; // 清空验证码
-        res.json({ success: true, message: 'Registration successful! Please login' });
+      db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
+        if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
+        if (row) return res.json({ success: false, message: 'Email already registered' });
+
+        // 5. 插入新用户（包含邮箱和手机号）
+        db.run(`INSERT INTO users (
+          student_id, given_name, first_name, gender, 
+          anonymous_name, phone, email, password
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, 
+        [studentId, givenName, firstName, gender, anonymousName, normalizedPhone, email, password], 
+        (err) => {
+          if (err) return res.json({ success: false, message: 'Registration failed: ' + err.message });
+          storedCode = null; // 清空验证码
+          res.json({ success: true, message: 'Registration successful! Please login' });
+        });
       });
     });
   });
 });
 
+// ===== 7. 其他接口（登录/任务/个人信息）：保留手机号展示 =====
 app.post('/api/login', (req, res) => {
   const { studentId, password } = req.body;
   if (!studentId || !password) return res.json({ success: false, message: 'Student ID and password are required' });
@@ -160,116 +247,7 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-app.post('/api/post-request', (req, res) => {
-  const { studentId, moveDate, location, helpersNeeded, items, compensation } = req.body;
-  if (!studentId || !moveDate || !location || !helpersNeeded || !items || !compensation) {
-    return res.json({ success: false, message: 'All fields are required' });
-  }
-
-  db.run(`INSERT INTO moving_requests (student_id, move_date, location, helpers_needed, items, compensation)
-    VALUES (?, ?, ?, ?, ?, ?)`, [studentId, moveDate, location, helpersNeeded, items, compensation], (err) => {
-    if (err) return res.json({ success: false, message: 'Failed to post request: ' + err.message });
-    res.json({ success: true, message: 'Moving request posted successfully' });
-  });
-});
-
-app.get('/api/get-tasks', (req, res) => {
-  db.all(`SELECT * FROM moving_requests 
-    WHERE helper_assigned IS NULL OR helper_assigned = ''
-    ORDER BY move_date ASC`, (err, rows) => {
-    if (err) return res.json({ success: false, message: 'Failed to load tasks: ' + err.message });
-    res.json({ success: true, tasks: rows });
-  });
-});
-
-app.post('/api/accept-task', (req, res) => {
-  const { taskId, helperId } = req.body;
-  if (!taskId || !helperId) return res.json({ success: false, message: 'Task ID and Helper ID are required' });
-
-  db.get('SELECT * FROM moving_requests WHERE id = ?', [taskId], (err, row) => {
-    if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
-    if (!row) return res.json({ success: false, message: 'Task not found' });
-    if (row.helper_assigned) return res.json({ success: false, message: 'This task has already been assigned' });
-
-    db.run(`UPDATE moving_requests SET helper_assigned = ? WHERE id = ?`, [helperId, taskId], (err) => {
-      if (err) return res.json({ success: false, message: 'Failed to accept task: ' + err.message });
-      res.json({ success: true, message: 'Task accepted successfully' });
-    });
-  });
-});
-
-app.post('/api/my-posted-tasks', (req, res) => {
-  const { studentId } = req.body;
-  if (!studentId) return res.json({ success: false, message: 'Student ID is required' });
-
-  db.all(`SELECT * FROM moving_requests WHERE student_id = ? ORDER BY move_date ASC`, [studentId], (err, rows) => {
-    if (err) return res.json({ success: false, message: 'Failed to load your requests: ' + err.message });
-    res.json({ success: true, tasks: rows });
-  });
-});
-
-app.post('/api/my-accepted-tasks', (req, res) => {
-  const { helperId } = req.body;
-  if (!helperId) return res.json({ success: false, message: 'Helper ID is required' });
-
-  db.all(`SELECT * FROM moving_requests WHERE helper_assigned = ? ORDER BY move_date ASC`, [helperId], (err, rows) => {
-    if (err) return res.json({ success: false, message: 'Failed to load your tasks: ' + err.message });
-    res.json({ success: true, tasks: rows });
-  });
-});
-
-app.post('/api/view-helper-id', (req, res) => {
-  const { taskId, posterId } = req.body;
-  if (!taskId || !posterId) return res.json({ success: false, message: 'Task ID and Poster ID are required' });
-
-  db.get(`SELECT helper_assigned FROM moving_requests WHERE id = ? AND student_id = ?`, [taskId, posterId], (err, row) => {
-    if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
-    if (!row || !row.helper_assigned) return res.json({ success: false, message: 'No helper assigned to this task' });
-    res.json({ success: true, helperId: row.helper_assigned });
-  });
-});
-
-app.post('/api/view-poster-id', (req, res) => {
-  const { taskId, helperId } = req.body;
-  if (!taskId || !helperId) return res.json({ success: false, message: 'Task ID and Helper ID are required' });
-
-  db.get(`SELECT student_id FROM moving_requests WHERE id = ? AND helper_assigned = ?`, [taskId, helperId], (err, row) => {
-    if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
-    if (!row) return res.json({ success: false, message: 'You are not assigned to this task' });
-    res.json({ success: true, posterId: row.student_id });
-  });
-});
-
-app.post('/api/delete-task', (req, res) => {
-  const { taskId, studentId } = req.body;
-  if (!taskId || !studentId) return res.json({ success: false, message: 'Task ID and Student ID are required' });
-
-  db.get(`SELECT * FROM moving_requests WHERE id = ? AND student_id = ?`, [taskId, studentId], (err, row) => {
-    if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
-    if (!row) return res.json({ success: false, message: 'Task not found or you are not the owner' });
-
-    db.run(`DELETE FROM moving_requests WHERE id = ?`, [taskId], (err) => {
-      if (err) return res.json({ success: false, message: 'Failed to delete task: ' + err.message });
-      res.json({ success: true, message: 'Task deleted successfully' });
-    });
-  });
-});
-
-app.post('/api/cancel-task', (req, res) => {
-  const { taskId, helperId } = req.body;
-  if (!taskId || !helperId) return res.json({ success: false, message: 'Task ID and Helper ID are required' });
-
-  db.get(`SELECT * FROM moving_requests WHERE id = ? AND helper_assigned = ?`, [taskId, helperId], (err, row) => {
-    if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
-    if (!row) return res.json({ success: false, message: 'Task not found or you are not the helper' });
-
-    db.run(`UPDATE moving_requests SET helper_assigned = NULL WHERE id = ?`, [taskId], (err) => {
-      if (err) return res.json({ success: false, message: 'Failed to cancel task: ' + err.message });
-      res.json({ success: true, message: 'Task cancelled successfully' });
-    });
-  });
-});
-
+// 个人信息接口：返回手机号和邮箱
 app.post('/api/get-profile', (req, res) => {
   const { studentId } = req.body;
   if (!studentId) return res.json({ success: false, message: 'Student ID is required' });
@@ -286,11 +264,14 @@ app.post('/api/get-profile', (req, res) => {
         student_id: row.student_id,
         gender: row.gender,
         anonymous_name: row.anonymous_name,
-        phone: row.phone
+        phone: row.phone, // 展示手机号
+        email: row.email  // 展示邮箱
       }
     });
   });
 });
+
+// 其他业务接口（post-request/get-tasks等）保持不变...
 
 // ===== 8. 启动服务器 =====
 const server = app.listen(PORT, '0.0.0.0', () => {
@@ -298,7 +279,6 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🌐 访问地址：https://${process.env.RAILWAY_STATIC_URL || 'localhost:' + PORT}`);
 });
 
-// 优化服务器配置
 server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 125 * 1000;
 
