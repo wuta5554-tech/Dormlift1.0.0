@@ -1,4 +1,3 @@
-// 修复版 server.js（解决 Railway 容器 SIGTERM 终止问题）
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
@@ -9,112 +8,97 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ===== 关键修复1：处理容器终止信号 =====
-process.on('SIGTERM', () => {
-  console.log('👋 接收到 SIGTERM 信号，优雅关闭服务器');
-  if (db) {
-    db.close((err) => {
-      if (err) console.error('数据库关闭失败:', err.message);
-      else console.log('✅ 数据库已关闭');
-    });
-  }
-  process.exit(0);
-});
+// ===== 1. 数据库路径（强制使用 /tmp，Railway 唯一可写目录） =====
+const DB_DIR = '/tmp/dormlift';
+const DB_PATH = path.join(DB_DIR, 'dormlift.db');
 
-process.on('SIGINT', () => {
-  console.log('👋 接收到 SIGINT 信号，优雅关闭服务器');
-  if (db) {
-    db.close((err) => {
-      if (err) console.error('数据库关闭失败:', err.message);
-      else console.log('✅ 数据库已关闭');
-    });
-  }
-  process.exit(0);
-});
-
-// ===== 关键修复2：使用 /tmp 目录存储数据库（Railway 可写） =====
-const DB_PATH = path.join('/tmp', 'dormlift.db');
-// 确保 /tmp 目录存在
-if (!fs.existsSync('/tmp')) {
-  fs.mkdirSync('/tmp', { recursive: true });
+// 确保目录存在
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+  console.log(`📁 创建数据库目录：${DB_DIR}`);
 }
 
-// 全局变量
+// ===== 2. 全局变量 =====
 let storedCode = null;
-let db = null;
-
-// 中间件
-app.use(cors({
-  origin: '*', // 允许所有来源（生产环境可限定域名）
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
-}));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-// 托管静态文件（index.html）
-app.use(express.static(__dirname));
-
-// 1. 健康检查接口（Railway 必过）
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', port: PORT });
+let db = new sqlite3.Database(DB_PATH, (err) => {
+  if (err) {
+    console.error('❌ 数据库连接失败:', err.message);
+    process.exit(1); // 连接失败则退出，PM2 会自动重启
+  } else {
+    console.log(`✅ 数据库连接成功（路径：${DB_PATH}）`);
+    initTables();
+  }
 });
 
-// 2. 根路由返回前端页面
+// ===== 3. 中间件 =====
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
+app.use(bodyParser.json({ limit: '1mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
+app.use(express.static(__dirname));
+
+// ===== 4. 健康检查（Railway 必过） =====
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    port: PORT,
+    db_connected: !!db,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ===== 5. 根路由返回前端页面 =====
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 3. 连接数据库（使用 /tmp 路径）
-function connectDB() {
-  db = new sqlite3.Database(DB_PATH, (err) => {
-    if (err) {
-      console.error('数据库连接失败:', err.message);
-      // 重试连接
-      setTimeout(connectDB, 1000);
-    } else {
-      console.log(`✅ 数据库连接成功（路径：${DB_PATH}）`);
-      initTables();
-    }
-  });
-}
-
-// 4. 初始化数据表
+// ===== 6. 初始化数据表 =====
 function initTables() {
   // 用户表
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    student_id TEXT UNIQUE NOT NULL,
-    given_name TEXT NOT NULL,
-    first_name TEXT NOT NULL,
-    gender TEXT NOT NULL,
-    anonymous_name TEXT NOT NULL,
-    phone TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
-  )`, (err) => {
-    if (err) console.error('用户表初始化失败:', err.message);
+  const userTableSql = `
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      student_id TEXT UNIQUE NOT NULL,
+      given_name TEXT NOT NULL,
+      first_name TEXT NOT NULL,
+      gender TEXT NOT NULL,
+      anonymous_name TEXT NOT NULL,
+      phone TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL
+    )
+  `;
+
+  // 搬家请求表
+  const requestTableSql = `
+    CREATE TABLE IF NOT EXISTS moving_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      student_id TEXT NOT NULL,
+      move_date TEXT NOT NULL,
+      location TEXT NOT NULL,
+      helpers_needed TEXT NOT NULL,
+      items TEXT NOT NULL,
+      compensation TEXT NOT NULL,
+      helper_assigned TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (student_id) REFERENCES users(student_id)
+    )
+  `;
+
+  db.run(userTableSql, (err) => {
+    if (err) console.error('❌ 用户表初始化失败:', err.message);
     else console.log('✅ 用户表初始化完成');
   });
 
-  // 搬家请求表
-  db.run(`CREATE TABLE IF NOT EXISTS moving_requests (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    student_id TEXT NOT NULL,
-    move_date TEXT NOT NULL,
-    location TEXT NOT NULL,
-    helpers_needed TEXT NOT NULL,
-    items TEXT NOT NULL,
-    compensation TEXT NOT NULL,
-    helper_assigned TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (student_id) REFERENCES users(student_id)
-  )`, (err) => {
-    if (err) console.error('搬家请求表初始化失败:', err.message);
+  db.run(requestTableSql, (err) => {
+    if (err) console.error('❌ 搬家请求表初始化失败:', err.message);
     else console.log('✅ 搬家请求表初始化完成');
   });
 }
 
-// ========== 所有业务接口（完整保留） ==========
-app.post('/api/send-verification-code', async (req, res) => {
+// ===== 7. 所有业务接口（完整保留） =====
+app.post('/api/send-verification-code', (req, res) => {
   const { phone } = req.body;
   if (!phone) return res.json({ success: false, message: 'Phone number is required' });
   
@@ -127,7 +111,7 @@ app.post('/api/send-verification-code', async (req, res) => {
   });
 });
 
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', (req, res) => {
   const { givenName, firstName, studentId, gender, phone, verifyCode, anonymousName, password } = req.body;
   
   if (!givenName || !firstName || !studentId || !gender || !phone || !verifyCode || !anonymousName || !password) {
@@ -138,18 +122,21 @@ app.post('/api/register', async (req, res) => {
     return res.json({ success: false, message: 'Invalid or expired verification code' });
   }
 
+  // 检查学号是否已注册
   db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, row) => {
     if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
     if (row) return res.json({ success: false, message: 'Student ID already registered' });
 
+    // 检查手机号是否已注册
     db.get('SELECT * FROM users WHERE phone = ?', [phone], (err, row) => {
       if (err) return res.json({ success: false, message: 'Database error: ' + err.message });
       if (row) return res.json({ success: false, message: 'Phone number already registered' });
 
+      // 插入新用户
       db.run(`INSERT INTO users (student_id, given_name, first_name, gender, anonymous_name, phone, password)
         VALUES (?, ?, ?, ?, ?, ?, ?)`, [studentId, givenName, firstName, gender, anonymousName, phone, password], (err) => {
         if (err) return res.json({ success: false, message: 'Registration failed: ' + err.message });
-        storedCode = null;
+        storedCode = null; // 清空验证码
         res.json({ success: true, message: 'Registration successful! Please login' });
       });
     });
@@ -305,14 +292,25 @@ app.post('/api/get-profile', (req, res) => {
   });
 });
 
-// ===== 关键修复3：确保服务器持续运行 =====
+// ===== 8. 启动服务器 =====
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ 服务器已启动：http://0.0.0.0:${PORT}`);
-  console.log(`🔍 Railway 访问地址：https://${process.env.RAILWAY_STATIC_URL || 'localhost:' + PORT}`);
-  // 启动后连接数据库
-  connectDB();
+  console.log(`🌐 访问地址：https://${process.env.RAILWAY_STATIC_URL || 'localhost:' + PORT}`);
 });
 
-// 防止服务器空闲退出
-server.keepAliveTimeout = 60 * 1000;
-server.headersTimeout = 65 * 1000;
+// 优化服务器配置
+server.keepAliveTimeout = 120 * 1000;
+server.headersTimeout = 125 * 1000;
+
+// PM2 优雅退出
+process.on('SIGINT', () => {
+  console.log('📤 接收到退出信号，关闭数据库连接');
+  db.close((err) => {
+    if (err) console.error('❌ 数据库关闭失败:', err.message);
+    else console.log('✅ 数据库已关闭');
+    server.close(() => {
+      console.log('✅ 服务器已关闭');
+      process.exit(0);
+    });
+  });
+});
