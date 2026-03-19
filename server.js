@@ -820,19 +820,37 @@ app.post('/api/get-profile', (req, res) => {
 });
 
 // ===================== 启动服务器 =====================
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 服务器已启动，端口：${PORT}`);
   console.log(`✅ 访问地址：http://localhost:${PORT}`);
   console.log(`✅ 支持任意有效（valid）邮箱注册，无Outlook限制`);
   console.log(`✅ 验证码模式：读取Railway环境变量（Variable）发送`);
 });
 
-// ===================== 进程退出处理 =====================
-process.on('SIGINT', () => {
-  console.log('\n🔴 服务器正在关闭...');
-  db.close((err) => {
-    if (err) console.error('❌ 数据库关闭失败:', err.message);
-    else console.log('✅ 数据库连接已关闭');
-    process.exit(0);
+// ===================== 优雅处理进程终止（解决SIGTERM） =====================
+// 处理Railway的SIGTERM信号
+process.on('SIGTERM', () => {
+  console.log('\n📢 收到SIGTERM信号，优雅关闭服务器...');
+  // 关闭HTTP服务
+  server.close(() => {
+    console.log('✅ HTTP服务已关闭');
+    // 关闭数据库连接
+    db.close((err) => {
+      if (err) console.error('❌ 数据库关闭失败:', err.message);
+      else console.log('✅ 数据库连接已关闭');
+      process.exit(0); // 正常退出
+    });
   });
+});
+
+// 处理未捕获的异常（避免进程崩溃）
+process.on('uncaughtException', (err) => {
+  console.error('❌ 未捕获异常:', err.message);
+  db.close(() => process.exit(1));
+});
+
+// 处理未处理的Promise拒绝
+process.on('unhandledRejection', (err) => {
+  console.error('❌ 未处理的Promise拒绝:', err.message);
+  db.close(() => process.exit(1));
 });
