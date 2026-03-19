@@ -30,11 +30,14 @@ app.get('/', (req, res) => {
 });
 
 // ===================== 数据库配置 =====================
+// 修改数据库初始化调用方式（延迟5秒执行，先让服务器响应健康检查）
 const db = new sqlite3.Database('./dormlift.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
-  if (err) console.error('❌ 数据库连接失败:', err.message);
-  else {
-    console.log('✅ 数据库连接成功');
-    initDatabase();
+  if (err) {
+    console.error('❌ 数据库连接失败:', err.message);
+  } else {
+    console.log('✅ 数据库连接成功（dormlift.db）');
+    // 延迟初始化数据表，先响应健康检查
+    setTimeout(initDatabase, 5000); 
   }
 });
 
