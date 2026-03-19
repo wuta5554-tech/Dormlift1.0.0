@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "pm2 start server.js --no-daemon --name dormlift",
+    "start": "pm2 start server.js --no-daemon --name dormlift --watch=false", // 新增--watch=false避免热重启
     "stop": "pm2 stop dormlift"
   },
   "dependencies": {
