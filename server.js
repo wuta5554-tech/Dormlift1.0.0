@@ -43,59 +43,84 @@ let storedVerificationCode = { email: '', code: '', expireTime: 0 };
 // 关闭测试模式（开启真实邮件发送）
 const EMAIL_TEST_MODE = false;
 
+// ===================== 数据库配置 =====================
+// 连接SQLite数据库（不存在则自动创建）
+const db = new sqlite3.Database('./dormlift.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+  if (err) {
+    console.error('❌ 数据库连接失败:', err.message);
+  } else {
+    console.log('✅ 数据库连接成功（dormlift.db）');
+    initDatabase(); // 连接成功后调用初始化函数
+  }
+});
+
+// 全局变量：存储验证码（内存级，重启后清空）
+let storedVerificationCode = { email: '', code: '', expireTime: 0 };
+// 关闭测试模式（开启真实邮件发送）
+const EMAIL_TEST_MODE = false;
+
+// 新增：核心标记 → 防止数据表重复初始化（解决日志重复打印）
+let isDbInitialized = false;
+
 // ===================== 数据库表初始化 =====================
 function initDatabase() {
-  console.log('🔧 初始化数据表...');
+  // 关键：如果已经初始化过，直接返回，不再重复执行
+  if (isDbInitialized) {
+    console.log('🔧 数据表已初始化，无需重复执行');
+    return;
+  }
 
-  // 1. 用户表
+  console.log('🔧 开始初始化数据表...');
+
+  // 1. 用户表（users）
   const createUsersTable = `
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      student_id TEXT UNIQUE NOT NULL,
-      given_name TEXT NOT NULL,
-      first_name TEXT NOT NULL,
-      gender TEXT NOT NULL,
-      anonymous_name TEXT NOT NULL,
-      phone TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      student_id TEXT UNIQUE NOT NULL,  -- 学生ID（唯一）
+      given_name TEXT NOT NULL,         -- 名
+      first_name TEXT NOT NULL,         -- 姓
+      gender TEXT NOT NULL,             -- 性别
+      anonymous_name TEXT NOT NULL,     -- 匿名昵称
+      phone TEXT UNIQUE NOT NULL,       -- 手机号（唯一）
+      email TEXT UNIQUE NOT NULL,       -- 邮箱（唯一）
+      password TEXT NOT NULL,           -- 密码
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- 更新时间
     )
   `;
 
-  // 2. 搬家请求表
+  // 2. 搬家请求表（moving_requests）
   const createRequestsTable = `
     CREATE TABLE IF NOT EXISTS moving_requests (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      student_id TEXT NOT NULL,
-      move_date TEXT NOT NULL,
-      location TEXT NOT NULL,
-      helpers_needed TEXT NOT NULL,
-      items TEXT NOT NULL,
-      compensation TEXT NOT NULL,
-      helper_assigned TEXT,
-      status TEXT DEFAULT 'pending',
+      student_id TEXT NOT NULL,         -- 发布者学生ID
+      move_date TEXT NOT NULL,         -- 搬家日期
+      location TEXT NOT NULL,          -- 搬家地点
+      helpers_needed TEXT NOT NULL,    -- 需要的帮手数量
+      items TEXT NOT NULL,             -- 搬运物品
+      compensation TEXT NOT NULL,      -- 报酬
+      helper_assigned TEXT,            -- 被分配的帮手ID
+      status TEXT DEFAULT 'pending',   -- 状态：pending/assigned/finished
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (student_id) REFERENCES users(student_id) ON DELETE CASCADE
     )
   `;
 
-  // 3. 任务分配表
+  // 3. 任务分配表（task_assignments）
   const createAssignmentsTable = `
     CREATE TABLE IF NOT EXISTS task_assignments (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      task_id INTEGER NOT NULL,
-      helper_id TEXT NOT NULL,
-      assign_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      task_id INTEGER NOT NULL,         -- 搬家请求ID
+      helper_id TEXT NOT NULL,          -- 帮手学生ID
+      assign_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 分配时间
       FOREIGN KEY (task_id) REFERENCES moving_requests(id) ON DELETE CASCADE,
       FOREIGN KEY (helper_id) REFERENCES users(student_id) ON DELETE CASCADE,
-      UNIQUE(task_id, helper_id)
+      UNIQUE(task_id, helper_id)        -- 一个任务只能分配给一个帮手
     )
   `;
 
-  // 执行建表
+  // 执行建表语句
   db.run(createUsersTable, (err) => {
     if (err) console.error('❌ 创建用户表失败:', err.message);
     else console.log('✅ 用户表初始化完成');
@@ -112,7 +137,11 @@ function initDatabase() {
   });
 
   console.log('🔧 所有数据表初始化完成');
+  // 关键：标记为已初始化，后续不再执行
+  isDbInitialized = true;
 }
+
+
 
 // ===================== 核心工具函数 =====================
 /**
