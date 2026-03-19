@@ -1,18 +1,22 @@
 /**
- * DormLift 后端服务 - Railway适配最终版
- * 修复：SQLite COMMENT语法 + 端口动态配置 + 语法闭合完整
- * 测试模式：验证码打印在控制台，无需Outlook邮箱连接
+ * DormLift 后端服务 - 最终版
+ * 特性：
+ * 1. 支持任意合法邮箱注册（QQ/163/Gmail/Outlook等）
+ * 2. 适配Railway动态端口，无硬编码
+ * 3. 静态文件直接读取根目录，无需public文件夹
+ * 4. 测试模式：验证码打印在控制台，无需真实邮箱连接
+ * 5. 无SQLite语法错误，数据库表初始化正常
  */
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
-const path = require('path'); // 新增：处理路径
+const path = require('path');
 
 // 创建Express应用
 const app = express();
-// 🔥 关键：Railway动态端口（优先读取环境变量）
+// Railway动态端口（优先读取环境变量）
 const PORT = process.env.PORT || 3000;
 
 // ===================== 中间件配置 =====================
@@ -30,7 +34,7 @@ app.use(bodyParser.urlencoded({
   limit: '1mb'
 }));
 
-// 🔥 静态文件配置：index.html和server.js同级（无需public文件夹）
+// 静态文件配置：index.html和server.js同级
 app.use(express.static(__dirname));
 // 强制根路径返回index.html
 app.get('/', (req, res) => {
@@ -55,7 +59,7 @@ let storedVerificationCode = {
 };
 
 // ===================== 邮箱配置（测试模式） =====================
-const EMAIL_TEST_MODE = true;
+const EMAIL_TEST_MODE = true; // 测试模式：验证码打印在控制台
 
 const emailTransporter = nodemailer.createTransport({
   host: 'smtp.office365.com',
@@ -71,7 +75,7 @@ const emailTransporter = nodemailer.createTransport({
   }
 });
 
-// 测试邮箱连接（不阻塞）
+// 测试邮箱连接（不阻塞启动）
 emailTransporter.verify((error, success) => {
   if (error) {
     console.log('【邮箱提示】连接失败，已启用测试模式（验证码将打印在控制台）');
@@ -159,10 +163,13 @@ function initDatabase() {
   console.log('【数据库初始化】所有表检查/创建完成');
 }
 
-// ===================== 工具函数 =====================
-function isValidOutlookEmail(email) {
-  const outlookRegex = /^[a-zA-Z0-9._%+-]+@(outlook|hotmail)\.com$/i;
-  return outlookRegex.test(email);
+// ===================== 工具函数（核心修改：支持任意邮箱） =====================
+/**
+ * 通用邮箱格式验证（支持QQ/163/Gmail/Outlook等所有合法邮箱）
+ */
+function isValidEmail(email) {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i;
+  return emailRegex.test(email);
 }
 
 function generateVerificationCode() {
@@ -194,7 +201,7 @@ async function sendEmailVerificationCode(toEmail, code) {
   }
 }
 
-// ===================== 接口 - 验证码 =====================
+// ===================== 接口 - 验证码（支持任意邮箱） =====================
 app.post('/api/send-verification-code', async (req, res) => {
   try {
     const { email } = req.body;
@@ -206,10 +213,11 @@ app.post('/api/send-verification-code', async (req, res) => {
       });
     }
 
-    if (!isValidOutlookEmail(email)) {
+    // 通用邮箱格式验证（无Outlook限制）
+    if (!isValidEmail(email)) {
       return res.status(400).json({
         success: false,
-        message: '邮箱格式错误：仅支持Outlook/Hotmail邮箱'
+        message: '邮箱格式错误：请输入合法的邮箱地址（如 xxx@qq.com、xxx@163.com、xxx@gmail.com 等）'
       });
     }
 
@@ -239,7 +247,7 @@ app.post('/api/send-verification-code', async (req, res) => {
   }
 });
 
-// ===================== 接口 - 注册/登录 =====================
+// ===================== 接口 - 注册（支持任意邮箱） =====================
 app.post('/api/register', (req, res) => {
   try {
     const {
@@ -274,13 +282,15 @@ app.post('/api/register', (req, res) => {
       });
     }
 
-    if (!isValidOutlookEmail(email)) {
+    // 通用邮箱格式验证（无Outlook限制）
+    if (!isValidEmail(email)) {
       return res.status(400).json({
         success: false,
-        message: '邮箱格式错误：仅支持Outlook/Hotmail邮箱'
+        message: '邮箱格式错误：请输入合法的邮箱地址（如 xxx@qq.com、xxx@163.com、xxx@gmail.com 等）'
       });
     }
 
+    // 验证验证码有效性
     if (!storedVerificationCode || 
         storedVerificationCode.email !== email || 
         storedVerificationCode.code !== verifyCode || 
@@ -291,6 +301,7 @@ app.post('/api/register', (req, res) => {
       });
     }
 
+    // 检查学生ID是否已注册
     db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, studentRow) => {
       if (err) {
         console.error('【数据库错误】查询学生ID失败:', err.message);
@@ -307,6 +318,7 @@ app.post('/api/register', (req, res) => {
         });
       }
 
+      // 检查邮箱是否已注册
       db.get('SELECT * FROM users WHERE email = ?', [email], (err, emailRow) => {
         if (err) {
           console.error('【数据库错误】查询邮箱失败:', err.message);
@@ -319,10 +331,11 @@ app.post('/api/register', (req, res) => {
         if (emailRow) {
           return res.status(400).json({
             success: false,
-            message: '注册失败：该Outlook邮箱已被注册'
+            message: '注册失败：该邮箱已被注册'
           });
         }
 
+        // 检查手机号是否已注册
         db.get('SELECT * FROM users WHERE phone = ?', [phone], (err, phoneRow) => {
           if (err) {
             console.error('【数据库错误】查询手机号失败:', err.message);
@@ -339,6 +352,7 @@ app.post('/api/register', (req, res) => {
             });
           }
 
+          // 插入新用户
           const insertUserSql = `
             INSERT INTO users (
               student_id, given_name, first_name, gender,
@@ -357,6 +371,7 @@ app.post('/api/register', (req, res) => {
               });
             }
 
+            // 清空验证码
             storedVerificationCode = {
               email: '',
               code: '',
@@ -380,6 +395,7 @@ app.post('/api/register', (req, res) => {
   }
 });
 
+// ===================== 接口 - 登录 =====================
 app.post('/api/login', (req, res) => {
   try {
     const { studentId, password } = req.body;
@@ -428,7 +444,7 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-// ===================== 接口 - 任务管理 =====================
+// ===================== 接口 - 发布任务 =====================
 app.post('/api/post-request', (req, res) => {
   try {
     const {
@@ -497,6 +513,7 @@ app.post('/api/post-request', (req, res) => {
   }
 });
 
+// ===================== 接口 - 获取未分配任务 =====================
 app.get('/api/get-tasks', (req, res) => {
   try {
     const getTasksSql = `
@@ -530,6 +547,7 @@ app.get('/api/get-tasks', (req, res) => {
   }
 });
 
+// ===================== 接口 - 接受任务 =====================
 app.post('/api/accept-task', (req, res) => {
   try {
     const { taskId, helperId } = req.body;
@@ -613,6 +631,7 @@ app.post('/api/accept-task', (req, res) => {
   }
 });
 
+// ===================== 接口 - 获取我发布的任务 =====================
 app.post('/api/my-posted-tasks', (req, res) => {
   try {
     const { studentId } = req.body;
@@ -655,6 +674,7 @@ app.post('/api/my-posted-tasks', (req, res) => {
   }
 });
 
+// ===================== 接口 - 获取我接受的任务 =====================
 app.post('/api/my-accepted-tasks', (req, res) => {
   try {
     const { helperId } = req.body;
@@ -698,6 +718,7 @@ app.post('/api/my-accepted-tasks', (req, res) => {
   }
 });
 
+// ===================== 接口 - 查看任务助手ID =====================
 app.post('/api/view-helper-id', (req, res) => {
   try {
     const { taskId, posterId } = req.body;
@@ -747,6 +768,7 @@ app.post('/api/view-helper-id', (req, res) => {
   }
 });
 
+// ===================== 接口 - 查看任务发布者ID =====================
 app.post('/api/view-poster-id', (req, res) => {
   try {
     const { taskId, helperId } = req.body;
@@ -789,6 +811,7 @@ app.post('/api/view-poster-id', (req, res) => {
   }
 });
 
+// ===================== 接口 - 删除我发布的任务 =====================
 app.post('/api/delete-task', (req, res) => {
   try {
     const { taskId, studentId } = req.body;
@@ -816,11 +839,13 @@ app.post('/api/delete-task', (req, res) => {
         });
       }
 
+      // 先删除关联的任务分配记录
       db.run('DELETE FROM task_assignments WHERE task_id = ?', [taskId], (err) => {
         if (err) {
           console.error('【数据库错误】删除分配记录失败:', err.message);
         }
 
+        // 删除任务本身
         db.run('DELETE FROM moving_requests WHERE id = ?', [taskId], (err) => {
           if (err) {
             console.error('【数据库错误】删除任务失败:', err.message);
@@ -846,6 +871,7 @@ app.post('/api/delete-task', (req, res) => {
   }
 });
 
+// ===================== 接口 - 取消我接受的任务 =====================
 app.post('/api/cancel-task', (req, res) => {
   try {
     const { taskId, helperId } = req.body;
@@ -873,6 +899,7 @@ app.post('/api/cancel-task', (req, res) => {
         });
       }
 
+      // 恢复任务为未分配状态
       const updateTaskSql = `
         UPDATE moving_requests
         SET helper_assigned = NULL, status = 'pending'
@@ -887,6 +914,7 @@ app.post('/api/cancel-task', (req, res) => {
           });
         }
 
+        // 删除关联的任务分配记录
         db.run('DELETE FROM task_assignments WHERE task_id = ? AND helper_id = ?', [taskId, helperId], (err) => {
           if (err) {
             console.error('【数据库错误】删除分配记录失败:', err.message);
@@ -908,6 +936,7 @@ app.post('/api/cancel-task', (req, res) => {
   }
 });
 
+// ===================== 接口 - 获取个人信息 =====================
 app.post('/api/get-profile', (req, res) => {
   try {
     const { studentId } = req.body;
@@ -969,6 +998,7 @@ app.listen(PORT, () => {
   console.log(`📅 启动时间: ${new Date().toLocaleString()}`);
   console.log(`💡 前端界面已挂载，访问根路径即可查看`);
   console.log(`🔧 测试模式已开启：验证码将打印在控制台`);
+  console.log(`📧 支持任意合法邮箱注册（QQ/163/Gmail/Outlook等）`);
   console.log(`============================================`);
 });
 
