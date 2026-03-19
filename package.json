@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "pm2 start server.js --no-daemon --name dormlift --watch=false",
-    "stop": "pm2 stop dormlift"
+    "start": "pm2 start server.js --no-daemon --name dormlift --watch=false"
   },
   "dependencies": {
     "express": "^4.18.2",
