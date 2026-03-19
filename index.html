@@ -1,774 +1,947 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Move - Student Moving Platform</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            background-color: #2196F3;
-            color: white;
-            padding: 15px 0;
-            text-align: center;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: 20px;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        nav button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: white;
-            color: #2196F3;
-            cursor: pointer;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        nav button.active {
-            background-color: #2196F3;
-            color: white;
-        }
-        nav button:hover:not(.active) {
-            background-color: #e3f2fd;
-        }
-        .form-section {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-            display: none;
-        }
-        .form-section.active {
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: #444;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 15px;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #2196F3;
-            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
-        }
-        .code-row {
-            display: flex;
-            gap: 10px;
-        }
-        .code-row input {
-            flex: 1;
-        }
-        .btn-get-code {
-            padding: 12px 20px;
-            background: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .btn-get-code:disabled {
-            background: #90caf9;
-            cursor: not-allowed;
-        }
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background: #1976D2;
-        }
-        .tip {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-        .alert {
-            padding: 10px 14px;
-            border-radius: 4px;
-            margin-bottom: 16px;
-            display: none;
-        }
-        .alert-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            display: block;
-        }
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            display: block;
-        }
-        .task-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .task-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-left: 4px solid #2196F3;
-        }
-        .task-card h3 {
-            margin-bottom: 10px;
-            color: #2196F3;
-        }
-        .task-card p {
-            margin-bottom: 8px;
-            color: #666;
-            font-size: 14px;
-        }
-        .task-card .btn {
-            padding: 8px 16px;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        .profile-info {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .profile-item {
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #eee;
-        }
-        .profile-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 4px;
-        }
-        .profile-value {
-            font-size: 16px;
-            font-weight: 500;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusMove - Outlook验证版</title>
+  <style>
+    /* 全局样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    body {
+      background-color: #f5f7fa;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    /* 头部样式 */
+    header {
+      background-color: #2563eb;
+      color: white;
+      padding: 16px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .login-status {
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background-color: rgba(255,255,255,0.2);
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    .login-status:hover {
+      background-color: rgba(255,255,255,0.3);
+    }
+    /* Tab导航 */
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background-color: white;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .tab-btn.active {
+      background-color: #2563eb;
+      color: white;
+    }
+    .tab-btn:hover:not(.active) {
+      color: #2563eb;
+      background-color: #f1f5f9;
+    }
+    /* 页面内容 */
+    .page {
+      display: none;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .page.active {
+      display: block;
+    }
+    /* 表单样式 */
+    .form-card {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .form-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #334155;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+    .code-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .code-row input {
+      flex: 1;
+    }
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+      width: 100%;
+    }
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+    .btn-outline {
+      background-color: white;
+      color: #2563eb;
+      border: 1px solid #2563eb;
+      white-space: nowrap;
+    }
+    .btn-outline:hover {
+      background-color: #f1f5f9;
+    }
+    .btn-outline:disabled {
+      background-color: #f8fafc;
+      color: #94a3b8;
+      border-color: #e2e8f0;
+      cursor: not-allowed;
+    }
+    /* 提示框 */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    .alert-success {
+      background-color: #dcfce7;
+      color: #166534;
+      display: block;
+    }
+    .alert-error {
+      background-color: #fee2e2;
+      color: #991b1b;
+      display: block;
+    }
+    /* 提示文字 */
+    .tip {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+    /* 任务列表 */
+    .task-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .task-card {
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      transition: box-shadow 0.3s;
+    }
+    .task-card:hover {
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .task-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 8px;
+    }
+    .task-meta {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    /* 个人信息 */
+    .profile-info {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .profile-item {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .profile-label {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    .profile-value {
+      font-size: 16px;
+      font-weight: 500;
+    }
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .task-list {
+        grid-template-columns: 1fr;
+      }
+      .tab-nav {
+        flex-direction: column;
+      }
+      .page {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Campus Move</h1>
-            <p>Student Moving Assistance Platform (Email Verification Only)</p>
-        </header>
+  <header>
+    <div class="container header-content">
+      <div class="logo">CampusMove (Outlook验证版)</div>
+      <div id="loginStatus" class="login-status" onclick="switchTab('login')">未登录 | 请登录/注册</div>
+    </div>
+  </header>
 
-        <nav>
-            <button class="active" onclick="showSection('register')">Register</button>
-            <button onclick="showSection('login')">Login</button>
-            <button onclick="showSection('post-request')" id="postBtn" class="hidden">Post Moving Request</button>
-            <button onclick="showSection('view-tasks')" id="viewTasksBtn" class="hidden">View Available Tasks</button>
-            <button onclick="showSection('my-posted-tasks')" id="myPostedBtn" class="hidden">My Posted Tasks</button>
-            <button onclick="showSection('my-accepted-tasks')" id="myAcceptedBtn" class="hidden">My Accepted Tasks</button>
-            <button onclick="showSection('profile')" id="profileBtn" class="hidden">My Profile</button>
-            <button onclick="logout()" id="logoutBtn" class="hidden">Logout</button>
-        </nav>
-
-        <div id="alertBox" class="alert"></div>
-
-        <!-- Register Section (纯邮箱验证) -->
-        <div id="register" class="form-section active">
-            <h2 style="text-align: center; margin-bottom: 24px;">Student Register (Email Verification)</h2>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label>First Name</label>
-                    <input type="text" id="firstName" placeholder="Your first name" required>
-                </div>
-                <div class="form-group">
-                    <label>University ID</label>
-                    <input type="text" id="studentId" placeholder="e.g. 12345678" required>
-                </div>
-                <div class="form-group">
-                    <label>Gender</label>
-                    <select id="gender" required>
-                        <option value="">Select gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-
-                <!-- 核心：邮箱（收验证码） -->
-                <div class="form-group">
-                    <label>Email Address <span style="color: red;">*</span> (Verification Code Sent Here)</label>
-                    <input type="email" id="email" placeholder="your.email@example.com" required>
-                    <div class="tip">We will send a 6-digit code to this email (no SMS to your phone)</div>
-                </div>
-
-                <!-- 手机号（仅联系） -->
-                <div class="form-group">
-                    <label>New Zealand Mobile Phone Number (For Contact Only)</label>
-                    <input type="tel" id="phone" placeholder="e.g. +64211234567 or 0211234567" required>
-                    <div class="tip">Format: +64 2[0-9] followed by 7 digits (NZ mobile number) — used for contact only, no verification</div>
-                </div>
-
-                <!-- 邮箱验证码 -->
-                <div class="form-group">
-                    <label>Verification Code (From Email)</label>
-                    <div class="code-row">
-                        <input type="text" id="verifyCode" placeholder="6-digit code" maxlength="6" required>
-                        <button type="button" id="sendCodeBtn" class="btn-get-code">Get Code</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Anonymous Display Name</label>
-                    <input type="text" id="anonymousName" placeholder="e.g. Student123, Helper456" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="password" placeholder="Create a password" required>
-                </div>
-
-                <button type="submit" class="btn">Complete Registration</button>
-            </form>
-        </div>
-
-        <!-- Login Section -->
-        <div id="login" class="form-section">
-            <h2 style="text-align: center; margin-bottom: 24px;">Student Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>University ID</label>
-                    <input type="text" id="loginStudentId" placeholder="e.g. 12345678" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn">Login</button>
-            </form>
-        </div>
-
-        <!-- Post Moving Request Section -->
-        <div id="post-request" class="form-section">
-            <h2 style="text-align: center; margin-bottom: 24px;">Post Moving Request</h2>
-            <form id="postRequestForm">
-                <div class="form-group">
-                    <label>Move Date & Time</label>
-                    <input type="datetime-local" id="moveDate" required>
-                </div>
-                <div class="form-group">
-                    <label>Location (From → To)</label>
-                    <input type="text" id="location" placeholder="e.g. Dorm A to Apartment B, Auckland" required>
-                </div>
-                <div class="form-group">
-                    <label>Number of Helpers Needed</label>
-                    <input type="number" id="helpersNeeded" min="1" value="1" required>
-                </div>
-                <div class="form-group">
-                    <label>Items to Move</label>
-                    <textarea id="items" placeholder="e.g. 3 boxes, 1 bed, 2 suitcases" rows="3" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Compensation (NZD)</label>
-                    <input type="text" id="compensation" placeholder="e.g. $20 per person, free meal" required>
-                </div>
-                <button type="submit" class="btn">Post Request</button>
-            </form>
-        </div>
-
-        <!-- View Available Tasks Section -->
-        <div id="view-tasks" class="form-section">
-            <h2 style="text-align: center; margin-bottom: 24px;">Available Moving Tasks</h2>
-            <div id="taskList" class="task-list"></div>
-        </div>
-
-        <!-- My Posted Tasks Section -->
-        <div id="my-posted-tasks" class="form-section">
-            <h2 style="text-align: center; margin-bottom: 24px;">My Posted Tasks</h2>
-            <div id="myPostedTasksList" class="task-list"></div>
-        </div>
-
-        <!-- My Accepted Tasks Section -->
-        <div id="my-accepted-tasks" class="form-section">
-            <h2 style="text-align: center; margin-bottom: 24px;">My Accepted Tasks</h2>
-            <div id="myAcceptedTasksList" class="task-list"></div>
-        </div>
-
-        <!-- My Profile Section -->
-        <div id="profile" class="form-section">
-            <h2 style="text-align: center; margin-bottom: 24px;">My Profile</h2>
-            <div class="profile-info">
-                <div class="profile-item">
-                    <div class="profile-label">First Name</div>
-                    <div class="profile-value" id="profileFirstName">-</div>
-                </div>
-                <div class="profile-item">
-                    <div class="profile-label">University ID</div>
-                    <div class="profile-value" id="profileStudentId">-</div>
-                </div>
-                <div class="profile-item">
-                    <div class="profile-label">Gender</div>
-                    <div class="profile-value" id="profileGender">-</div>
-                </div>
-                <div class="profile-item">
-                    <div class="profile-label">Anonymous Name</div>
-                    <div class="profile-value" id="profileAnonymousName">-</div>
-                </div>
-                <div class="profile-item">
-                    <div class="profile-label">NZ Mobile (Contact Only)</div>
-                    <div class="profile-value" id="profilePhone">-</div>
-                </div>
-                <div class="profile-item">
-                    <div class="profile-label">Email (Verification)</div>
-                    <div class="profile-value" id="profileEmail">-</div>
-                </div>
-            </div>
-        </div>
+  <div class="container">
+    <!-- Tab导航 -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('home')">首页</button>
+      <button class="tab-btn" onclick="switchTab('register')">注册</button>
+      <button class="tab-btn" onclick="switchTab('login')">登录</button>
+      <button class="tab-btn" id="postTaskBtn" style="display: none;" onclick="switchTab('postTask')">发布任务</button>
+      <button class="tab-btn" id="viewTasksBtn" style="display: none;" onclick="switchTab('viewTasks')">查看任务</button>
+      <button class="tab-btn" id="myPostedBtn" style="display: none;" onclick="switchTab('myPostedTasks')">我的发布</button>
+      <button class="tab-btn" id="myAcceptedBtn" style="display: none;" onclick="switchTab('myAcceptedTasks')">我的接单</button>
+      <button class="tab-btn" id="profileBtn" style="display: none;" onclick="switchTab('profile')">个人中心</button>
     </div>
 
-    <script>
-        const API_BASE = "https://dormlift100.up.railway.app/api";
-        let currentUser = { id: "", anonymousName: "" };
+    <!-- 提示框 -->
+    <div id="globalAlert" class="alert"></div>
 
-        // 显示提示
-        function showAlert(message, isSuccess) {
-            const box = document.getElementById("alertBox");
-            box.textContent = message;
-            box.className = `alert ${isSuccess ? 'alert-success' : 'alert-error'}`;
-            setTimeout(() => box.className = "alert", 5000);
-        }
+    <!-- 首页 -->
+    <div id="home" class="page active">
+      <h2 style="margin-bottom: 20px;">欢迎使用 CampusMove</h2>
+      <p style="margin-bottom: 16px;">新西兰留学生搬家互助平台，全程使用Outlook邮箱验证，手机号仅用于联系！</p>
+      <ul style="margin-left: 20px; line-height: 2;">
+        <li>✅ 注册仅需Outlook邮箱验证，无手机号验证</li>
+        <li>✅ 发布搬家任务，寻找热心帮手</li>
+        <li>✅ 接受他人任务，获取合理报酬</li>
+        <li>✅ 匿名昵称展示，保护个人隐私</li>
+      </ul>
+    </div>
 
-        // 格式化NZ手机号
-        function normalizeNZPhone(phone) {
-            const digits = phone.replace(/\D/g, "");
-            if (digits.startsWith("02")) return `+64${digits.slice(1)}`;
-            if (digits.startsWith("64")) return `+${digits}`;
-            return phone;
-        }
+    <!-- 注册页面（Outlook验证） -->
+    <div id="register" class="page">
+      <div class="form-card">
+        <div class="form-title">学生注册（Outlook邮箱验证）</div>
+        <form id="registerForm">
+          <div class="form-group">
+            <label>名字（First Name）</label>
+            <input type="text" id="regFirstName" placeholder="请输入你的名字" required>
+          </div>
+          <div class="form-group">
+            <label>学生ID</label>
+            <input type="text" id="regStudentId" placeholder="如：12345678" required>
+            <div class="tip">请填写真实的学校学生ID</div>
+          </div>
+          <div class="form-group">
+            <label>性别</label>
+            <select id="regGender" required>
+              <option value="">请选择性别</option>
+              <option value="Male">男</option>
+              <option value="Female">女</option>
+              <option value="Other">其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Outlook邮箱 <span style="color: red;">*</span></label>
+            <input type="email" id="regEmail" placeholder="请输入你的Outlook邮箱（如：xxx@outlook.com）" required>
+            <div class="tip">验证码将发送到此邮箱，仅支持Outlook/Hotmail邮箱</div>
+          </div>
+          <div class="form-group">
+            <label>新西兰手机号（仅用于联系）</label>
+            <input type="tel" id="regPhone" placeholder="如：+64211234567 或 0211234567" required>
+            <div class="tip">仅用于后续联系，不进行验证</div>
+          </div>
+          <div class="form-group">
+            <label>Outlook验证码 <span style="color: red;">*</span></label>
+            <div class="code-row">
+              <input type="text" id="regVerifyCode" placeholder="请输入6位验证码" maxlength="6" required>
+              <button type="button" id="sendCodeBtn" class="btn btn-outline">获取验证码</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>匿名昵称</label>
+            <input type="text" id="regAnonymousName" placeholder="如：Student123、Helper456" required>
+            <div class="tip">此昵称将公开显示，保护你的隐私</div>
+          </div>
+          <div class="form-group">
+            <label>密码</label>
+            <input type="password" id="regPassword" placeholder="请设置登录密码" required>
+          </div>
+          <button type="submit" class="btn btn-primary">完成注册</button>
+        </form>
+      </div>
+    </div>
 
-        // 切换页面
-        function showSection(sectionId) {
-            document.querySelectorAll(".form-section").forEach(section => {
-                section.classList.remove("active");
-            });
-            document.querySelectorAll("nav button").forEach(btn => {
-                btn.classList.remove("active");
-            });
-            document.getElementById(sectionId).classList.add("active");
-            event.target.classList.add("active");
+    <!-- 登录页面 -->
+    <div id="login" class="page">
+      <div class="form-card">
+        <div class="form-title">学生登录</div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label>学生ID</label>
+            <input type="text" id="loginStudentId" placeholder="请输入你的学生ID" required>
+          </div>
+          <div class="form-group">
+            <label>密码</label>
+            <input type="password" id="loginPassword" placeholder="请输入登录密码" required>
+          </div>
+          <button type="submit" class="btn btn-primary">登录</button>
+        </form>
+      </div>
+    </div>
 
-            if (sectionId === "view-tasks") loadTasks();
-            if (sectionId === "my-posted-tasks") loadMyPostedTasks();
-            if (sectionId === "my-accepted-tasks") loadMyAcceptedTasks();
-            if (sectionId === "profile") loadProfile();
-        }
+    <!-- 发布任务页面 -->
+    <div id="postTask" class="page">
+      <div class="form-card">
+        <div class="form-title">发布搬家任务</div>
+        <form id="postTaskForm">
+          <div class="form-group">
+            <label>搬家时间</label>
+            <input type="datetime-local" id="taskMoveDate" required>
+          </div>
+          <div class="form-group">
+            <label>搬家地点（From → To）</label>
+            <input type="text" id="taskLocation" placeholder="如：奥克兰大学宿舍 → 市中心公寓" required>
+          </div>
+          <div class="form-group">
+            <label>需要帮手数量</label>
+            <input type="number" id="taskHelpers" min="1" value="1" required>
+          </div>
+          <div class="form-group">
+            <label>搬运物品</label>
+            <textarea id="taskItems" placeholder="如：3个纸箱、1张床、2个行李箱" rows="3" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>报酬（NZD）</label>
+            <input type="text" id="taskCompensation" placeholder="如：$20/人、免费晚餐、互助搬家" required>
+          </div>
+          <button type="submit" class="btn btn-primary">发布任务</button>
+        </form>
+      </div>
+    </div>
 
-        // 更新登录状态
-        function updateLoginStatus() {
-            const btns = ["postBtn", "viewTasksBtn", "myPostedBtn", "myAcceptedBtn", "profileBtn", "logoutBtn"];
-            if (currentUser.id) {
-                btns.forEach(id => document.getElementById(id).classList.remove("hidden"));
-                document.querySelector('button[onclick="showSection(\'register\')"]').classList.add("hidden");
-                document.querySelector('button[onclick="showSection(\'login\')"]').classList.add("hidden");
-            } else {
-                btns.forEach(id => document.getElementById(id).classList.add("hidden"));
-                document.querySelector('button[onclick="showSection(\'register\')"]').classList.remove("hidden");
-                document.querySelector('button[onclick="showSection(\'login\')"]').classList.remove("hidden");
-            }
-        }
+    <!-- 查看任务页面 -->
+    <div id="viewTasks" class="page">
+      <h2 style="margin-bottom: 20px;">可用搬家任务</h2>
+      <div id="taskList" class="task-list">加载中...</div>
+    </div>
 
-        // 登出
-        function logout() {
-            if (confirm("Are you sure you want to logout?")) {
-                currentUser = { id: "", anonymousName: "" };
-                updateLoginStatus();
-                showSection("register");
-                showAlert("Logged out successfully!", true);
-            }
-        }
+    <!-- 我的发布页面 -->
+    <div id="myPostedTasks" class="page">
+      <h2 style="margin-bottom: 20px;">我发布的任务</h2>
+      <div id="myPostedTaskList" class="task-list">加载中...</div>
+    </div>
 
-        // 发送邮箱验证码
-        document.getElementById("sendCodeBtn").addEventListener("click", async function() {
-            const email = document.getElementById("email").value.trim();
-            const phone = document.getElementById("phone").value.trim();
+    <!-- 我的接单页面 -->
+    <div id="myAcceptedTasks" class="page">
+      <h2 style="margin-bottom: 20px;">我接受的任务</h2>
+      <div id="myAcceptedTaskList" class="task-list">加载中...</div>
+    </div>
 
-            if (!email) {
-                showAlert("Please enter your email address!", false);
-                return;
-            }
-            if (!phone) {
-                showAlert("Please enter your NZ mobile number!", false);
-                return;
-            }
+    <!-- 个人中心页面 -->
+    <div id="profile" class="page">
+      <div class="profile-info">
+        <div class="form-title">个人信息</div>
+        <div class="profile-item">
+          <div class="profile-label">学生ID</div>
+          <div class="profile-value" id="profileStudentId">-</div>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">名字</div>
+          <div class="profile-value" id="profileFirstName">-</div>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">性别</div>
+          <div class="profile-value" id="profileGender">-</div>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Outlook邮箱</div>
+          <div class="profile-value" id="profileEmail">-</div>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">新西兰手机号</div>
+          <div class="profile-value" id="profilePhone">-</div>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">匿名昵称</div>
+          <div class="profile-value" id="profileAnonymousName">-</div>
+        </div>
+        <button class="btn btn-outline" onclick="logout()" style="margin-top: 20px;">退出登录</button>
+      </div>
+    </div>
+  </div>
 
-            this.disabled = true;
-            this.textContent = "Sending...";
+  <script>
+    // 全局配置
+    const API_BASE = ''; // 空字符串表示当前域名，部署后无需修改
+    // 当前登录用户
+    let currentUser = {
+      studentId: '',
+      anonymousName: ''
+    };
 
-            try {
-                const res = await fetch(`${API_BASE}/send-verification-code`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        email: email,
-                        phone: normalizeNZPhone(phone)
-                    })
-                });
-                const data = await res.json();
-                showAlert(data.message, data.success);
+    // ====================== 工具函数 ======================
+    /**
+     * 显示提示框
+     * @param {string} message 提示内容
+     * @param {boolean} isSuccess 是否成功
+     */
+    function showAlert(message, isSuccess) {
+      const alertEl = document.getElementById('globalAlert');
+      alertEl.textContent = message;
+      alertEl.className = `alert ${isSuccess ? 'alert-success' : 'alert-error'}`;
+      // 5秒后隐藏
+      setTimeout(() => {
+        alertEl.className = 'alert';
+      }, 5000);
+    }
 
-                if (data.success) {
-                    let countdown = 60;
-                    const timer = setInterval(() => {
-                        countdown--;
-                        this.textContent = `${countdown}s`;
-                        if (countdown <= 0) {
-                            clearInterval(timer);
-                            this.disabled = false;
-                            this.textContent = "Get Code";
-                        }
-                    }, 1000);
-                } else {
-                    this.disabled = false;
-                    this.textContent = "Get Code";
-                }
-            } catch (err) {
-                showAlert("Failed to send code. Please try again.", false);
-                this.disabled = false;
-                this.textContent = "Get Code";
-            }
+    /**
+     * 切换Tab页面
+     * @param {string} tabId 页面ID
+     */
+    function switchTab(tabId) {
+      // 隐藏所有页面
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      // 取消所有Tab激活状态
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      // 激活目标页面和Tab
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+
+      // 加载对应数据
+      if (tabId === 'viewTasks') loadTasks();
+      if (tabId === 'myPostedTasks') loadMyPostedTasks();
+      if (tabId === 'myAcceptedTasks') loadMyAcceptedTasks();
+      if (tabId === 'profile') loadProfile();
+    }
+
+    /**
+     * 更新登录状态
+     */
+    function updateLoginStatus() {
+      const loginStatusEl = document.getElementById('loginStatus');
+      const authBtns = ['register', 'login']; // 未登录显示的按钮
+      const userBtns = ['postTaskBtn', 'viewTasksBtn', 'myPostedBtn', 'myAcceptedBtn', 'profileBtn']; // 登录后显示的按钮
+
+      if (currentUser.studentId) {
+        // 已登录
+        loginStatusEl.textContent = `已登录：${currentUser.anonymousName}`;
+        loginStatusEl.onclick = () => switchTab('profile');
+        // 隐藏登录/注册按钮，显示用户功能按钮
+        authBtns.forEach(id => {
+          document.querySelector(`button[onclick="switchTab('${id}')"]`).style.display = 'none';
         });
-
-        // 注册提交
-        document.getElementById("registerForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
-
-            const formData = {
-                firstName: document.getElementById("firstName").value.trim(),
-                studentId: document.getElementById("studentId").value.trim(),
-                gender: document.getElementById("gender").value,
-                email: document.getElementById("email").value.trim(),
-                phone: normalizeNZPhone(document.getElementById("phone").value.trim()),
-                verifyCode: document.getElementById("verifyCode").value.trim(),
-                anonymousName: document.getElementById("anonymousName").value.trim(),
-                password: document.getElementById("password").value
-            };
-
-            if (!formData.verifyCode || formData.verifyCode.length !== 6) {
-                showAlert("Please enter 6-digit verification code from your email!", false);
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API_BASE}/register`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData)
-                });
-                const data = await res.json();
-                showAlert(data.message, data.success);
-
-                if (data.success) {
-                    this.reset();
-                    showSection("login");
-                }
-            } catch (err) {
-                showAlert("Registration failed. Please try again.", false);
-            }
+        userBtns.forEach(id => {
+          document.getElementById(id).style.display = 'block';
         });
-
-        // 登录提交
-        document.getElementById("loginForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
-
-            const studentId = document.getElementById("loginStudentId").value.trim();
-            const password = document.getElementById("loginPassword").value;
-
-            try {
-                const res = await fetch(`${API_BASE}/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ studentId, password })
-                });
-                const data = await res.json();
-                showAlert(data.message, data.success);
-
-                if (data.success) {
-                    currentUser = { id: studentId, anonymousName: data.anonymousName };
-                    updateLoginStatus();
-                    showSection("post-request");
-                }
-            } catch (err) {
-                showAlert("Login failed. Please check your credentials.", false);
-            }
+      } else {
+        // 未登录
+        loginStatusEl.textContent = '未登录 | 请登录/注册';
+        loginStatusEl.onclick = () => switchTab('login');
+        // 显示登录/注册按钮，隐藏用户功能按钮
+        authBtns.forEach(id => {
+          document.querySelector(`button[onclick="switchTab('${id}')"]`).style.display = 'block';
         });
-
-        // 发布搬家请求
-        document.getElementById("postRequestForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
-            if (!currentUser.id) {
-                showAlert("Please login first!", false);
-                showSection("login");
-                return;
-            }
-
-            const formData = {
-                studentId: currentUser.id,
-                moveDate: document.getElementById("moveDate").value,
-                location: document.getElementById("location").value.trim(),
-                helpersNeeded: document.getElementById("helpersNeeded").value,
-                items: document.getElementById("items").value.trim(),
-                compensation: document.getElementById("compensation").value.trim()
-            };
-
-            try {
-                const res = await fetch(`${API_BASE}/post-request`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData)
-                });
-                const data = await res.json();
-                showAlert(data.message, data.success);
-
-                if (data.success) {
-                    this.reset();
-                    showSection("my-posted-tasks");
-                }
-            } catch (err) {
-                showAlert("Failed to post request. Please try again.", false);
-            }
+        userBtns.forEach(id => {
+          document.getElementById(id).style.display = 'none';
         });
+      }
+    }
 
-        // 加载所有任务
-        async function loadTasks() {
-            const taskList = document.getElementById("taskList");
-            taskList.innerHTML = "Loading tasks...";
+    /**
+     * 校验登录状态
+     * @returns {boolean} 是否登录
+     */
+    function checkLogin() {
+      if (!currentUser.studentId) {
+        showAlert('请先登录！', false);
+        switchTab('login');
+        return false;
+      }
+      return true;
+    }
 
-            try {
-                const res = await fetch(`${API_BASE}/get-tasks`);
-                const data = await res.json();
+    /**
+     * 格式化日期
+     * @param {string} dateStr 日期字符串
+     * @returns {string} 格式化后的日期
+     */
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      const date = new Date(dateStr);
+      return date.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
 
-                if (data.success && data.tasks.length > 0) {
-                    taskList.innerHTML = "";
-                    data.tasks.forEach(task => {
-                        const card = document.createElement("div");
-                        card.className = "task-card";
-                        card.innerHTML = `
-                            <h3>${task.location}</h3>
-                            <p><strong>Date:</strong> ${new Date(task.move_date).toLocaleString()}</p>
-                            <p><strong>Helpers:</strong> ${task.helpers_needed}</p>
-                            <p><strong>Items:</strong> ${task.items}</p>
-                            <p><strong>Compensation:</strong> ${task.compensation}</p>
-                            <button class="btn" onclick="acceptTask(${task.id})">Accept Task</button>
-                        `;
-                        taskList.appendChild(card);
-                    });
-                } else {
-                    taskList.innerHTML = "<p>No available tasks at the moment.</p>";
-                }
-            } catch (err) {
-                taskList.innerHTML = "<p>Failed to load tasks. Please try again later.</p>";
+    // ====================== 业务逻辑 ======================
+    /**
+     * 发送Outlook验证码
+     */
+    document.getElementById('sendCodeBtn').addEventListener('click', async function() {
+      const email = document.getElementById('regEmail').value.trim();
+      // 基础验证
+      if (!email || !/^[^\s@]+@(outlook|hotmail)\.com$/.test(email)) {
+        showAlert('请输入有效的Outlook/Hotmail邮箱（如：xxx@outlook.com）', false);
+        return;
+      }
+
+      // 禁用按钮，防止重复点击
+      this.disabled = true;
+      this.textContent = '发送中...';
+
+      try {
+        const response = await fetch(`${API_BASE}/api/send-verification-code`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email })
+        });
+        const result = await response.json();
+        showAlert(result.message, result.success);
+
+        // 倒计时逻辑
+        if (result.success) {
+          let countdown = 60;
+          const timer = setInterval(() => {
+            countdown--;
+            this.textContent = `${countdown}s后重新发送`;
+            if (countdown <= 0) {
+              clearInterval(timer);
+              this.disabled = false;
+              this.textContent = '获取验证码';
             }
+          }, 1000);
+        } else {
+          this.disabled = false;
+          this.textContent = '获取验证码';
         }
+      } catch (error) {
+        showAlert('发送失败：' + error.message, false);
+        this.disabled = false;
+        this.textContent = '获取验证码';
+      }
+    });
 
-        // 接受任务
-        async function acceptTask(taskId) {
-            if (!currentUser.id) {
-                showAlert("Please login first!", false);
-                showSection("login");
-                return;
-            }
+    /**
+     * 注册表单提交
+     */
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
 
-            if (!confirm("Are you sure you want to accept this task?")) return;
+      // 获取表单数据
+      const formData = {
+        firstName: document.getElementById('regFirstName').value.trim(),
+        studentId: document.getElementById('regStudentId').value.trim(),
+        gender: document.getElementById('regGender').value,
+        email: document.getElementById('regEmail').value.trim(),
+        phone: document.getElementById('regPhone').value.trim(),
+        verifyCode: document.getElementById('regVerifyCode').value.trim(),
+        anonymousName: document.getElementById('regAnonymousName').value.trim(),
+        password: document.getElementById('regPassword').value
+      };
 
-            try {
-                const res = await fetch(`${API_BASE}/accept-task`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ taskId, helperId: currentUser.id })
-                });
-                const data = await res.json();
-                showAlert(data.message, data.success);
-                if (data.success) loadTasks();
-            } catch (err) {
-                showAlert("Failed to accept task. Please try again.", false);
-            }
+      // 基础验证
+      if (formData.verifyCode.length !== 6) {
+        showAlert('请输入6位验证码！', false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/api/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        const result = await response.json();
+        showAlert(result.message, result.success);
+
+        // 注册成功，重置表单并跳转到登录页
+        if (result.success) {
+          this.reset();
+          switchTab('login');
         }
+      } catch (error) {
+        showAlert('注册失败：' + error.message, false);
+      }
+    });
 
-        // 加载我发布的任务
-        async function loadMyPostedTasks() {
-            const list = document.getElementById("myPostedTasksList");
-            list.innerHTML = "Loading...";
+    /**
+     * 登录表单提交
+     */
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
 
-            try {
-                const res = await fetch(`${API_BASE}/my-posted-tasks`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ studentId: currentUser.id })
-                });
-                const data = await res.json();
+      const studentId = document.getElementById('loginStudentId').value.trim();
+      const password = document.getElementById('loginPassword').value;
 
-                if (data.success && data.tasks.length > 0) {
-                    list.innerHTML = "";
-                    data.tasks.forEach(task => {
-                        const status = task.helper_assigned ? "Assigned" : "Available";
-                        const card = document.createElement("div");
-                        card.className = "task-card";
-                        card.innerHTML = `
-                            <h3>${task.location}</h3>
-                            <p><strong>Date:</strong> ${new Date(task.move_date).toLocaleString()}</p>
-                            <p><strong>Status:</strong> ${status}</p>
-                            <p><strong>Compensation:</strong> ${task.compensation}</p>
-                            <button class="btn" onclick="deleteTask(${task.id})">Delete Task</button>
-                        `;
-                        list.appendChild(card);
-                    });
-                } else {
-                    list.innerHTML = "<p>You have not posted any tasks yet.</p>";
-                }
-            } catch (err) {
-                list.innerHTML = "<p>Failed to load your tasks. Please try again later.</p>";
-            }
+      try {
+        const response = await fetch(`${API_BASE}/api/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            studentId,
+            password
+          })
+        });
+        const result = await response.json();
+        showAlert(result.message, result.success);
+
+        // 登录成功，保存用户信息
+        if (result.success) {
+          currentUser = {
+            studentId: result.data.studentId,
+            anonymousName: result.data.anonymousName
+          };
+          // 保存到本地存储，刷新页面不丢失
+          localStorage.setItem('campusmove_user', JSON.stringify(currentUser));
+          // 更新登录状态并跳转到首页
+          updateLoginStatus();
+          switchTab('home');
         }
+      } catch (error) {
+        showAlert('登录失败：' + error.message, false);
+      }
+    });
 
-        // 加载我接受的任务
-        async function loadMyAcceptedTasks() {
-            const list = document.getElementById("myAcceptedTasksList");
-            list.innerHTML = "Loading...";
+    /**
+     * 发布任务表单提交
+     */
+    document.getElementById('postTaskForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!checkLogin()) return;
 
-            try {
-                const res = await fetch(`${API_BASE}/my-accepted-tasks`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ helperId: currentUser.id })
-                });
-                const data = await res.json();
+      const formData = {
+        studentId: currentUser.studentId,
+        moveDate: document.getElementById('taskMoveDate').value,
+        location: document.getElementById('taskLocation').value.trim(),
+        helpersNeeded: document.getElementById('taskHelpers').value,
+        items: document.getElementById('taskItems').value.trim(),
+        compensation: document.getElementById('taskCompensation').value.trim()
+      };
 
-                if (data.success && data.tasks.length > 0) {
-                    list.innerHTML = "";
-                    data.tasks.forEach(task => {
-                        const card = document.createElement("div");
-                        card.className = "task-card";
-                        card.innerHTML = `
-                            <h3>${task.location}</h3>
-                            <p><strong>Date:</strong> ${new Date(task.move_date).toLocaleString()}</p>
-                            <p><strong>Items:</strong> ${task.items}</p>
-                            <p><strong>Compensation:</strong> ${task.compensation}</p>
-                            <button class="btn" onclick="cancelTask(${task.id})">Cancel Task</button>
-                        `;
-                        list.appendChild(card);
-                    });
-                } else {
-                    list.innerHTML = "<p>You have not accepted any tasks yet.</p>";
-                }
-            } catch (err) {
-                list.innerHTML = "<p>Failed to load your tasks. Please try again later.</p>";
-            }
+      try {
+        const response = await fetch(`${API_BASE}/api/post-task`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        const result = await response.json();
+        showAlert(result.message, result.success);
+
+        // 发布成功，重置表单并跳转到我的发布
+        if (result.success) {
+          this.reset();
+          switchTab('myPostedTasks');
         }
+      } catch (error) {
+        showAlert('发布失败：' + error.message, false);
+      }
+    });
 
-        // 删除任务
-        async function deleteTask(taskId) {
-            if (!confirm("Are you sure you want to delete this task?")) return;
+    /**
+     * 加载所有可用任务
+     */
+    async function loadTasks() {
+      const taskListEl = document.getElementById('taskList');
+      taskListEl.innerHTML = '加载中...';
 
-            try {
-                const res = await fetch(`${API_BASE}/delete-task`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ taskId, studentId: currentUser.id })
-                });
-                const data = await res.json();
-                showAlert(data.message, data.success);
-                if (data.success) loadMyPostedTasks();
-            } catch (err) {
-                showAlert("Failed to delete task. Please try again.", false);
-            }
+      try {
+        const response = await fetch(`${API_BASE}/api/get-tasks`);
+        const result = await response.json();
+
+        if (result.success && result.data.length > 0) {
+          taskListEl.innerHTML = '';
+          result.data.forEach(task => {
+            const taskCard = document.createElement('div');
+            taskCard.className = 'task-card';
+            taskCard.innerHTML = `
+              <div class="task-title">${task.location}</div>
+              <div class="task-meta">发布者：${task.publisher_name || '未知'}</div>
+              <div class="task-meta">搬家时间：${formatDate(task.move_date)}</div>
+              <div class="task-meta">需要帮手：${task.helpers_needed} 人</div>
+              <div class="task-meta">搬运物品：${task.items}</div>
+              <div class="task-meta">报酬：${task.compensation}</div>
+              <button class="btn btn-primary" style="margin-top: 10px;" onclick="acceptTask(${task.id})">接受任务</button>
+            `;
+            taskListEl.appendChild(taskCard);
+          });
+        } else {
+          taskListEl.innerHTML = '<p style="text-align: center; color: #64748b;">暂无可用任务</p>';
         }
+      } catch (error) {
+        taskListEl.innerHTML = '<p style="text-align: center; color: #991b1b;">加载失败，请重试</p>';
+        showAlert('加载任务失败：' + error.message, false);
+      }
+    }
 
-        // 取消任务
-        async function cancelTask(taskId) {
-            if (!confirm("Are you sure you want to cancel this task?")) return;
+    /**
+     * 接受任务
+     * @param {number} taskId 任务ID
+     */
+    async function acceptTask(taskId) {
+      if (!checkLogin()) return;
 
-            try {
-                const res = await fetch(`${API_BASE}/cancel-task`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ taskId, helperId: currentUser.id })
-                });
-                const data = await res.json();
-                showAlert(data.message, data.success);
-                if (data.success) loadMyAcceptedTasks();
-            } catch (err) {
-                showAlert("Failed to cancel task. Please try again.", false);
-            }
+      if (!confirm('确定要接受此任务吗？')) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/api/accept-task`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            taskId,
+            helperId: currentUser.studentId
+          })
+        });
+        const result = await response.json();
+        showAlert(result.message, result.success);
+
+        // 接受成功，重新加载任务
+        if (result.success) {
+          loadTasks();
         }
+      } catch (error) {
+        showAlert('接受任务失败：' + error.message, false);
+      }
+    }
 
-        // 加载个人信息
-        async function loadProfile() {
-            document.getElementById("profileFirstName").textContent = "-";
-            document.getElementById("profileStudentId").textContent = "-";
-            document.getElementById("profileGender").textContent = "-";
-            document.getElementById("profileAnonymousName").textContent = "-";
-            document.getElementById("profilePhone").textContent = "-";
-            document.getElementById("profileEmail").textContent = "-";
+    /**
+     * 加载我发布的任务
+     */
+    async function loadMyPostedTasks() {
+      if (!checkLogin()) return;
 
-            try {
-                const res = await fetch(`${API_BASE}/get-profile`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ studentId: currentUser.id })
-                });
-                const data = await res.json();
+      const taskListEl = document.getElementById('myPostedTaskList');
+      taskListEl.innerHTML = '加载中...';
 
-                if (data.success) {
-                    const user = data.user;
-                    document.getElementById("profileFirstName").textContent = user.first_name;
-                    document.getElementById("profileStudentId").textContent = user.student_id;
-                    document.getElementById("profileGender").textContent = user.gender;
-                    document.getElementById("profileAnonymousName").textContent = user.anonymous_name;
-                    document.getElementById("profilePhone").textContent = user.phone;
-                    document.getElementById("profileEmail").textContent = user.email;
-                } else {
-                    showAlert(data.message, false);
-                }
-            } catch (err) {
-                showAlert("Failed to load profile. Please try again later.", false);
-            }
+      try {
+        const response = await fetch(`${API_BASE}/api/my-posted-tasks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            studentId: currentUser.studentId
+          })
+        });
+        const result = await response.json();
+
+        if (result.success && result.data.length > 0) {
+          taskListEl.innerHTML = '';
+          result.data.forEach(task => {
+            const status = task.helper_assigned ? 
+              '<span style="color: #166534;">已接单</span>' : 
+              '<span style="color: #dc2626;">未接单</span>';
+            
+            const taskCard = document.createElement('div');
+            taskCard.className = 'task-card';
+            taskCard.innerHTML = `
+              <div class="task-title">${task.location}</div>
+              <div class="task-meta">状态：${status}</div>
+              <div class="task-meta">搬家时间：${formatDate(task.move_date)}</div>
+              <div class="task-meta">需要帮手：${task.helpers_needed} 人</div>
+              <div class="task-meta">报酬：${task.compensation}</div>
+            `;
+            taskListEl.appendChild(taskCard);
+          });
+        } else {
+          taskListEl.innerHTML = '<p style="text-align: center; color: #64748b;">你还未发布任何任务</p>';
         }
+      } catch (error) {
+        taskListEl.innerHTML = '<p style="text-align: center; color: #991b1b;">加载失败，请重试</p>';
+        showAlert('加载失败：' + error.message, false);
+      }
+    }
 
-        // 初始化
+    /**
+     * 加载我接受的任务
+     */
+    async function loadMyAcceptedTasks() {
+      if (!checkLogin()) return;
+
+      const taskListEl = document.getElementById('myAcceptedTaskList');
+      taskListEl.innerHTML = '加载中...';
+
+      try {
+        const response = await fetch(`${API_BASE}/api/my-accepted-tasks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            helperId: currentUser.studentId
+          })
+        });
+        const result = await response.json();
+
+        if (result.success && result.data.length > 0) {
+          taskListEl.innerHTML = '';
+          result.data.forEach(task => {
+            const taskCard = document.createElement('div');
+            taskCard.className = 'task-card';
+            taskCard.innerHTML = `
+              <div class="task-title">${task.location}</div>
+              <div class="task-meta">发布者：${task.publisher_name || '未知'}</div>
+              <div class="task-meta">搬家时间：${formatDate(task.move_date)}</div>
+              <div class="task-meta">搬运物品：${task.items}</div>
+              <div class="task-meta">报酬：${task.compensation}</div>
+            `;
+            taskListEl.appendChild(taskCard);
+          });
+        } else {
+          taskListEl.innerHTML = '<p style="text-align: center; color: #64748b;">你还未接受任何任务</p>';
+        }
+      } catch (error) {
+        taskListEl.innerHTML = '<p style="text-align: center; color: #991b1b;">加载失败，请重试</p>';
+        showAlert('加载失败：' + error.message, false);
+      }
+    }
+
+    /**
+     * 加载个人信息
+     */
+    async function loadProfile() {
+      if (!checkLogin()) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/api/get-profile`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            studentId: currentUser.studentId
+          })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          const user = result.data;
+          document.getElementById('profileStudentId').textContent = user.student_id;
+          document.getElementById('profileFirstName').textContent = user.first_name;
+          document.getElementById('profileGender').textContent = user.gender;
+          document.getElementById('profileEmail').textContent = user.email;
+          document.getElementById('profilePhone').textContent = user.phone;
+          document.getElementById('profileAnonymousName').textContent = user.anonymous_name;
+        } else {
+          showAlert(result.message, false);
+        }
+      } catch (error) {
+        showAlert('加载个人信息失败：' + error.message, false);
+      }
+    }
+
+    /**
+     * 退出登录
+     */
+    function logout() {
+      if (confirm('确定要退出登录吗？')) {
+        // 清空用户信息
+        currentUser = {
+          studentId: '',
+          anonymousName: ''
+        };
+        // 清除本地存储
+        localStorage.removeItem('campusmove_user');
+        // 更新登录状态并跳转到首页
         updateLoginStatus();
-    </script>
+        switchTab('home');
+        showAlert('退出登录成功！', true);
+      }
+    }
+
+    // ====================== 初始化 ======================
+    window.onload = function() {
+      // 从本地存储恢复登录状态
+      const savedUser = localStorage.getItem('campusmove_user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+      }
+      // 更新登录状态
+      updateLoginStatus();
+    };
+  </script>
 </body>
 </html>
