@@ -1,15 +1,14 @@
 {
-  "name": "campusmove",
+  "name": "campusmove-backend",
   "version": "1.0.0",
-  "description": "Campus Moving Assistance Platform (NZ Student Focused)",
+  "description": "Campus Move - NZ Student Moving Platform (Email Verification)",
   "main": "server.js",
   "scripts": {
-    "start": "NODE_ENV=production node server.js",
-    "dev": "NODE_ENV=development nodemon server.js",
-    "pm2:start": "NODE_ENV=production pm2 start server.js --name campusmove --attach",
-    "pm2:stop": "pm2 stop campusmove",
-    "pm2:restart": "pm2 restart campusmove",
-    "pm2:logs": "pm2 logs campusmove"
+    "start": "NODE_ENV=production node server.js",          // 生产启动（指定环境变量）
+    "dev": "NODE_ENV=development nodemon server.js",       // 开发调试（自动重启）
+    "pm2:start": "NODE_ENV=production pm2 start server.js --name campusmove",  // 生产进程守护
+    "pm2:logs": "pm2 logs campusmove",                     // 查看生产日志（排错用）
+    "clean": "rm -rf node_modules package-lock.json && npm install"  // 修复依赖问题
   },
   "dependencies": {
     "express": "^4.19.2",
@@ -19,13 +18,14 @@
     "nodemailer": "^6.9.13"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0"  // 仅开发环境用，生产不安装
   },
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=8.0.0"
   },
-  "keywords": ["student", "moving", "nz", "email-verification", "nodejs"],
+  "keywords": ["nz-student", "email-verification", "moving-platform", "nodejs"],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "private": true  // 标记为私有项目，避免意外发布
 }
