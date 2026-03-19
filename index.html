@@ -1,947 +1,664 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusMove - Outlook验证版</title>
-  <style>
-    /* 全局样式 */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    }
-    body {
-      background-color: #f5f7fa;
-      color: #1e293b;
-      line-height: 1.6;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-    /* 头部样式 */
-    header {
-      background-color: #2563eb;
-      color: white;
-      padding: 16px 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      font-size: 20px;
-      font-weight: 600;
-    }
-    .login-status {
-      cursor: pointer;
-      padding: 8px 12px;
-      border-radius: 6px;
-      background-color: rgba(255,255,255,0.2);
-      font-size: 14px;
-      transition: background-color 0.3s;
-    }
-    .login-status:hover {
-      background-color: rgba(255,255,255,0.3);
-    }
-    /* Tab导航 */
-    .tab-nav {
-      display: flex;
-      gap: 8px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      background-color: white;
-      color: #64748b;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .tab-btn.active {
-      background-color: #2563eb;
-      color: white;
-    }
-    .tab-btn:hover:not(.active) {
-      color: #2563eb;
-      background-color: #f1f5f9;
-    }
-    /* 页面内容 */
-    .page {
-      display: none;
-      background-color: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-    }
-    .page.active {
-      display: block;
-    }
-    /* 表单样式 */
-    .form-card {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .form-title {
-      font-size: 22px;
-      font-weight: 600;
-      color: #2563eb;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: #334155;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      font-size: 14px;
-      transition: border-color 0.3s;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-    }
-    .code-row {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-    .code-row input {
-      flex: 1;
-    }
-    .btn {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    .btn-primary {
-      background-color: #2563eb;
-      color: white;
-      width: 100%;
-    }
-    .btn-primary:hover {
-      background-color: #1d4ed8;
-    }
-    .btn-outline {
-      background-color: white;
-      color: #2563eb;
-      border: 1px solid #2563eb;
-      white-space: nowrap;
-    }
-    .btn-outline:hover {
-      background-color: #f1f5f9;
-    }
-    .btn-outline:disabled {
-      background-color: #f8fafc;
-      color: #94a3b8;
-      border-color: #e2e8f0;
-      cursor: not-allowed;
-    }
-    /* 提示框 */
-    .alert {
-      padding: 12px 16px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      display: none;
-    }
-    .alert-success {
-      background-color: #dcfce7;
-      color: #166534;
-      display: block;
-    }
-    .alert-error {
-      background-color: #fee2e2;
-      color: #991b1b;
-      display: block;
-    }
-    /* 提示文字 */
-    .tip {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 4px;
-    }
-    /* 任务列表 */
-    .task-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-      margin-top: 20px;
-    }
-    .task-card {
-      padding: 20px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      transition: box-shadow 0.3s;
-    }
-    .task-card:hover {
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .task-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #2563eb;
-      margin-bottom: 8px;
-    }
-    .task-meta {
-      font-size: 14px;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
-    /* 个人信息 */
-    .profile-info {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .profile-item {
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .profile-label {
-      font-size: 14px;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
-    .profile-value {
-      font-size: 16px;
-      font-weight: 500;
-    }
-    /* 响应式 */
-    @media (max-width: 768px) {
-      .task-list {
-        grid-template-columns: 1fr;
-      }
-      .tab-nav {
-        flex-direction: column;
-      }
-      .page {
-        padding: 20px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DormLift - Affordable Moving Help for University Students</title>
+    <style>
+        /* ===================== 全局样式 ===================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===================== 顶部导航栏 ===================== */
+        .top-nav {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2px;
+        }
+
+        .nav-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn.active {
+            background-color: #3498db;
+        }
+
+        /* ===================== 页面容器 ===================== */
+        .page {
+            display: none;
+            padding: 40px 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* ===================== 首页样式 ===================== */
+        .hero-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 60px 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-title {
+            font-size: 42px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: #7f8c8d;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        .features-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            font-size: 16px;
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        /* ===================== 表单样式 ===================== */
+        .form-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-title {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #34495e;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .input-error {
+            border-color: #e74c3c;
+        }
+
+        .tip {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 6px;
+        }
+
+        .red-star {
+            color: #e74c3c;
+        }
+
+        .code-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .code-row input {
+            flex: 1;
+        }
+
+        .btn-get-code {
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-get-code:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+
+        .btn-get-code:disabled {
+            background-color: #85c1e9;
+            cursor: not-allowed;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: #2980b9;
+        }
+
+        .form-switch {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .form-switch a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-switch a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===================== 任务列表样式 ===================== */
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tasks-title {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+
+        .task-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .task-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .task-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .task-info {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #34495e;
+        }
+
+        .task-info-label {
+            font-weight: 600;
+            color: #7f8c8d;
+            margin-right: 5px;
+        }
+
+        .task-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        /* ===================== 个人中心样式 ===================== */
+        .profile-info {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .profile-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profile-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .profile-label {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .profile-value {
+            font-size: 18px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        /* ===================== 响应式样式 ===================== */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .form-card {
+                padding: 30px 20px;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 26px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .code-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-get-code {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="container header-content">
-      <div class="logo">CampusMove (Outlook验证版)</div>
-      <div id="loginStatus" class="login-status" onclick="switchTab('login')">未登录 | 请登录/注册</div>
-    </div>
-  </header>
-
-  <div class="container">
-    <!-- Tab导航 -->
-    <div class="tab-nav">
-      <button class="tab-btn active" onclick="switchTab('home')">首页</button>
-      <button class="tab-btn" onclick="switchTab('register')">注册</button>
-      <button class="tab-btn" onclick="switchTab('login')">登录</button>
-      <button class="tab-btn" id="postTaskBtn" style="display: none;" onclick="switchTab('postTask')">发布任务</button>
-      <button class="tab-btn" id="viewTasksBtn" style="display: none;" onclick="switchTab('viewTasks')">查看任务</button>
-      <button class="tab-btn" id="myPostedBtn" style="display: none;" onclick="switchTab('myPostedTasks')">我的发布</button>
-      <button class="tab-btn" id="myAcceptedBtn" style="display: none;" onclick="switchTab('myAcceptedTasks')">我的接单</button>
-      <button class="tab-btn" id="profileBtn" style="display: none;" onclick="switchTab('profile')">个人中心</button>
-    </div>
-
-    <!-- 提示框 -->
-    <div id="globalAlert" class="alert"></div>
-
-    <!-- 首页 -->
-    <div id="home" class="page active">
-      <h2 style="margin-bottom: 20px;">欢迎使用 CampusMove</h2>
-      <p style="margin-bottom: 16px;">新西兰留学生搬家互助平台，全程使用Outlook邮箱验证，手机号仅用于联系！</p>
-      <ul style="margin-left: 20px; line-height: 2;">
-        <li>✅ 注册仅需Outlook邮箱验证，无手机号验证</li>
-        <li>✅ 发布搬家任务，寻找热心帮手</li>
-        <li>✅ 接受他人任务，获取合理报酬</li>
-        <li>✅ 匿名昵称展示，保护个人隐私</li>
-      </ul>
-    </div>
-
-    <!-- 注册页面（Outlook验证） -->
-    <div id="register" class="page">
-      <div class="form-card">
-        <div class="form-title">学生注册（Outlook邮箱验证）</div>
-        <form id="registerForm">
-          <div class="form-group">
-            <label>名字（First Name）</label>
-            <input type="text" id="regFirstName" placeholder="请输入你的名字" required>
-          </div>
-          <div class="form-group">
-            <label>学生ID</label>
-            <input type="text" id="regStudentId" placeholder="如：12345678" required>
-            <div class="tip">请填写真实的学校学生ID</div>
-          </div>
-          <div class="form-group">
-            <label>性别</label>
-            <select id="regGender" required>
-              <option value="">请选择性别</option>
-              <option value="Male">男</option>
-              <option value="Female">女</option>
-              <option value="Other">其他</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Outlook邮箱 <span style="color: red;">*</span></label>
-            <input type="email" id="regEmail" placeholder="请输入你的Outlook邮箱（如：xxx@outlook.com）" required>
-            <div class="tip">验证码将发送到此邮箱，仅支持Outlook/Hotmail邮箱</div>
-          </div>
-          <div class="form-group">
-            <label>新西兰手机号（仅用于联系）</label>
-            <input type="tel" id="regPhone" placeholder="如：+64211234567 或 0211234567" required>
-            <div class="tip">仅用于后续联系，不进行验证</div>
-          </div>
-          <div class="form-group">
-            <label>Outlook验证码 <span style="color: red;">*</span></label>
-            <div class="code-row">
-              <input type="text" id="regVerifyCode" placeholder="请输入6位验证码" maxlength="6" required>
-              <button type="button" id="sendCodeBtn" class="btn btn-outline">获取验证码</button>
+    <!-- 顶部导航栏 -->
+    <nav class="top-nav">
+        <div class="container nav-container">
+            <a href="#" class="nav-brand" onclick="switchPage('home')">DormLift</a>
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="switchPage('home')">Home</button>
+                <button class="nav-btn" onclick="switchPage('post-request')">Post a Request</button>
+                <button class="nav-btn" onclick="switchPage('find-tasks')">Find Tasks</button>
+                <button class="nav-btn" onclick="switchPage('my-profile')">My Profile</button>
+                <button class="nav-btn" onclick="switchPage('auth')" id="auth-btn">Login/Register</button>
             </div>
-          </div>
-          <div class="form-group">
-            <label>匿名昵称</label>
-            <input type="text" id="regAnonymousName" placeholder="如：Student123、Helper456" required>
-            <div class="tip">此昵称将公开显示，保护你的隐私</div>
-          </div>
-          <div class="form-group">
-            <label>密码</label>
-            <input type="password" id="regPassword" placeholder="请设置登录密码" required>
-          </div>
-          <button type="submit" class="btn btn-primary">完成注册</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- 登录页面 -->
-    <div id="login" class="page">
-      <div class="form-card">
-        <div class="form-title">学生登录</div>
-        <form id="loginForm">
-          <div class="form-group">
-            <label>学生ID</label>
-            <input type="text" id="loginStudentId" placeholder="请输入你的学生ID" required>
-          </div>
-          <div class="form-group">
-            <label>密码</label>
-            <input type="password" id="loginPassword" placeholder="请输入登录密码" required>
-          </div>
-          <button type="submit" class="btn btn-primary">登录</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- 发布任务页面 -->
-    <div id="postTask" class="page">
-      <div class="form-card">
-        <div class="form-title">发布搬家任务</div>
-        <form id="postTaskForm">
-          <div class="form-group">
-            <label>搬家时间</label>
-            <input type="datetime-local" id="taskMoveDate" required>
-          </div>
-          <div class="form-group">
-            <label>搬家地点（From → To）</label>
-            <input type="text" id="taskLocation" placeholder="如：奥克兰大学宿舍 → 市中心公寓" required>
-          </div>
-          <div class="form-group">
-            <label>需要帮手数量</label>
-            <input type="number" id="taskHelpers" min="1" value="1" required>
-          </div>
-          <div class="form-group">
-            <label>搬运物品</label>
-            <textarea id="taskItems" placeholder="如：3个纸箱、1张床、2个行李箱" rows="3" required></textarea>
-          </div>
-          <div class="form-group">
-            <label>报酬（NZD）</label>
-            <input type="text" id="taskCompensation" placeholder="如：$20/人、免费晚餐、互助搬家" required>
-          </div>
-          <button type="submit" class="btn btn-primary">发布任务</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- 查看任务页面 -->
-    <div id="viewTasks" class="page">
-      <h2 style="margin-bottom: 20px;">可用搬家任务</h2>
-      <div id="taskList" class="task-list">加载中...</div>
-    </div>
-
-    <!-- 我的发布页面 -->
-    <div id="myPostedTasks" class="page">
-      <h2 style="margin-bottom: 20px;">我发布的任务</h2>
-      <div id="myPostedTaskList" class="task-list">加载中...</div>
-    </div>
-
-    <!-- 我的接单页面 -->
-    <div id="myAcceptedTasks" class="page">
-      <h2 style="margin-bottom: 20px;">我接受的任务</h2>
-      <div id="myAcceptedTaskList" class="task-list">加载中...</div>
-    </div>
-
-    <!-- 个人中心页面 -->
-    <div id="profile" class="page">
-      <div class="profile-info">
-        <div class="form-title">个人信息</div>
-        <div class="profile-item">
-          <div class="profile-label">学生ID</div>
-          <div class="profile-value" id="profileStudentId">-</div>
         </div>
-        <div class="profile-item">
-          <div class="profile-label">名字</div>
-          <div class="profile-value" id="profileFirstName">-</div>
+    </nav>
+
+    <!-- 页面容器 -->
+    <div class="container">
+        <!-- 1. 首页 -->
+        <div id="home" class="page active">
+            <div class="hero-section">
+                <h1 class="hero-title">Affordable Moving Help for University Students</h1>
+                <p class="hero-subtitle">Connect with fellow students to get help moving your belongings into or out of dorms - cheap, reliable, and community-focused.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="switchPage('post-request')">Post a Moving Request</button>
+                    <button class="btn btn-secondary" onclick="switchPage('find-tasks')">Become a Helper</button>
+                </div>
+            </div>
+
+            <div class="features-section">
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Low Cost</h3>
+                    <p class="feature-desc">Cheaper than professional movers - pay small amounts or offer campus credits to fellow students.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3 class="feature-title">Flexible</h3>
+                    <p class="feature-desc">Schedule moves around your class timetable - no rigid time slots or expensive last-minute charges.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤝</div>
+                    <h3 class="feature-title">Trusted</h3>
+                    <p class="feature-desc">Student-to-student network with ratings and basic checks for peace of mind when moving your belongings.</p>
+                </div>
+            </div>
         </div>
-        <div class="profile-item">
-          <div class="profile-label">性别</div>
-          <div class="profile-value" id="profileGender">-</div>
+
+        <!-- 2. 发布搬家请求 -->
+        <div id="post-request" class="page">
+            <div class="form-card">
+                <h2 class="form-title">Post a Moving Request</h2>
+                <form id="post-request-form">
+                    <div class="form-group">
+                        <label for="move-date">Move Date & Time <span class="red-star">*</span></label>
+                        <input type="datetime-local" id="move-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="from-address">From Address <span class="red-star">*</span></label>
+                        <input type="text" id="from-address" placeholder="e.g. 123 Campus Dorm, Auckland" required>
+                        <p class="tip">Enter the full address of your current location</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="to-address">To Address <span class="red-star">*</span></label>
+                        <input type="text" id="to-address" placeholder="e.g. 456 Student Apartment, Auckland" required>
+                        <p class="tip">Enter the full address of your new location</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="helpers-needed">Number of Helpers Needed <span class="red-star">*</span></label>
+                        <input type="number" id="helpers-needed" min="1" value="1" required>
+                        <p class="tip">How many students do you need to help with your move?</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="items-to-move">Items to Move <span class="red-star">*</span></label>
+                        <textarea id="items-to-move" rows="4" placeholder="e.g. 2 large boxes, 1 bed frame, 1 desk, 3 suitcases" required></textarea>
+                        <p class="tip">Be specific to help helpers prepare for the move</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="compensation">Compensation (NZD) <span class="red-star">*</span></label>
+                        <input type="text" id="compensation" placeholder="e.g. $20 per helper, free meal + $10, or campus credits" required>
+                        <p class="tip">How will you compensate the helpers for their time?</p>
+                    </div>
+
+                    <button type="button" class="btn-submit" onclick="submitMovingRequest()">Post Request</button>
+                </form>
+            </div>
         </div>
-        <div class="profile-item">
-          <div class="profile-label">Outlook邮箱</div>
-          <div class="profile-value" id="profileEmail">-</div>
+
+        <!-- 3. 查找任务 -->
+        <div id="find-tasks" class="page">
+            <div class="tasks-header">
+                <h2 class="tasks-title">Available Moving Tasks</h2>
+                <button class="btn btn-primary btn-sm" onclick="refreshTasks()">Refresh Tasks</button>
+            </div>
+
+            <div id="task-list-container" class="task-list">
+                <!-- 任务列表将通过JS动态加载 -->
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">
+                    Loading tasks... Please wait.
+                </div>
+            </div>
         </div>
-        <div class="profile-item">
-          <div class="profile-label">新西兰手机号</div>
-          <div class="profile-value" id="profilePhone">-</div>
+
+        <!-- 4. 个人中心 -->
+        <div id="my-profile" class="page">
+            <div class="profile-info">
+                <h2 class="form-title">My Profile</h2>
+                
+                <div class="profile-item">
+                    <div class="profile-label">Student ID</div>
+                    <div class="profile-value" id="profile-student-id">Not logged in</div>
+                </div>
+
+                <div class="profile-item">
+                    <div class="profile-label">Anonymous Name</div>
+                    <div class="profile-value" id="profile-anon-name">Not logged in</div>
+                </div>
+
+                <div class="profile-item">
+                    <div class="profile-label">Outlook Email</div>
+                    <div class="profile-value" id="profile-email">Not logged in</div>
+                </div>
+
+                <div class="profile-item">
+                    <div class="profile-label">Phone Number</div>
+                    <div class="profile-value" id="profile-phone">Not logged in</div>
+                </div>
+
+                <div class="profile-item">
+                    <div class="profile-label">Gender</div>
+                    <div class="profile-value" id="profile-gender">Not logged in</div>
+                </div>
+
+                <button class="btn-submit btn-danger" onclick="logout()" style="margin-top: 20px;">Logout</button>
+            </div>
+
+            <!-- 我的发布/接受任务 -->
+            <div style="margin-top: 40px;">
+                <div class="tasks-header">
+                    <h2 class="tasks-title">My Posted Requests</h2>
+                </div>
+                <div id="my-posted-tasks" class="task-list">
+                    <!-- 我的发布任务将动态加载 -->
+                </div>
+            </div>
+
+            <div style="margin-top: 40px;">
+                <div class="tasks-header">
+                    <h2 class="tasks-title">My Accepted Tasks</h2>
+                </div>
+                <div id="my-accepted-tasks" class="task-list">
+                    <!-- 我的接受任务将动态加载 -->
+                </div>
+            </div>
         </div>
-        <div class="profile-item">
-          <div class="profile-label">匿名昵称</div>
-          <div class="profile-value" id="profileAnonymousName">-</div>
-        </div>
-        <button class="btn btn-outline" onclick="logout()" style="margin-top: 20px;">退出登录</button>
-      </div>
-    </div>
-  </div>
 
-  <script>
-    // 全局配置
-    const API_BASE = ''; // 空字符串表示当前域名，部署后无需修改
-    // 当前登录用户
-    let currentUser = {
-      studentId: '',
-      anonymousName: ''
-    };
+        <!-- 5. 登录/注册 -->
+        <div id="auth" class="page">
+            <div class="form-card">
+                <!-- 登录表单 -->
+                <div id="login-form">
+                    <h2 class="form-title">Login to DormLift</h2>
+                    <div class="form-group">
+                        <label for="login-student-id">Student ID <span class="red-star">*</span></label>
+                        <input type="text" id="login-student-id" placeholder="Enter your student ID" required>
+                    </div>
 
-    // ====================== 工具函数 ======================
-    /**
-     * 显示提示框
-     * @param {string} message 提示内容
-     * @param {boolean} isSuccess 是否成功
-     */
-    function showAlert(message, isSuccess) {
-      const alertEl = document.getElementById('globalAlert');
-      alertEl.textContent = message;
-      alertEl.className = `alert ${isSuccess ? 'alert-success' : 'alert-error'}`;
-      // 5秒后隐藏
-      setTimeout(() => {
-        alertEl.className = 'alert';
-      }, 5000);
-    }
+                    <div class="form-group">
+                        <label for="login-password">Password <span class="red-star">*</span></label>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
+                    </div>
 
-    /**
-     * 切换Tab页面
-     * @param {string} tabId 页面ID
-     */
-    function switchTab(tabId) {
-      // 隐藏所有页面
-      document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-      });
-      // 取消所有Tab激活状态
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      // 激活目标页面和Tab
-      document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
+                    <button type="button" class="btn-submit" onclick="login()">Login</button>
 
-      // 加载对应数据
-      if (tabId === 'viewTasks') loadTasks();
-      if (tabId === 'myPostedTasks') loadMyPostedTasks();
-      if (tabId === 'myAcceptedTasks') loadMyAcceptedTasks();
-      if (tabId === 'profile') loadProfile();
-    }
+                    <div class="form-switch">
+                        Don't have an account? <a href="#" onclick="toggleAuthForm()">Register here</a>
+                    </div>
+                </div>
 
-    /**
-     * 更新登录状态
-     */
-    function updateLoginStatus() {
-      const loginStatusEl = document.getElementById('loginStatus');
-      const authBtns = ['register', 'login']; // 未登录显示的按钮
-      const userBtns = ['postTaskBtn', 'viewTasksBtn', 'myPostedBtn', 'myAcceptedBtn', 'profileBtn']; // 登录后显示的按钮
+                <!-- 注册表单 -->
+                <div id="register-form" style="display: none;">
+                    <h2 class="form-title">Register for DormLift</h2>
+                    
+                    <div class="form-group">
+                        <label for="reg-given-name">Given Name (Surname) <span class="red-star">*</span></label>
+                        <input type="text" id="reg-given-name" placeholder="Enter your family name" required>
+                    </div>
 
-      if (currentUser.studentId) {
-        // 已登录
-        loginStatusEl.textContent = `已登录：${currentUser.anonymousName}`;
-        loginStatusEl.onclick = () => switchTab('profile');
-        // 隐藏登录/注册按钮，显示用户功能按钮
-        authBtns.forEach(id => {
-          document.querySelector(`button[onclick="switchTab('${id}')"]`).style.display = 'none';
-        });
-        userBtns.forEach(id => {
-          document.getElementById(id).style.display = 'block';
-        });
-      } else {
-        // 未登录
-        loginStatusEl.textContent = '未登录 | 请登录/注册';
-        loginStatusEl.onclick = () => switchTab('login');
-        // 显示登录/注册按钮，隐藏用户功能按钮
-        authBtns.forEach(id => {
-          document.querySelector(`button[onclick="switchTab('${id}')"]`).style.display = 'block';
-        });
-        userBtns.forEach(id => {
-          document.getElementById(id).style.display = 'none';
-        });
-      }
-    }
-
-    /**
-     * 校验登录状态
-     * @returns {boolean} 是否登录
-     */
-    function checkLogin() {
-      if (!currentUser.studentId) {
-        showAlert('请先登录！', false);
-        switchTab('login');
-        return false;
-      }
-      return true;
-    }
-
-    /**
-     * 格式化日期
-     * @param {string} dateStr 日期字符串
-     * @returns {string} 格式化后的日期
-     */
-    function formatDate(dateStr) {
-      if (!dateStr) return '-';
-      const date = new Date(dateStr);
-      return date.toLocaleString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-
-    // ====================== 业务逻辑 ======================
-    /**
-     * 发送Outlook验证码
-     */
-    document.getElementById('sendCodeBtn').addEventListener('click', async function() {
-      const email = document.getElementById('regEmail').value.trim();
-      // 基础验证
-      if (!email || !/^[^\s@]+@(outlook|hotmail)\.com$/.test(email)) {
-        showAlert('请输入有效的Outlook/Hotmail邮箱（如：xxx@outlook.com）', false);
-        return;
-      }
-
-      // 禁用按钮，防止重复点击
-      this.disabled = true;
-      this.textContent = '发送中...';
-
-      try {
-        const response = await fetch(`${API_BASE}/api/send-verification-code`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email })
-        });
-        const result = await response.json();
-        showAlert(result.message, result.success);
-
-        // 倒计时逻辑
-        if (result.success) {
-          let countdown = 60;
-          const timer = setInterval(() => {
-            countdown--;
-            this.textContent = `${countdown}s后重新发送`;
-            if (countdown <= 0) {
-              clearInterval(timer);
-              this.disabled = false;
-              this.textContent = '获取验证码';
-            }
-          }, 1000);
-        } else {
-          this.disabled = false;
-          this.textContent = '获取验证码';
-        }
-      } catch (error) {
-        showAlert('发送失败：' + error.message, false);
-        this.disabled = false;
-        this.textContent = '获取验证码';
-      }
-    });
-
-    /**
-     * 注册表单提交
-     */
-    document.getElementById('registerForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      // 获取表单数据
-      const formData = {
-        firstName: document.getElementById('regFirstName').value.trim(),
-        studentId: document.getElementById('regStudentId').value.trim(),
-        gender: document.getElementById('regGender').value,
-        email: document.getElementById('regEmail').value.trim(),
-        phone: document.getElementById('regPhone').value.trim(),
-        verifyCode: document.getElementById('regVerifyCode').value.trim(),
-        anonymousName: document.getElementById('regAnonymousName').value.trim(),
-        password: document.getElementById('regPassword').value
-      };
-
-      // 基础验证
-      if (formData.verifyCode.length !== 6) {
-        showAlert('请输入6位验证码！', false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`${API_BASE}/api/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-        const result = await response.json();
-        showAlert(result.message, result.success);
-
-        // 注册成功，重置表单并跳转到登录页
-        if (result.success) {
-          this.reset();
-          switchTab('login');
-        }
-      } catch (error) {
-        showAlert('注册失败：' + error.message, false);
-      }
-    });
-
-    /**
-     * 登录表单提交
-     */
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const studentId = document.getElementById('loginStudentId').value.trim();
-      const password = document.getElementById('loginPassword').value;
-
-      try {
-        const response = await fetch(`${API_BASE}/api/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            studentId,
-            password
-          })
-        });
-        const result = await response.json();
-        showAlert(result.message, result.success);
-
-        // 登录成功，保存用户信息
-        if (result.success) {
-          currentUser = {
-            studentId: result.data.studentId,
-            anonymousName: result.data.anonymousName
-          };
-          // 保存到本地存储，刷新页面不丢失
-          localStorage.setItem('campusmove_user', JSON.stringify(currentUser));
-          // 更新登录状态并跳转到首页
-          updateLoginStatus();
-          switchTab('home');
-        }
-      } catch (error) {
-        showAlert('登录失败：' + error.message, false);
-      }
-    });
-
-    /**
-     * 发布任务表单提交
-     */
-    document.getElementById('postTaskForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      if (!checkLogin()) return;
-
-      const formData = {
-        studentId: currentUser.studentId,
-        moveDate: document.getElementById('taskMoveDate').value,
-        location: document.getElementById('taskLocation').value.trim(),
-        helpersNeeded: document.getElementById('taskHelpers').value,
-        items: document.getElementById('taskItems').value.trim(),
-        compensation: document.getElementById('taskCompensation').value.trim()
-      };
-
-      try {
-        const response = await fetch(`${API_BASE}/api/post-task`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-        const result = await response.json();
-        showAlert(result.message, result.success);
-
-        // 发布成功，重置表单并跳转到我的发布
-        if (result.success) {
-          this.reset();
-          switchTab('myPostedTasks');
-        }
-      } catch (error) {
-        showAlert('发布失败：' + error.message, false);
-      }
-    });
-
-    /**
-     * 加载所有可用任务
-     */
-    async function loadTasks() {
-      const taskListEl = document.getElementById('taskList');
-      taskListEl.innerHTML = '加载中...';
-
-      try {
-        const response = await fetch(`${API_BASE}/api/get-tasks`);
-        const result = await response.json();
-
-        if (result.success && result.data.length > 0) {
-          taskListEl.innerHTML = '';
-          result.data.forEach(task => {
-            const taskCard = document.createElement('div');
-            taskCard.className = 'task-card';
-            taskCard.innerHTML = `
-              <div class="task-title">${task.location}</div>
-              <div class="task-meta">发布者：${task.publisher_name || '未知'}</div>
-              <div class="task-meta">搬家时间：${formatDate(task.move_date)}</div>
-              <div class="task-meta">需要帮手：${task.helpers_needed} 人</div>
-              <div class="task-meta">搬运物品：${task.items}</div>
-              <div class="task-meta">报酬：${task.compensation}</div>
-              <button class="btn btn-primary" style="margin-top: 10px;" onclick="acceptTask(${task.id})">接受任务</button>
-            `;
-            taskListEl.appendChild(taskCard);
-          });
-        } else {
-          taskListEl.innerHTML = '<p style="text-align: center; color: #64748b;">暂无可用任务</p>';
-        }
-      } catch (error) {
-        taskListEl.innerHTML = '<p style="text-align: center; color: #991b1b;">加载失败，请重试</p>';
-        showAlert('加载任务失败：' + error.message, false);
-      }
-    }
-
-    /**
-     * 接受任务
-     * @param {number} taskId 任务ID
-     */
-    async function acceptTask(taskId) {
-      if (!checkLogin()) return;
-
-      if (!confirm('确定要接受此任务吗？')) return;
-
-      try {
-        const response = await fetch(`${API_BASE}/api/accept-task`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            taskId,
-            helperId: currentUser.studentId
-          })
-        });
-        const result = await response.json();
-        showAlert(result.message, result.success);
-
-        // 接受成功，重新加载任务
-        if (result.success) {
-          loadTasks();
-        }
-      } catch (error) {
-        showAlert('接受任务失败：' + error.message, false);
-      }
-    }
-
-    /**
-     * 加载我发布的任务
-     */
-    async function loadMyPostedTasks() {
-      if (!checkLogin()) return;
-
-      const taskListEl = document.getElementById('myPostedTaskList');
-      taskListEl.innerHTML = '加载中...';
-
-      try {
-        const response = await fetch(`${API_BASE}/api/my-posted-tasks`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            studentId: currentUser.studentId
-          })
-        });
-        const result = await response.json();
-
-        if (result.success && result.data.length > 0) {
-          taskListEl.innerHTML = '';
-          result.data.forEach(task => {
-            const status = task.helper_assigned ? 
-              '<span style="color: #166534;">已接单</span>' : 
-              '<span style="color: #dc2626;">未接单</span>';
-            
-            const taskCard = document.createElement('div');
-            taskCard.className = 'task-card';
-            taskCard.innerHTML = `
-              <div class="task-title">${task.location}</div>
-              <div class="task-meta">状态：${status}</div>
-              <div class="task-meta">搬家时间：${formatDate(task.move_date)}</div>
-              <div class="task-meta">需要帮手：${task.helpers_needed} 人</div>
-              <div class="task-meta">报酬：${task.compensation}</div>
-            `;
-            taskListEl.appendChild(taskCard);
-          });
-        } else {
-          taskListEl.innerHTML = '<p style="text-align: center; color: #64748b;">你还未发布任何任务</p>';
-        }
-      } catch (error) {
-        taskListEl.innerHTML = '<p style="text-align: center; color: #991b1b;">加载失败，请重试</p>';
-        showAlert('加载失败：' + error.message, false);
-      }
-    }
-
-    /**
-     * 加载我接受的任务
-     */
-    async function loadMyAcceptedTasks() {
-      if (!checkLogin()) return;
-
-      const taskListEl = document.getElementById('myAcceptedTaskList');
-      taskListEl.innerHTML = '加载中...';
-
-      try {
-        const response = await fetch(`${API_BASE}/api/my-accepted-tasks`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            helperId: currentUser.studentId
-          })
-        });
-        const result = await response.json();
-
-        if (result.success && result.data.length > 0) {
-          taskListEl.innerHTML = '';
-          result.data.forEach(task => {
-            const taskCard = document.createElement('div');
-            taskCard.className = 'task-card';
-            taskCard.innerHTML = `
-              <div class="task-title">${task.location}</div>
-              <div class="task-meta">发布者：${task.publisher_name || '未知'}</div>
-              <div class="task-meta">搬家时间：${formatDate(task.move_date)}</div>
-              <div class="task-meta">搬运物品：${task.items}</div>
-              <div class="task-meta">报酬：${task.compensation}</div>
-            `;
-            taskListEl.appendChild(taskCard);
-          });
-        } else {
-          taskListEl.innerHTML = '<p style="text-align: center; color: #64748b;">你还未接受任何任务</p>';
-        }
-      } catch (error) {
-        taskListEl.innerHTML = '<p style="text-align: center; color: #991b1b;">加载失败，请重试</p>';
-        showAlert('加载失败：' + error.message, false);
-      }
-    }
-
-    /**
-     * 加载个人信息
-     */
-    async function loadProfile() {
-      if (!checkLogin()) return;
-
-      try {
-        const response = await fetch(`${API_BASE}/api/get-profile`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            studentId: currentUser.studentId
-          })
-        });
-        const result = await response.json();
-
-        if (result.success) {
-          const user = result.data;
-          document.getElementById('profileStudentId').textContent = user.student_id;
-          document.getElementById('profileFirstName').textContent = user.first_name;
-          document.getElementById('profileGender').textContent = user.gender;
-          document.getElementById('profileEmail').textContent = user.email;
-          document.getElementById('profilePhone').textContent = user.phone;
-          document.getElementById('profileAnonymousName').textContent = user.anonymous_name;
-        } else {
-          showAlert(result.message, false);
-        }
-      } catch (error) {
-        showAlert('加载个人信息失败：' + error.message, false);
-      }
-    }
-
-    /**
-     * 退出登录
-     */
-    function logout() {
-      if (confirm('确定要退出登录吗？')) {
-        // 清空用户信息
-        currentUser = {
-          studentId: '',
-          anonymousName: ''
-        };
-        // 清除本地存储
-        localStorage.removeItem('campusmove_user');
-        // 更新登录状态并跳转到首页
-        updateLoginStatus();
-        switchTab('home');
-        showAlert('退出登录成功！', true);
-      }
-    }
-
-    // ====================== 初始化 ======================
-    window.onload = function() {
-      // 从本地存储恢复登录状态
-      const savedUser = localStorage.getItem('campusmove_user');
-      if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-      }
-      // 更新登录状态
-      updateLoginStatus();
-    };
-  </script>
-</body>
-</html>
+                    <div class="form-group">
+                        <label for="reg-first-name">First Name <span class="red-star">*</span></label>
+                        <input type="text" id="reg-first-name" placeholder="
