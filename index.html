@@ -1,974 +1,708 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CampusMove - Student Moving Assistance</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px 0;
-            text-align: center;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: 20px;
-        }
-
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        nav button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #3498db;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-
-        nav button:hover {
-            background-color: #2980b9;
-        }
-
-        .form-section {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            display: none;
-        }
-
-        .form-section.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #444;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 4px;
-            background-color: #27ae60;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            transition: background-color 0.3s;
-        }
-
-        .btn:hover {
-            background-color: #219653;
-        }
-
-        .btn-secondary {
-            background-color: #95a5a6;
-        }
-
-        .btn-secondary:hover {
-            background-color: #7f8c8d;
-        }
-
-        .task-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .task-card {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-left: 5px solid #3498db;
-        }
-
-        .task-card h3 {
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-
-        .task-card p {
-            margin-bottom: 8px;
-            color: #666;
-        }
-
-        .task-card .btn {
-            margin-top: 10px;
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            display: none;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            display: block;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            display: block;
-        }
-
-        small {
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        @media (max-width: 768px) {
-            .task-list {
-                grid-template-columns: 1fr;
-            }
-
-            nav {
-                gap: 10px;
-            }
-
-            nav button {
-                padding: 8px 16px;
-                font-size: 14px;
-            }
-
-            .form-section {
-                padding: 20px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Move - Student Moving Help</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background: #f5f7fa;
+      color: #333;
+      padding-bottom: 40px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    header {
+      background: #2563eb;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 0 0 12px 12px;
+      margin-bottom: 24px;
+    }
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+    }
+    .tab-btn {
+      padding: 10px 16px;
+      border: none;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 14px;
+    }
+    .tab-btn.active {
+      background: #2563eb;
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-outline {
+      background: white;
+      color: #2563eb;
+      border: 1px solid #2563eb;
+    }
+    .code-row {
+      display: flex;
+      gap: 10px;
+    }
+    .code-row input {
+      flex: 1;
+    }
+    .code-row button {
+      width: 120px;
+    }
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .task-item {
+      padding: 16px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .task-meta {
+      color: #666;
+      font-size: 14px;
+      margin: 4px 0;
+    }
+    .tip {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+    .profile-item {
+      margin: 12px 0;
+    }
+    .profile-item h4 {
+      font-size: 14px;
+      color: #666;
+    }
+    .sub-tab-links {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .sub-tab-link {
+      padding: 8px 12px;
+      background: #eee;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .sub-tab-link.active {
+      background: #2563eb;
+      color: white;
+    }
+    .sub-tab-content {
+      display: none;
+    }
+    .sub-tab-content.active {
+      display: block;
+    }
+    #loginStatus {
+      text-align: center;
+      margin: 10px 0;
+      color: #2563eb;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>CampusMove</h1>
-            <p>Student Moving Assistance Platform</p>
-        </header>
+  <header>
+    <h1>Campus Move</h1>
+    <p>Student Moving Help Platform</p>
+  </header>
 
-        <nav>
-            <button onclick="showSection('register')">Register</button>
-            <button onclick="showSection('login')">Login</button>
-            <button onclick="showSection('post-request')" id="postBtn" class="hidden">Post Moving Request</button>
-            <button onclick="showSection('view-tasks')" id="viewTasksBtn" class="hidden">View Available Tasks</button>
-            <button onclick="showSection('my-posted-tasks')" id="myPostedBtn" class="hidden">My Posted Tasks</button>
-            <button onclick="showSection('my-accepted-tasks')" id="myAcceptedBtn" class="hidden">My Accepted Tasks</button>
-            <button onclick="showSection('profile')" id="profileBtn" class="hidden">My Profile</button>
-            <button onclick="logout()" id="logoutBtn" class="hidden">Logout</button>
-        </nav>
+  <div id="loginStatus">Not logged in (Login/Register)</div>
 
-        <!-- Alert Message -->
-        <div id="alertMessage" class="alert"></div>
-
-        <!-- Registration Form -->
-        <div id="register" class="form-section active">
-            <h2>Register</h2>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="regGivenName">Given Name</label>
-                    <input type="text" id="regGivenName" placeholder="Enter your given name" required>
-                </div>
-                <div class="form-group">
-                    <label for="regFirstName">First Name</label>
-                    <input type="text" id="regFirstName" placeholder="Enter your first name" required>
-                </div>
-                <div class="form-group">
-                    <label for="regStudentId">Student ID</label>
-                    <input type="text" id="regStudentId" placeholder="Enter your student ID" required>
-                </div>
-                <div class="form-group">
-                    <label for="regGender">Gender</label>
-                    <select id="regGender" required>
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="regEmail">Email Address</label>
-                    <input type="email" id="regEmail" placeholder="your.email@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="regPhone">New Zealand Mobile Phone Number (for contact)</label>
-                    <input type="tel" id="regPhone" placeholder="e.g. 0211234567 / +64221234567" required>
-                    <small>
-                        • Starts with 02 or +642<br>
-                        • Length: 8–11 digits (02 + 6–9 digits)<br>
-                        • Example: 021 123456 / 022 1234567 / +6428 96123456789
-                    </small>
-                </div>
-                <div class="form-group">
-                    <label for="regVerifyCode">Verification Code (sent to email)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="regVerifyCode" placeholder="6-digit code" required>
-                        <button type="button" id="sendCodeBtn">Get Code</button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="regAnonymousName">Anonymous Name (for display)</label>
-                    <input type="text" id="regAnonymousName" placeholder="Enter a nickname (no real name)" required>
-                </div>
-                <div class="form-group">
-                    <label for="regPassword">Password</label>
-                    <input type="password" id="regPassword" placeholder="Create a password" required>
-                </div>
-                <button type="submit" class="btn">Register</button>
-            </form>
-        </div>
-
-        <!-- Login Form -->
-        <div id="login" class="form-section">
-            <h2>Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginStudentId">Student ID</label>
-                    <input type="text" id="loginStudentId" placeholder="Enter your student ID" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
-                </div>
-                <button type="submit" class="btn">Login</button>
-            </form>
-        </div>
-
-        <!-- Post Moving Request -->
-        <div id="post-request" class="form-section">
-            <h2>Post Moving Request</h2>
-            <form id="postRequestForm">
-                <div class="form-group">
-                    <label for="moveDate">Moving Date</label>
-                    <input type="date" id="moveDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="location">Location (From/To)</label>
-                    <input type="text" id="location" placeholder="e.g. Dorm A to Apartment B" required>
-                </div>
-                <div class="form-group">
-                    <label for="helpersNeeded">Number of Helpers Needed</label>
-                    <input type="number" id="helpersNeeded" min="1" placeholder="Enter number of helpers" required>
-                </div>
-                <div class="form-group">
-                    <label for="items">Items to Move</label>
-                    <textarea id="items" placeholder="e.g. 2 suitcases, 1 desk, 3 boxes" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="compensation">Compensation (NZD)</label>
-                    <input type="text" id="compensation" placeholder="e.g. $20 per person / Free meal" required>
-                </div>
-                <button type="submit" class="btn">Post Request</button>
-            </form>
-        </div>
-
-        <!-- View Available Tasks -->
-        <div id="view-tasks" class="form-section">
-            <h2>Available Moving Tasks</h2>
-            <div id="taskList" class="task-list"></div>
-        </div>
-
-        <!-- My Posted Tasks -->
-        <div id="my-posted-tasks" class="form-section">
-            <h2>My Posted Tasks</h2>
-            <div id="myPostedTasksList" class="task-list"></div>
-        </div>
-
-        <!-- My Accepted Tasks -->
-        <div id="my-accepted-tasks" class="form-section">
-            <h2>My Accepted Tasks</h2>
-            <div id="myAcceptedTasksList" class="task-list"></div>
-        </div>
-
-        <!-- My Profile -->
-        <div id="profile" class="form-section">
-            <h2>My Profile</h2>
-            <div id="profileInfo">
-                <p><strong>Given Name:</strong> <span id="profileGivenName">-</span></p>
-                <p><strong>First Name:</strong> <span id="profileFirstName">-</span></p>
-                <p><strong>Student ID:</strong> <span id="profileStudentId">-</span></p>
-                <p><strong>Gender:</strong> <span id="profileGender">-</span></p>
-                <p><strong>Anonymous Name:</strong> <span id="profileAnonymousName">-</span></p>
-                <p><strong>Phone Number:</strong> <span id="profilePhone">-</span></p>
-                <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
-            </div>
-        </div>
+  <div class="container">
+    <div class="tab-bar">
+      <div class="tab-btn active" onclick="openTab('home')">Home</div>
+      <div class="tab-btn" onclick="openTab('helper-list')">Find Tasks</div>
+      <div class="tab-btn" onclick="openTab('post-request')">Post Request</div>
+      <div class="tab-btn" onclick="openTab('my-profile')">My Profile</div>
+      <div class="tab-btn" onclick="openTab('login')">Login/Register</div>
     </div>
 
-    <script>
-        // Base API URL (替换为你的Railway地址)
-        const API_URL = "https://dormlift100.up.railway.app/api";
-        
-        // Global variables
-        let currentStudentId = null;
-        let currentAnonymousName = null;
+    <!-- Home -->
+    <div id="home" class="tab-content active">
+      <div class="card">
+        <h2>Welcome to Campus Move</h2>
+        <p style="margin:12px 0;">Post your moving request or help others move and earn rewards.</p>
+        <p>• Register with Email Verification</p>
+        <p>• Phone for contact only</p>
+        <p>• Anonymous display for privacy</p>
+      </div>
+    </div>
 
-        // Show/hide sections
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.form-section').forEach(section => {
-                section.classList.remove('active');
+    <!-- Find Tasks -->
+    <div id="helper-list" class="tab-content">
+      <div class="card">
+        <h3>Available Tasks</h3>
+        <div class="task-list" id="taskList"></div>
+      </div>
+    </div>
+
+    <!-- Post Request -->
+    <div id="post-request" class="tab-content">
+      <div class="card">
+        <h3>Post Moving Request</h3>
+        <form id="movingRequestForm">
+          <div class="form-group">
+            <label>Move Date & Time</label>
+            <input type="datetime-local" id="moveDate" required>
+          </div>
+          <div class="form-group">
+            <label>Location (From → To)</label>
+            <input type="text" id="location" placeholder="e.g. Dorm A to Apartment" required>
+          </div>
+          <div class="form-group">
+            <label>Helpers Needed</label>
+            <input type="number" id="helpersNeeded" min="1" value="1" required>
+          </div>
+          <div class="form-group">
+            <label>Items to Move</label>
+            <input type="text" id="items" placeholder="Boxes, bed, suitcase etc." required>
+          </div>
+          <div class="form-group">
+            <label>Compensation (NZD)</label>
+            <input type="text" id="compensation" placeholder="$20 / Meal / Help in return" required>
+          </div>
+          <button type="submit" class="btn">Post Request</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- My Profile -->
+    <div id="my-profile" class="tab-content">
+      <div class="card">
+        <div class="sub-tab-links">
+          <div class="sub-tab-link active" onclick="openSubTab('profile-info')">My Info</div>
+          <div class="sub-tab-link" onclick="openSubTab('profile-posted')">My Posted</div>
+          <div class="sub-tab-link" onclick="openSubTab('profile-accepted')">My Accepted</div>
+        </div>
+
+        <div id="profile-info" class="sub-tab-content active">
+          <div id="profileDetails"></div>
+        </div>
+        <div id="profile-posted" class="sub-tab-content">
+          <div class="task-list" id="myPostedList"></div>
+        </div>
+        <div id="profile-accepted" class="sub-tab-content">
+          <div class="task-list" id="myAcceptedList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login / Register -->
+    <div id="login" class="tab-content">
+      <div class="sub-tab-links" style="max-width:500px;margin:0 auto;">
+        <div class="sub-tab-link active" onclick="toggleAuthTab('login-form')">Login</div>
+        <div class="sub-tab-link" onclick="toggleAuthTab('register-form')">Register</div>
+      </div>
+
+      <!-- Login -->
+      <div id="login-form" class="sub-tab-content active">
+        <div class="card" style="max-width:500px;margin:20px auto;">
+          <h2 style="text-align:center;margin-bottom:20px;">Student Login</h2>
+          <form id="loginForm">
+            <div class="form-group">
+              <label>University ID</label>
+              <input type="text" id="loginStudentId" placeholder="Your Student ID" required>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Register (EMAIL VERIFICATION, Phone for Contact ONLY) -->
+      <div id="register-form" class="sub-tab-content">
+        <div class="card" style="max-width:600px;margin:20px auto;">
+          <h2 style="text-align:center;margin-bottom:20px;">Student Register</h2>
+          <form id="registerForm">
+            <div class="form-group">
+              <label>Given Name</label>
+              <input type="text" id="regGivenName" required>
+            </div>
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" id="regFirstName" required>
+            </div>
+            <div class="form-group">
+              <label>University ID</label>
+              <input type="text" id="regStudentId" required>
+            </div>
+            <div class="form-group">
+              <label>Gender</label>
+              <select id="regGender" required>
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+                <option>Prefer not to say</option>
+              </select>
+            </div>
+
+            <!-- EMAIL FOR VERIFICATION -->
+            <div class="form-group">
+              <label>Email (Receive Verification Code)</label>
+              <input type="email" id="regEmail" placeholder="your@email.com" required>
+            </div>
+
+            <!-- PHONE FOR CONTACT ONLY -->
+            <div class="form-group">
+              <label>New Zealand Mobile (For Contact Only)</label>
+              <input type="tel" id="regPhone" placeholder="0211234567 / +64211234567" required>
+              <div class="tip">Format: 02xxxxxxxxx / +642xxxxxxxxx</div>
+            </div>
+
+            <!-- VERIFICATION CODE (FROM EMAIL) -->
+            <div class="form-group">
+              <label>Email Verification Code</label>
+              <div class="code-row">
+                <input type="text" id="regVerifyCode" placeholder="6-digit code" maxlength="6" required>
+                <button type="button" id="sendCodeBtn" class="btn btn-outline">Get Code</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Anonymous Display Name</label>
+              <input type="text" id="regAnonymousName" placeholder="Student123 / Helper456" required>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="regPassword" required>
+            </div>
+            <div class="form-group">
+              <label>Confirm Password</label>
+              <input type="password" id="regConfirmPassword" required>
+            </div>
+
+            <button type="submit" class="btn">Register</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = "https://dormlift100.up.railway.app/api";
+    let currentUser = { id: "", anonymousName: "" };
+
+    // Tab Switch
+    function openTab(t) {
+      document.querySelectorAll(".tab-content").forEach(e=>e.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(e=>e.classList.remove("active"));
+      document.getElementById(t).classList.add("active");
+      event.target.classList.add("active");
+      if(t==="helper-list") loadTasks();
+    }
+
+    // Sub Tab
+    function openSubTab(t) {
+      if(!currentUser.id){ alert("Please login first"); openTab("login"); return; }
+      document.querySelectorAll(".sub-tab-content").forEach(e=>e.classList.remove("active"));
+      document.querySelectorAll(".sub-tab-link").forEach(e=>e.classList.remove("active"));
+      document.getElementById(t).classList.add("active");
+      event.target.classList.add("active");
+      if(t==="profile-info") loadProfileInfo();
+      if(t==="profile-posted") loadMyPostedTasks();
+      if(t==="profile-accepted") loadMyAcceptedTasks();
+    }
+
+    // Auth Tab
+    function toggleAuthTab(t) {
+      document.querySelectorAll(".sub-tab-content").forEach(e=>e.classList.remove("active"));
+      document.querySelectorAll(".sub-tab-link").forEach(e=>e.classList.remove("active"));
+      document.getElementById(t).classList.add("active");
+      event.target.classList.add("active");
+    }
+
+    // Login Status
+    function updateLoginStatus() {
+      const el = document.getElementById("loginStatus");
+      if(currentUser.id){
+        el.innerHTML = `Logged as: ${currentUser.anonymousName} (Logout)`;
+        el.onclick = logout;
+      }else{
+        el.innerHTML = "Not logged in (Login/Register)";
+        el.onclick = ()=>openTab("login");
+      }
+    }
+
+    // Logout
+    function logout() {
+      if(!confirm("Logout?")) return;
+      currentUser = { id:"", anonymousName:"" };
+      updateLoginStatus();
+      openTab("home");
+    }
+
+    // NZ Phone Format
+    function normalizeNZPhone(p) {
+      const d = p.replace(/\D/g,"");
+      if(d.startsWith("02")) return "+64"+d.slice(1);
+      if(d.startsWith("64")) return "+"+d;
+      return p;
+    }
+
+    // ======================
+    // Send CODE TO EMAIL
+    // ======================
+    document.getElementById("sendCodeBtn").onclick = async function(){
+      const email = document.getElementById("regEmail").value.trim();
+      const phone = document.getElementById("regPhone").value.trim();
+      if(!email){ alert("Enter email"); return; }
+      if(!phone){ alert("Enter NZ phone"); return; }
+
+      const normPhone = normalizeNZPhone(phone);
+      this.disabled = true;
+      this.textContent = "Sending...";
+
+      try{
+        const r = await fetch(API+"/send-verification-code",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ email, phone: normPhone })
+        });
+        const d = await r.json();
+        alert(d.message);
+        if(d.success){
+          let sec = 60;
+          const timer = setInterval(()=>{
+            sec--;
+            this.textContent = sec+"s";
+            if(sec<=0){
+              clearInterval(timer);
+              this.disabled=false;
+              this.textContent="Get Code";
+            }
+          },1000);
+        }else{
+          this.disabled=false;
+          this.textContent="Get Code";
+        }
+      }catch(e){
+        alert("Send failed");
+        this.disabled=false;
+        this.textContent="Get Code";
+      }
+    };
+
+    // ======================
+    // REGISTER
+    // ======================
+    document.getElementById("registerForm").onsubmit = async function(e){
+      e.preventDefault();
+      const given = document.getElementById("regGivenName").value.trim();
+      const first = document.getElementById("regFirstName").value.trim();
+      const sid = document.getElementById("regStudentId").value.trim();
+      const gender = document.getElementById("regGender").value;
+      const email = document.getElementById("regEmail").value.trim();
+      const phone = document.getElementById("regPhone").value.trim();
+      const code = document.getElementById("regVerifyCode").value.trim();
+      const anon = document.getElementById("regAnonymousName").value.trim();
+      const pwd = document.getElementById("regPassword").value;
+      const cpwd = document.getElementById("regConfirmPassword").value;
+
+      if(pwd!==cpwd){ alert("Password not match"); return; }
+      const normPhone = normalizeNZPhone(phone);
+
+      try{
+        const r = await fetch(API+"/register",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            givenName:given, firstName:first, studentId:sid, gender,
+            email, phone:normPhone, verifyCode:code, anonymousName:anon, password:pwd
+          })
+        });
+        const d = await r.json();
+        alert(d.message);
+        if(d.success){
+          toggleAuthTab("login-form");
+          this.reset();
+        }
+      }catch(e){ alert("Register failed"); }
+    };
+
+    // ======================
+    // LOGIN
+    // ======================
+    document.getElementById("loginForm").onsubmit = async function(e){
+      e.preventDefault();
+      const sid = document.getElementById("loginStudentId").value.trim();
+      const pwd = document.getElementById("loginPassword").value;
+      try{
+        const r = await fetch(API+"/login",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ studentId:sid, password:pwd })
+        });
+        const d = await r.json();
+        if(d.success){
+          currentUser.id = sid;
+          currentUser.anonymousName = d.anonymousName;
+          updateLoginStatus();
+          alert("Login success");
+          openTab("home");
+        }else{
+          alert(d.message);
+        }
+      }catch(e){ alert("Login failed"); }
+    };
+
+    // ======================
+    // Tasks
+    // ======================
+    async function loadTasks() {
+      const list = document.getElementById("taskList");
+      list.innerHTML = "Loading...";
+      try{
+        const r = await fetch(API+"/get-tasks");
+        const d = await r.json();
+        list.innerHTML = "";
+        if(!d.success || d.tasks.length===0){
+          list.innerHTML = "<div class='task-item'>No tasks yet</div>";
+          return;
+        }
+        d.tasks.forEach(t=>{
+          const item = document.createElement("div");
+          item.className="task-item";
+          item.innerHTML = `
+            <h4>${t.location}</h4>
+            <div class='task-meta'>${new Date(t.move_date).toLocaleString()}</div>
+            <div class='task-meta'>Helpers: ${t.helpers_needed} | ${t.compensation}</div>
+            <div class='task-meta'>${t.items}</div>
+            <button class="btn accept" data-id="${t.id}" data-poster="${t.student_id}">Accept Task</button>
+          `;
+          list.appendChild(item);
+        });
+        bindAccept();
+      }catch(e){ list.innerHTML="Load failed"; }
+    }
+
+    function bindAccept(){
+      document.querySelectorAll(".accept").forEach(b=>{
+        b.onclick = async function(){
+          if(!currentUser.id){ alert("Login first"); openTab("login"); return; }
+          const tid = this.dataset.id;
+          if(!confirm("Accept this task?")) return;
+          try{
+            const r = await fetch(API+"/accept-task",{
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({ taskId:tid, helperId:currentUser.id })
             });
-            // Show selected section
-            document.getElementById(sectionId).classList.add('active');
-            // Load data for specific sections
-            if (sectionId === 'view-tasks') loadAvailableTasks();
-            if (sectionId === 'my-posted-tasks') loadMyPostedTasks();
-            if (sectionId === 'my-accepted-tasks') loadMyAcceptedTasks();
-            if (sectionId === 'profile') loadProfile();
+            const d = await r.json();
+            alert(d.message);
+            loadTasks();
+          }catch(e){ alert("Failed"); }
         }
+      });
+    }
 
-        // Show alert message
-        function showAlert(message, isSuccess = true) {
-            const alertEl = document.getElementById('alertMessage');
-            alertEl.textContent = message;
-            alertEl.className = `alert ${isSuccess ? 'alert-success' : 'alert-error'}`;
-            // Hide after 5 seconds
-            setTimeout(() => {
-                alertEl.className = 'alert';
-            }, 5000);
-        }
-
-        // Normalize NZ Phone Number
-        function normalizeNZPhone(phone) {
-            if (!phone) return '';
-            let digits = phone.replace(/\D/g, '');
-            if (digits.startsWith('02')) {
-                return '+64' + digits.slice(1);
-            }
-            if (digits.startsWith('64')) {
-                return '+' + digits;
-            }
-            return phone;
-        }
-
-        // Validate NZ Phone Number
-        function isValidNZPhone(normalizedPhone) {
-            if (!normalizedPhone) return false;
-            const pattern = /^\+642\d{7,9}$/;
-            return pattern.test(normalizedPhone);
-        }
-
-        // Send Verification Code (Email)
-        document.getElementById('sendCodeBtn').addEventListener('click', async function() {
-            const emailInput = document.getElementById('regEmail').value.trim();
-            const phoneInput = document.getElementById('regPhone').value.trim();
-
-            // Validate inputs
-            if (!emailInput) {
-                showAlert('Please enter your email address', false);
-                return;
-            }
-            if (!phoneInput) {
-                showAlert('Please enter your New Zealand mobile phone number', false);
-                return;
-            }
-
-            // Normalize and validate phone
-            const normalizedPhone = normalizeNZPhone(phoneInput);
-            if (!isValidNZPhone(normalizedPhone)) {
-                showAlert('Invalid NZ mobile format!\nValid examples:\n• 0211234567 / +64221234567', false);
-                return;
-            }
-
-            // Disable button
-            this.disabled = true;
-            this.textContent = 'Sending...';
-
-            try {
-                const response = await fetch(`${API_URL}/send-verification-code`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        email: emailInput, 
-                        phone: normalizedPhone 
-                    })
-                });
-
-                const result = await response.json();
-                showAlert(result.message, result.success);
-
-                if (result.success) {
-                    // Countdown 60 seconds
-                    let countdown = 60;
-                    this.textContent = `${countdown}s`;
-                    const timer = setInterval(() => {
-                        countdown--;
-                        this.textContent = `${countdown}s`;
-                        if (countdown <= 0) {
-                            clearInterval(timer);
-                            this.disabled = false;
-                            this.textContent = 'Get Code';
-                        }
-                    }, 1000);
-                } else {
-                    this.disabled = false;
-                    this.textContent = 'Get Code';
-                }
-            } catch (error) {
-                showAlert('Failed to connect to server!', false);
-                console.error('Send code error:', error);
-                this.disabled = false;
-                this.textContent = 'Get Code';
-            }
+    // Post Request
+    document.getElementById("movingRequestForm").onsubmit = async function(e){
+      e.preventDefault();
+      if(!currentUser.id){ alert("Login first"); openTab("login"); return; }
+      const date = document.getElementById("moveDate").value;
+      const loc = document.getElementById("location").value;
+      const helpers = document.getElementById("helpersNeeded").value;
+      const items = document.getElementById("items").value;
+      const comp = document.getElementById("compensation").value;
+      try{
+        const r = await fetch(API+"/post-request",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            studentId:currentUser.id, moveDate:date, location:loc,
+            helpersNeeded:helpers, items, compensation:comp
+          })
         });
+        const d = await r.json();
+        alert(d.message);
+        if(d.success) openTab("helper-list");
+      }catch(e){ alert("Post failed"); }
+    };
 
-        // Register Form Submission
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // Get form values
-            const givenName = document.getElementById('regGivenName').value.trim();
-            const firstName = document.getElementById('regFirstName').value.trim();
-            const studentId = document.getElementById('regStudentId').value.trim();
-            const gender = document.getElementById('regGender').value;
-            const phone = document.getElementById('regPhone').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const verifyCode = document.getElementById('regVerifyCode').value.trim();
-            const anonymousName = document.getElementById('regAnonymousName').value.trim();
-            const password = document.getElementById('regPassword').value.trim();
-
-            // Normalize phone number
-            const normalizedPhone = normalizeNZPhone(phone);
-
-            try {
-                const response = await fetch(`${API_URL}/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        givenName,
-                        firstName,
-                        studentId,
-                        gender,
-                        phone: normalizedPhone,
-                        email,
-                        verifyCode,
-                        anonymousName,
-                        password
-                    })
-                });
-
-                const result = await response.json();
-                showAlert(result.message, result.success);
-
-                if (result.success) {
-                    // Reset form and switch to login
-                    this.reset();
-                    showSection('login');
-                }
-            } catch (error) {
-                showAlert('Registration failed! Please try again.', false);
-                console.error('Register error:', error);
-            }
+    // My Posted
+    async function loadMyPostedTasks(){
+      const list = document.getElementById("myPostedList");
+      list.innerHTML = "Loading...";
+      try{
+        const r = await fetch(API+"/my-posted-tasks",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ studentId:currentUser.id })
         });
-
-        // Login Form Submission
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const studentId = document.getElementById('loginStudentId').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-
-            try {
-                const response = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ studentId, password })
-                });
-
-                const result = await response.json();
-                showAlert(result.message, result.success);
-
-                if (result.success) {
-                    // Save user info
-                    currentStudentId = studentId;
-                    currentAnonymousName = result.anonymousName;
-                    
-                    // Show authenticated buttons
-                    document.getElementById('postBtn').classList.remove('hidden');
-                    document.getElementById('viewTasksBtn').classList.remove('hidden');
-                    document.getElementById('myPostedBtn').classList.remove('hidden');
-                    document.getElementById('myAcceptedBtn').classList.remove('hidden');
-                    document.getElementById('profileBtn').classList.remove('hidden');
-                    document.getElementById('logoutBtn').classList.remove('hidden');
-                    
-                    // Hide auth buttons
-                    document.querySelector('button[onclick="showSection(\'register\')"]').classList.add('hidden');
-                    document.querySelector('button[onclick="showSection(\'login\')"]').classList.add('hidden');
-                    
-                    // Reset form and switch to post request
-                    this.reset();
-                    showSection('post-request');
-                }
-            } catch (error) {
-                showAlert('Login failed! Please check your credentials.', false);
-                console.error('Login error:', error);
-            }
+        const d = await r.json();
+        list.innerHTML = "";
+        if(!d.success || d.tasks.length===0){
+          list.innerHTML = "<div class='task-item'>No posted tasks</div>";
+          return;
+        }
+        d.tasks.forEach(t=>{
+          const item = document.createElement("div");
+          item.className="task-item";
+          const assigned = t.helper_assigned?`<span style='color:green'>Assigned</span>`:`<span style='color:red'>Available</span>`;
+          item.innerHTML = `
+            <h4>${t.location}</h4>
+            <div class='task-meta'>${new Date(t.move_date).toLocaleString()}</div>
+            <div class='task-meta'>Status: ${assigned}</div>
+            <button class="btn" onclick="deleteTask(${t.id})">Delete</button>
+          `;
+          list.appendChild(item);
         });
+      }catch(e){ list.innerHTML="Failed"; }
+    }
 
-        // Post Moving Request Submission
-        document.getElementById('postRequestForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            if (!currentStudentId) {
-                showAlert('Please login first!', false);
-                showSection('login');
-                return;
-            }
-
-            const moveDate = document.getElementById('moveDate').value;
-            const location = document.getElementById('location').value.trim();
-            const helpersNeeded = document.getElementById('helpersNeeded').value;
-            const items = document.getElementById('items').value.trim();
-            const compensation = document.getElementById('compensation').value.trim();
-
-            try {
-                const response = await fetch(`${API_URL}/post-request`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        studentId: currentStudentId,
-                        moveDate,
-                        location,
-                        helpersNeeded,
-                        items,
-                        compensation
-                    })
-                });
-
-                const result = await response.json();
-                showAlert(result.message, result.success);
-
-                if (result.success) {
-                    this.reset();
-                    showSection('my-posted-tasks');
-                }
-            } catch (error) {
-                showAlert('Failed to post request! Please try again.', false);
-                console.error('Post request error:', error);
-            }
+    // My Accepted
+    async function loadMyAcceptedTasks(){
+      const list = document.getElementById("myAcceptedList");
+      list.innerHTML = "Loading...";
+      try{
+        const r = await fetch(API+"/my-accepted-tasks",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ helperId:currentUser.id })
         });
-
-        // Load Available Tasks
-        async function loadAvailableTasks() {
-            try {
-                const response = await fetch(`${API_URL}/get-tasks`);
-                const result = await response.json();
-
-                if (result.success) {
-                    const taskList = document.getElementById('taskList');
-                    taskList.innerHTML = '';
-
-                    if (result.tasks.length === 0) {
-                        taskList.innerHTML = '<p>No available tasks at the moment.</p>';
-                        return;
-                    }
-
-                    result.tasks.forEach(task => {
-                        const taskCard = document.createElement('div');
-                        taskCard.className = 'task-card';
-                        taskCard.innerHTML = `
-                            <h3>Task #${task.id}</h3>
-                            <p><strong>Date:</strong> ${task.move_date}</p>
-                            <p><strong>Location:</strong> ${task.location}</p>
-                            <p><strong>Helpers Needed:</strong> ${task.helpers_needed}</p>
-                            <p><strong>Items:</strong> ${task.items}</p>
-                            <p><strong>Compensation:</strong> ${task.compensation}</p>
-                            <button class="btn" onclick="acceptTask(${task.id})">Accept This Task</button>
-                        `;
-                        taskList.appendChild(taskCard);
-                    });
-                } else {
-                    showAlert(result.message, false);
-                }
-            } catch (error) {
-                showAlert('Failed to load tasks! Please try again.', false);
-                console.error('Load tasks error:', error);
-            }
+        const d = await r.json();
+        list.innerHTML = "";
+        if(!d.success || d.tasks.length===0){
+          list.innerHTML = "<div class='task-item'>No accepted tasks</div>";
+          return;
         }
+        d.tasks.forEach(t=>{
+          const item = document.createElement("div");
+          item.className="task-item";
+          item.innerHTML = `
+            <h4>${t.location}</h4>
+            <div class='task-meta'>${new Date(t.move_date).toLocaleString()}</div>
+            <button class="btn" onclick="cancelTask(${t.id})">Cancel</button>
+          `;
+          list.appendChild(item);
+        });
+      }catch(e){ list.innerHTML="Failed"; }
+    }
 
-        // Accept Task
-        async function acceptTask(taskId) {
-            if (!currentStudentId) {
-                showAlert('Please login first!', false);
-                showSection('login');
-                return;
-            }
+    // Delete / Cancel
+    async function deleteTask(id){
+      if(!confirm("Delete?")) return;
+      try{
+        const r = await fetch(API+"/delete-task",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ taskId:id, studentId:currentUser.id })
+        });
+        const d = await r.json();
+        alert(d.message);
+        loadMyPostedTasks();
+      }catch(e){}
+    }
 
-            if (confirm('Are you sure you want to accept this task?')) {
-                try {
-                    const response = await fetch(`${API_URL}/accept-task`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            taskId,
-                            helperId: currentStudentId
-                        })
-                    });
+    async function cancelTask(id){
+      if(!confirm("Cancel?")) return;
+      try{
+        const r = await fetch(API+"/cancel-task",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ taskId:id, helperId:currentUser.id })
+        });
+        const d = await r.json();
+        alert(d.message);
+        loadMyAcceptedTasks();
+      }catch(e){}
+    }
 
-                    const result = await response.json();
-                    showAlert(result.message, result.success);
-
-                    if (result.success) {
-                        loadAvailableTasks();
-                    }
-                } catch (error) {
-                    showAlert('Failed to accept task! Please try again.', false);
-                    console.error('Accept task error:', error);
-                }
-            }
+    // Profile
+    async function loadProfileInfo(){
+      const box = document.getElementById("profileDetails");
+      box.innerHTML = "Loading...";
+      try{
+        const r = await fetch(API+"/get-profile",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ studentId:currentUser.id })
+        });
+        const d = await r.json();
+        if(d.success){
+          const u = d.user;
+          box.innerHTML = `
+            <div class='profile-item'><h4>Given Name</h4><p>${u.given_name}</p></div>
+            <div class='profile-item'><h4>First Name</h4><p>${u.first_name}</p></div>
+            <div class='profile-item'><h4>Student ID</h4><p>${u.student_id}</p></div>
+            <div class='profile-item'><h4>Gender</h4><p>${u.gender}</p></div>
+            <div class='profile-item'><h4>Anonymous Name</h4><p>${u.anonymous_name}</p></div>
+            <div class='profile-item'><h4>Phone</h4><p>${u.phone}</p></div>
+            <div class='profile-item'><h4>Email</h4><p>${u.email}</p></div>
+          `;
+        }else{
+          box.innerHTML = d.message;
         }
+      }catch(e){ box.innerHTML="Failed"; }
+    }
 
-        // Load My Posted Tasks
-        async function loadMyPostedTasks() {
-            if (!currentStudentId) {
-                showAlert('Please login first!', false);
-                showSection('login');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/my-posted-tasks`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ studentId: currentStudentId })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    const taskList = document.getElementById('myPostedTasksList');
-                    taskList.innerHTML = '';
-
-                    if (result.tasks.length === 0) {
-                        taskList.innerHTML = '<p>You have not posted any tasks yet.</p>';
-                        return;
-                    }
-
-                    result.tasks.forEach(task => {
-                        const taskCard = document.createElement('div');
-                        taskCard.className = 'task-card';
-                        taskCard.innerHTML = `
-                            <h3>Your Task #${task.id}</h3>
-                            <p><strong>Date:</strong> ${task.move_date}</p>
-                            <p><strong>Location:</strong> ${task.location}</p>
-                            <p><strong>Helpers Needed:</strong> ${task.helpers_needed}</p>
-                            <p><strong>Items:</strong> ${task.items}</p>
-                            <p><strong>Compensation:</strong> ${task.compensation}</p>
-                            <p><strong>Helper Assigned:</strong> ${task.helper_assigned || 'None'}</p>
-                            ${task.helper_assigned ? 
-                                `<button class="btn btn-secondary" onclick="viewHelperId(${task.id})">View Helper ID</button>` : ''}
-                            <button class="btn btn-secondary" onclick="deleteTask(${task.id})">Delete Task</button>
-                        `;
-                        taskList.appendChild(taskCard);
-                    });
-                } else {
-                    showAlert(result.message, false);
-                }
-            } catch (error) {
-                showAlert('Failed to load your tasks! Please try again.', false);
-                console.error('Load my posted tasks error:', error);
-            }
-        }
-
-        // Load My Accepted Tasks
-        async function loadMyAcceptedTasks() {
-            if (!currentStudentId) {
-                showAlert('Please login first!', false);
-                showSection('login');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/my-accepted-tasks`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ helperId: currentStudentId })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    const taskList = document.getElementById('myAcceptedTasksList');
-                    taskList.innerHTML = '';
-
-                    if (result.tasks.length === 0) {
-                        taskList.innerHTML = '<p>You have not accepted any tasks yet.</p>';
-                        return;
-                    }
-
-                    result.tasks.forEach(task => {
-                        const taskCard = document.createElement('div');
-                        taskCard.className = 'task-card';
-                        taskCard.innerHTML = `
-                            <h3>Accepted Task #${task.id}</h3>
-                            <p><strong>Date:</strong> ${task.move_date}</p>
-                            <p><strong>Location:</strong> ${task.location}</p>
-                            <p><strong>Helpers Needed:</strong> ${task.helpers_needed}</p>
-                            <p><strong>Items:</strong> ${task.items}</p>
-                            <p><strong>Compensation:</strong> ${task.compensation}</p>
-                            <button class="btn btn-secondary" onclick="viewPosterId(${task.id})">View Poster ID</button>
-                            <button class="btn btn-secondary" onclick="cancelTask(${task.id})">Cancel Task</button>
-                        `;
-                        taskList.appendChild(taskCard);
-                    });
-                } else {
-                    showAlert(result.message, false);
-                }
-            } catch (error) {
-                showAlert('Failed to load accepted tasks! Please try again.', false);
-                console.error('Load accepted tasks error:', error);
-            }
-        }
-
-        // View Helper ID
-        async function viewHelperId(taskId) {
-            if (!currentStudentId) {
-                showAlert('Please login first!', false);
-                showSection('login');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/view-helper-id`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        taskId,
-                        posterId: currentStudentId
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    alert(`Helper ID: ${result.helperId}\nYou can contact them via phone/email.`);
-                } else {
-                    showAlert(result.message, false);
-                }
-            } catch (error) {
-                showAlert('Failed to get helper ID! Please try again.', false);
-                console.error('View helper ID error:', error);
-            }
-        }
-
-        // View Poster ID
-        async function viewPosterId(taskId) {
-            if (!currentStudentId) {
-                showAlert('Please login first!', false);
-                showSection('login');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/view-poster-id`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        taskId,
-                        helperId: currentStudentId
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    alert(`Poster ID: ${result.posterId}\nYou can contact them via phone/email.`);
-                } else {
-                    showAlert(result.message, false);
-                }
-            } catch (error) {
-                showAlert('Failed to get poster ID! Please try again.', false);
-                console.error('View poster ID error:', error);
-            }
-        }
-
-        // Delete Task
-        async function deleteTask(taskId) {
-            if (!currentStudentId) {
-                showAlert('Please login first!', false);
-                showSection('login');
-                return;
-            }
-
-            if (confirm('Are you sure you want to delete this task?')) {
-                try {
-                    const response = await fetch(`${API_URL}/delete-task`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            taskId,
-                            studentId: currentStudentId
-                        })
-                    });
-
-                    const result = await response.json();
-                    showAlert(result.message, result.success);
-
-                    if (result.success) {
-                        loadMyPostedTasks();
-                    }
-                } catch (error) {
-                    showAlert('Failed to delete task! Please try again.', false);
-                    console.error('Delete task error:', error);
-                }
-            }
-        }
-
-        // Cancel Task
-        async function cancelTask(taskId) {
-            if (!currentStudentId) {
-                showAlert('Please login first!', false);
-                showSection('login');
-                return;
-            }
-
-            if (confirm('Are you sure you want to cancel this task?')) {
-                try {
-                    const response = await fetch(`${API_URL}/cancel-task`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            taskId,
-                            helperId: currentStudentId
-                        })
-                    });
-
-                    const result = await response.json();
-                    showAlert(result.message, result.success);
-
-                    if (result.success) {
-                        loadMyAcceptedTasks();
-                    }
-                } catch (error) {
-                    showAlert('Failed to cancel task! Please try again.', false);
-                    console.error('Cancel task error:', error);
-                }
-            }
-        }
-
-        // Load Profile
-        async function loadProfile() {
-            if (!currentStudentId) {
-                showAlert('Please login first!', false);
-                showSection('login');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/get-profile`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ studentId: currentStudentId })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    const user = result.user;
-                    document.getElementById('profileGivenName').textContent = user.given_name;
-                    document.getElementById('profileFirstName').textContent = user.first_name;
-                    document.getElementById('profileStudentId').textContent = user.student_id;
-                    document.getElementById('profileGender').textContent = user.gender;
-                    document.getElementById('profileAnonymousName').textContent = user.anonymous_name;
-                    document.getElementById('profilePhone').textContent = user.phone;
-                    document.getElementById('profileEmail').textContent = user.email;
-                } else {
-                    showAlert(result.message, false);
-                }
-            } catch (error) {
-                showAlert('Failed to load profile! Please try again.', false);
-                console.error('Load profile error:', error);
-            }
-        }
-
-        // Logout
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                currentStudentId = null;
-                currentAnonymousName = null;
-                
-                // Hide authenticated buttons
-                document.getElementById('postBtn').classList.add('hidden');
-                document.getElementById('viewTasksBtn').classList.add('hidden');
-                document.getElementById('myPostedBtn').classList.add('hidden');
-                document.getElementById('myAcceptedBtn').classList.add('hidden');
-                document.getElementById('profileBtn').classList.add('hidden');
-                document.getElementById('logoutBtn').classList.add('hidden');
-                
-                // Show auth buttons
-                document.querySelector('button[onclick="showSection(\'register\')"]').classList.remove('hidden');
-                document.querySelector('button[onclick="showSection(\'login\')"]').classList.remove('hidden');
-                
-                showAlert('Logged out successfully!', true);
-                showSection('login');
-            }
-        }
-
-        // Initial load - check health
-        window.onload = async function() {
-            try {
-                await fetch(`${API_URL.replace('/api', '')}/health`);
-                console.log('Server is healthy');
-            } catch (error) {
-                showAlert('Warning: Server connection issue! Some features may not work.', false);
-            }
-        };
-    </script>
+    // Init
+    updateLoginStatus();
+  </script>
 </body>
 </html>
