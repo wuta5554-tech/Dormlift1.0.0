@@ -35,7 +35,7 @@ app.use(express.static(__dirname));
 // 根路径直接返回同级的index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
-
+}
 // ===================== 数据库配置 =====================
 const db = new sqlite3.Database('./dormlift.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
   if (err) {
