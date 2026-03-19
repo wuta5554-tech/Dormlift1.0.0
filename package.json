@@ -1,6 +1,6 @@
 {
-  "name": "dormlift-full",
-  "version": "1.0.0",
+  "name": "dormlift-ultimate",
+  "version": "2.0.0",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -12,8 +12,9 @@
     "body-parser": "^1.20.2",
     "nodemailer": "^6.9.7",
     "bcryptjs": "^2.4.3"
+    // 移除 moment 依赖
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16"
   }
 }
