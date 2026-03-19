@@ -1,6 +1,6 @@
 {
-  "name": "dormlift-ultimate",
-  "version": "2.0.0",
+  "name": "dormlift-final",
+  "version": "1.0.0",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -14,6 +14,6 @@
     "bcryptjs": "^2.4.3"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=16.0.0"
   }
 }
