@@ -1,11 +1,10 @@
 /**
- * DormLift 后端服务 - 最终版
- * 特性：
- * 1. 支持任意合法邮箱注册（QQ/163/Gmail/Outlook等）
- * 2. 适配Railway动态端口，无硬编码
- * 3. 静态文件直接读取根目录，无需public文件夹
- * 4. 测试模式：验证码打印在控制台，无需真实邮箱连接
- * 5. 无SQLite语法错误，数据库表初始化正常
+ * DormLift 最终完整版（Railway环境变量版）
+ * 核心特性：
+ * 1. 支持任意邮箱注册（QQ/163/Gmail/Outlook等）
+ * 2. 验证码通过Outlook SMTP真实发送（读取Railway环境变量，无硬编码）
+ * 3. 适配Railway云端部署，安全且易维护
+ * 使用前：在Railway的Variables里配置 OUTLOOK_EMAIL 和 OUTLOOK_PASS
  */
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
@@ -14,79 +13,39 @@ const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const path = require('path');
 
-// 创建Express应用
+// 初始化Express应用
 const app = express();
-// Railway动态端口（优先读取环境变量）
+// 适配Railway动态端口（优先读取环境变量，本地默认3000）
 const PORT = process.env.PORT || 3000;
 
-// ===================== 中间件配置 =====================
-// 跨域配置
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-// 解析JSON请求体
+// 中间件配置
+app.use(cors({ origin: '*' })); // 允许跨域（测试环境）
 app.use(bodyParser.json({ limit: '1mb' }));
-app.use(bodyParser.urlencoded({ 
-  extended: true,
-  limit: '1mb'
-}));
+app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
+app.use(express.static(__dirname)); // 托管前端页面
 
-// 静态文件配置：index.html和server.js同级
-app.use(express.static(__dirname));
-// 强制根路径返回index.html
+// 根路径返回index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ===================== 数据库配置 =====================
 const db = new sqlite3.Database('./dormlift.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
-  if (err) {
-    console.error('【数据库错误】连接失败:', err.message);
-  } else {
-    console.log('【数据库成功】已连接到 dormlift.db');
+  if (err) console.error('❌ 数据库连接失败:', err.message);
+  else {
+    console.log('✅ 数据库连接成功');
     initDatabase();
   }
 });
 
-// 全局验证码存储（测试用）
-let storedVerificationCode = {
-  email: '',
-  code: '',
-  expireTime: 0
-};
+// 全局变量：存储验证码（内存级，生产环境可换Redis）
+let storedVerificationCode = { email: '', code: '', expireTime: 0 };
+// 关闭测试模式（开启真实邮件发送）
+const EMAIL_TEST_MODE = false;
 
-// ===================== 邮箱配置（测试模式） =====================
-const EMAIL_TEST_MODE = true; // 测试模式：验证码打印在控制台
-
-const emailTransporter = nodemailer.createTransport({
-  host: 'smtp.office365.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.OUTLOOK_EMAIL || 'test@outlook.com',
-    pass: process.env.OUTLOOK_PASSWORD || 'test-password'
-  },
-  tls: {
-    rejectUnauthorized: false,
-    ciphers: 'SSLv3'
-  }
-});
-
-// 测试邮箱连接（不阻塞启动）
-emailTransporter.verify((error, success) => {
-  if (error) {
-    console.log('【邮箱提示】连接失败，已启用测试模式（验证码将打印在控制台）');
-  } else {
-    console.log('【邮箱配置成功】已连接到Outlook SMTP服务器');
-  }
-});
-
-// ===================== 数据库表初始化（无COMMENT） =====================
+// ===================== 数据库表初始化 =====================
 function initDatabase() {
-  console.log('【数据库初始化】开始创建/检查表结构...');
+  console.log('🔧 初始化数据表...');
 
   // 1. 用户表
   const createUsersTable = `
@@ -105,16 +64,8 @@ function initDatabase() {
     )
   `;
 
-  db.run(createUsersTable, (err) => {
-    if (err) {
-      console.error('【数据库错误】创建users表失败:', err.message);
-    } else {
-      console.log('【数据库成功】users表初始化完成');
-    }
-  });
-
   // 2. 搬家请求表
-  const createMovingRequestsTable = `
+  const createRequestsTable = `
     CREATE TABLE IF NOT EXISTS moving_requests (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       student_id TEXT NOT NULL,
@@ -131,16 +82,8 @@ function initDatabase() {
     )
   `;
 
-  db.run(createMovingRequestsTable, (err) => {
-    if (err) {
-      console.error('【数据库错误】创建moving_requests表失败:', err.message);
-    } else {
-      console.log('【数据库成功】moving_requests表初始化完成');
-    }
-  });
-
   // 3. 任务分配表
-  const createTaskAssignmentsTable = `
+  const createAssignmentsTable = `
     CREATE TABLE IF NOT EXISTS task_assignments (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       task_id INTEGER NOT NULL,
@@ -152,238 +95,235 @@ function initDatabase() {
     )
   `;
 
-  db.run(createTaskAssignmentsTable, (err) => {
-    if (err) {
-      console.error('【数据库错误】创建task_assignments表失败:', err.message);
-    } else {
-      console.log('【数据库成功】task_assignments表初始化完成');
-    }
+  // 执行建表
+  db.run(createUsersTable, (err) => {
+    if (err) console.error('❌ 创建用户表失败:', err.message);
+    else console.log('✅ 用户表初始化完成');
   });
 
-  console.log('【数据库初始化】所有表检查/创建完成');
+  db.run(createRequestsTable, (err) => {
+    if (err) console.error('❌ 创建搬家请求表失败:', err.message);
+    else console.log('✅ 搬家请求表初始化完成');
+  });
+
+  db.run(createAssignmentsTable, (err) => {
+    if (err) console.error('❌ 创建任务分配表失败:', err.message);
+    else console.log('✅ 任务分配表初始化完成');
+  });
+
+  console.log('🔧 所有数据表初始化完成');
 }
 
-// ===================== 工具函数（核心修改：支持任意邮箱） =====================
+// ===================== 核心工具函数 =====================
 /**
- * 通用邮箱格式验证（支持QQ/163/Gmail/Outlook等所有合法邮箱）
+ * 通用邮箱格式验证（valid：检查格式是否有效，非valuable）
+ * @param {string} email - 用户输入的邮箱
+ * @returns {boolean} - 验证结果
  */
 function isValidEmail(email) {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i;
   return emailRegex.test(email);
 }
 
+/**
+ * 生成6位数字验证码
+ * @returns {string} - 6位验证码
+ */
 function generateVerificationCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-async function sendEmailVerificationCode(toEmail, code) {
-  if (EMAIL_TEST_MODE) {
-    console.log(`【测试模式】验证码：${code}（发送到 ${toEmail}）`);
+/**
+ * 发送验证码邮件（读取Railway环境变量，安全无硬编码）
+ * @param {string} email - 收件人邮箱
+ * @param {string} code - 6位验证码
+ * @returns {Promise<boolean>} - 发送结果
+ */
+async function sendVerificationCode(email, code) {
+  // 校验Railway环境变量是否配置
+  if (!process.env.OUTLOOK_EMAIL || !process.env.OUTLOOK_PASS) {
+    console.error('❌ Railway环境变量未配置：请设置OUTLOOK_EMAIL和OUTLOOK_PASS');
+    // 降级：打印验证码到日志
+    console.log(`⚠️  降级方案：验证码 ${code} 已打印（收件人：${email}）`);
     return true;
   }
 
-  const mailOptions = {
-    from: `"DormLift" <${process.env.OUTLOOK_EMAIL || 'test@outlook.com'}>`,
-    to: toEmail,
-    subject: 'DormLift 验证码',
-    text: `你的验证码是：${code}，有效期5分钟`,
-    html: `<div style="font-size:16px;">你的验证码是：<b>${code}</b></div>`
-  };
+  // Outlook SMTP配置（读取Railway环境变量）
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.office365.com', // Outlook官方SMTP服务器（固定）
+    port: 587,                  // 固定端口
+    secure: false,              // 587端口必须为false
+    auth: {
+      user: process.env.OUTLOOK_EMAIL, // 读取Railway的OUTLOOK_EMAIL变量
+      pass: process.env.OUTLOOK_PASS   // 读取Railway的OUTLOOK_PASS变量
+    },
+    tls: {
+      ciphers: 'SSLv3' // 解决Outlook连接兼容问题
+    }
+  });
 
   try {
-    await emailTransporter.sendMail(mailOptions);
-    console.log(`【邮箱发送成功】验证码已发送到 ${toEmail}`);
+    // 发送验证码邮件
+    await transporter.sendMail({
+      from: `DormLift <${process.env.OUTLOOK_EMAIL}>`, // 发件人=环境变量里的Outlook邮箱
+      to: email,                                      // 收件人（用户输入的邮箱）
+      subject: 'DormLift 验证码',                     // 邮件标题
+      text: `你的DormLift验证码是：${code}\n有效期5分钟，请尽快使用。`, // 纯文本内容
+      html: `<div style="font-family: Arial; padding: 20px;">
+              <h3 style="color: #2c3e50;">你的DormLift验证码</h3>
+              <p style="font-size: 16px;">验证码：<strong style="color: #3498db; font-size: 20px;">${code}</strong></p>
+              <p style="color: #7f8c8d; font-size: 12px;">有效期5分钟，请勿泄露给他人</p>
+            </div>` // 富文本内容
+    });
+
+    console.log(`✅ 验证码已发送到 ${email}（验证码：${code}）`);
     return true;
-  } catch (error) {
-    console.error(`【邮箱发送失败】${toEmail}:`, error.message);
-    console.log(`【备用方案】验证码：${code}`);
+  } catch (err) {
+    console.error('❌ 邮件发送失败:', err.message);
+    // 降级：打印到日志
+    console.log(`⚠️  降级方案：验证码 ${code} 已打印（收件人：${email}）`);
     return true;
   }
 }
 
-// ===================== 接口 - 验证码（彻底无Outlook限制） =====================
+// ===================== API接口：获取验证码 =====================
 app.post('/api/send-verification-code', async (req, res) => {
   try {
     const { email } = req.body;
 
+    // 1. 检查邮箱是否为空
     if (!email) {
       return res.status(400).json({
         success: false,
-        message: 'Parameter error: Email cannot be empty' // 邮箱为空的提示（英文）
+        message: '错误：邮箱不能为空'
       });
     }
 
-    // 通用邮箱格式验证（无任何服务商限制，只验证合法格式）
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please enter a valid email (e.g. xxx@qq.com, xxx@163.com, xxx@gmail.com)'
-      });
-    }
-
-    // 生成6位验证码（和旧代码完全一样）
-    const verificationCode = generateVerificationCode();
-    // 验证码有效期5分钟（和旧代码完全一样）
-    const expireTime = Date.now() + 5 * 60 * 1000;
-
-    // 测试模式打印验证码（和旧代码完全一样）
-    await sendEmailVerificationCode(email, verificationCode);
-
-    // 存储验证码（和旧代码完全一样）
-    storedVerificationCode = {
-      email: email,
-      code: verificationCode,
-      expireTime: expireTime
-    };
-
-    // 返回结果（格式和旧代码完全一样，仅提示文字优化）
-    res.status(200).json({
-      success: true,
-      message: EMAIL_TEST_MODE 
-        ? `Verification code generated: ${verificationCode} (Test mode, valid for 5 minutes)`
-        : `Verification code sent to ${email}, please check`
-    });
-  } catch (error) {
-    // 错误处理（和旧代码完全一样）
-    console.error('【接口错误】/api/send-verification-code:', error.message);
-    res.status(500).json({
-      success: false,
-      message: 'Server error: Failed to send verification code'
-    });
-  }
-});
-// ===================== 接口 - 注册（支持任意邮箱） =====================
-app.post('/api/register', (req, res) => {
-  try {
-    const {
-      givenName,
-      firstName,
-      studentId,
-      gender,
-      email,
-      verifyCode,
-      phone,
-      anonymousName,
-      password,
-      confirmPassword
-    } = req.body;
-
-    const requiredFields = [
-      givenName, firstName, studentId, gender,
-      email, verifyCode, phone, anonymousName,
-      password, confirmPassword
-    ];
-    if (requiredFields.some(field => !field || field.trim() === '')) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：所有字段均为必填项'
-      });
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({
-        success: false,
-        message: '密码错误：两次输入的密码不一致'
-      });
-    }
-
-    // 通用邮箱格式验证（无Outlook限制）
+    // 2. 验证邮箱格式是否有效（valid，非valuable）
     if (!isValidEmail(email)) {
       return res.status(400).json({
         success: false,
-        message: '邮箱格式错误：请输入合法的邮箱地址（如 xxx@qq.com、xxx@163.com、xxx@gmail.com 等）'
+        message: '错误：请输入有效的邮箱（比如 xxx@qq.com / xxx@outlook.com）'
       });
     }
 
-    // 验证验证码有效性
+    // 3. 生成验证码（5分钟有效期）
+    const code = generateVerificationCode();
+    const expireTime = Date.now() + 5 * 60 * 1000;
+
+    // 4. 发送验证码（读取Railway环境变量）
+    await sendVerificationCode(email, code);
+
+    // 5. 存储验证码
+    storedVerificationCode = { email, code, expireTime };
+
+    // 6. 返回成功响应
+    res.status(200).json({
+      success: true,
+      message: '验证码已发送，请注意查收邮箱（含垃圾邮件箱）'
+    });
+  } catch (err) {
+    console.error('❌ 获取验证码接口异常:', err.message);
+    res.status(500).json({
+      success: false,
+      message: '服务器错误：获取验证码失败'
+    });
+  }
+});
+
+// ===================== API接口：用户注册 =====================
+app.post('/api/register', (req, res) => {
+  try {
+    const {
+      givenName, firstName, studentId, gender,
+      email, verifyCode, phone, anonymousName,
+      password, confirmPassword
+    } = req.body;
+
+    // 1. 检查所有字段是否为空
+    const requiredFields = [givenName, firstName, studentId, gender, email, verifyCode, phone, anonymousName, password, confirmPassword];
+    if (requiredFields.some(field => !field || field.trim() === '')) {
+      return res.status(400).json({
+        success: false,
+        message: '错误：所有字段都不能为空'
+      });
+    }
+
+    // 2. 检查密码是否一致
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: '错误：两次输入的密码不一致'
+      });
+    }
+
+    // 3. 验证邮箱格式是否有效
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: '错误：请输入有效的邮箱（比如 xxx@qq.com / xxx@outlook.com）'
+      });
+    }
+
+    // 4. 验证验证码（有效期+正确性+邮箱匹配）
     if (!storedVerificationCode || 
         storedVerificationCode.email !== email || 
         storedVerificationCode.code !== verifyCode || 
         Date.now() > storedVerificationCode.expireTime) {
       return res.status(400).json({
         success: false,
-        message: '验证码错误：无效或已过期，请重新获取'
+        message: '错误：验证码无效或已过期，请重新获取'
       });
     }
 
-    // 检查学生ID是否已注册
+    // 5. 检查学生ID是否已注册
     db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, studentRow) => {
       if (err) {
-        console.error('【数据库错误】查询学生ID失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：查询学生ID失败'
-        });
+        console.error('❌ 检查学生ID失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：检查学生ID失败' });
       }
-
       if (studentRow) {
-        return res.status(400).json({
-          success: false,
-          message: '注册失败：该学生ID已被注册'
-        });
+        return res.status(400).json({ success: false, message: '错误：该学生ID已注册' });
       }
 
-      // 检查邮箱是否已注册
+      // 6. 检查邮箱是否已注册
       db.get('SELECT * FROM users WHERE email = ?', [email], (err, emailRow) => {
         if (err) {
-          console.error('【数据库错误】查询邮箱失败:', err.message);
-          return res.status(500).json({
-            success: false,
-            message: '服务器错误：查询邮箱失败'
-          });
+          console.error('❌ 检查邮箱失败:', err.message);
+          return res.status(500).json({ success: false, message: '服务器错误：检查邮箱失败' });
         }
-
         if (emailRow) {
-          return res.status(400).json({
-            success: false,
-            message: '注册失败：该邮箱已被注册'
-          });
+          return res.status(400).json({ success: false, message: '错误：该邮箱已注册' });
         }
 
-        // 检查手机号是否已注册
+        // 7. 检查手机号是否已注册
         db.get('SELECT * FROM users WHERE phone = ?', [phone], (err, phoneRow) => {
           if (err) {
-            console.error('【数据库错误】查询手机号失败:', err.message);
-            return res.status(500).json({
-              success: false,
-              message: '服务器错误：查询手机号失败'
-            });
+            console.error('❌ 检查手机号失败:', err.message);
+            return res.status(500).json({ success: false, message: '服务器错误：检查手机号失败' });
           }
-
           if (phoneRow) {
-            return res.status(400).json({
-              success: false,
-              message: '注册失败：该手机号已被注册'
-            });
+            return res.status(400).json({ success: false, message: '错误：该手机号已注册' });
           }
 
-          // 插入新用户
-          const insertUserSql = `
+          // 8. 插入新用户
+          const insertSql = `
             INSERT INTO users (
               student_id, given_name, first_name, gender,
               anonymous_name, phone, email, password
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
           `;
-          db.run(insertUserSql, [
-            studentId, givenName, firstName, gender,
-            anonymousName, phone, email, password
-          ], (err) => {
+
+          db.run(insertSql, [studentId, givenName, firstName, gender, anonymousName, phone, email, password], (err) => {
             if (err) {
-              console.error('【数据库错误】插入用户失败:', err.message);
-              return res.status(500).json({
-                success: false,
-                message: '注册失败：数据库插入错误'
-              });
+              console.error('❌ 注册用户失败:', err.message);
+              return res.status(500).json({ success: false, message: '服务器错误：注册失败' });
             }
 
-            // 清空验证码
-            storedVerificationCode = {
-              email: '',
-              code: '',
-              expireTime: 0
-            };
+            // 9. 清空验证码
+            storedVerificationCode = { email: '', code: '', expireTime: 0 };
 
+            // 10. 返回成功
             res.status(200).json({
               success: true,
               message: '注册成功！请使用学生ID和密码登录'
@@ -392,8 +332,8 @@ app.post('/api/register', (req, res) => {
         });
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/register:', error.message);
+  } catch (err) {
+    console.error('❌ 注册接口异常:', err.message);
     res.status(500).json({
       success: false,
       message: '服务器错误：注册失败'
@@ -401,34 +341,31 @@ app.post('/api/register', (req, res) => {
   }
 });
 
-// ===================== 接口 - 登录 =====================
+// ===================== API接口：用户登录 =====================
 app.post('/api/login', (req, res) => {
   try {
     const { studentId, password } = req.body;
 
+    // 1. 检查学生ID和密码是否为空
     if (!studentId || !password) {
       return res.status(400).json({
         success: false,
-        message: '参数错误：学生ID和密码均为必填项'
+        message: '错误：学生ID和密码不能为空'
       });
     }
 
+    // 2. 验证学生ID和密码
     db.get('SELECT * FROM users WHERE student_id = ? AND password = ?', [studentId, password], (err, row) => {
       if (err) {
-        console.error('【数据库错误】登录查询失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：登录查询失败'
-        });
+        console.error('❌ 登录验证失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：登录失败' });
       }
 
       if (!row) {
-        return res.status(401).json({
-          success: false,
-          message: '登录失败：学生ID或密码错误'
-        });
+        return res.status(401).json({ success: false, message: '错误：学生ID或密码错误' });
       }
 
+      // 3. 返回登录成功
       res.status(200).json({
         success: true,
         message: '登录成功！',
@@ -441,8 +378,8 @@ app.post('/api/login', (req, res) => {
         }
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/login:', error.message);
+  } catch (err) {
+    console.error('❌ 登录接口异常:', err.message);
     res.status(500).json({
       success: false,
       message: '服务器错误：登录失败'
@@ -450,58 +387,38 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-// ===================== 接口 - 发布任务 =====================
+// ===================== API接口：发布搬家请求 =====================
 app.post('/api/post-request', (req, res) => {
   try {
-    const {
-      studentId,
-      moveDate,
-      location,
-      helpersNeeded,
-      items,
-      compensation
-    } = req.body;
+    const { studentId, moveDate, location, helpersNeeded, items, compensation } = req.body;
 
+    // 1. 检查必填字段
     const requiredFields = [studentId, moveDate, location, helpersNeeded, items, compensation];
     if (requiredFields.some(field => !field || field.trim() === '')) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：所有字段均为必填项'
-      });
+      return res.status(400).json({ success: false, message: '错误：所有字段都不能为空' });
     }
 
+    // 2. 检查学生ID是否存在
     db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, row) => {
       if (err) {
-        console.error('【数据库错误】验证学生ID失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：验证学生ID失败'
-        });
+        console.error('❌ 检查学生ID失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：检查学生ID失败' });
       }
-
       if (!row) {
-        return res.status(400).json({
-          success: false,
-          message: '发布失败：该学生ID未注册'
-        });
+        return res.status(400).json({ success: false, message: '错误：该学生ID未注册' });
       }
 
-      const insertRequestSql = `
+      // 3. 插入搬家请求
+      const insertSql = `
         INSERT INTO moving_requests (
-          student_id, move_date, location,
-          helpers_needed, items, compensation
+          student_id, move_date, location, helpers_needed, items, compensation
         ) VALUES (?, ?, ?, ?, ?, ?)
       `;
-      db.run(insertRequestSql, [
-        studentId, moveDate, location,
-        helpersNeeded, items, compensation
-      ], (err) => {
+
+      db.run(insertSql, [studentId, moveDate, location, helpersNeeded, items, compensation], (err) => {
         if (err) {
-          console.error('【数据库错误】插入搬家请求失败:', err.message);
-          return res.status(500).json({
-            success: false,
-            message: '发布失败：数据库插入错误'
-          });
+          console.error('❌ 发布请求失败:', err.message);
+          return res.status(500).json({ success: false, message: '服务器错误：发布请求失败' });
         }
 
         res.status(200).json({
@@ -510,32 +427,28 @@ app.post('/api/post-request', (req, res) => {
         });
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/post-request:', error.message);
+  } catch (err) {
+    console.error('❌ 发布请求接口异常:', err.message);
     res.status(500).json({
       success: false,
-      message: '服务器错误：发布搬家请求失败'
+      message: '服务器错误：发布请求失败'
     });
   }
 });
 
-// ===================== 接口 - 获取未分配任务 =====================
+// ===================== API接口：获取所有未分配的任务 =====================
 app.get('/api/get-tasks', (req, res) => {
   try {
-    const getTasksSql = `
+    const sql = `
       SELECT * FROM moving_requests
       WHERE helper_assigned IS NULL OR helper_assigned = ''
       ORDER BY move_date ASC
     `;
 
-    db.all(getTasksSql, (err, rows) => {
+    db.all(sql, (err, rows) => {
       if (err) {
-        console.error('【数据库错误】获取任务失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：获取任务失败',
-          tasks: []
-        });
+        console.error('❌ 获取任务失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：获取任务失败', tasks: [] });
       }
 
       res.status(200).json({
@@ -543,8 +456,8 @@ app.get('/api/get-tasks', (req, res) => {
         tasks: rows || []
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/get-tasks:', error.message);
+  } catch (err) {
+    console.error('❌ 获取任务接口异常:', err.message);
     res.status(500).json({
       success: false,
       message: '服务器错误：获取任务失败',
@@ -553,83 +466,59 @@ app.get('/api/get-tasks', (req, res) => {
   }
 });
 
-// ===================== 接口 - 接受任务 =====================
+// ===================== API接口：接受任务 =====================
 app.post('/api/accept-task', (req, res) => {
   try {
     const { taskId, helperId } = req.body;
 
+    // 1. 检查必填字段
     if (!taskId || !helperId) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：任务ID和助手ID均为必填项'
-      });
+      return res.status(400).json({ success: false, message: '错误：任务ID和帮手ID不能为空' });
     }
 
+    // 2. 检查任务是否存在且未分配
     db.get('SELECT * FROM moving_requests WHERE id = ? AND (helper_assigned IS NULL OR helper_assigned = \'\')', [taskId], (err, taskRow) => {
       if (err) {
-        console.error('【数据库错误】查询任务失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：查询任务失败'
-        });
+        console.error('❌ 检查任务失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：检查任务失败' });
       }
-
       if (!taskRow) {
-        return res.status(400).json({
-          success: false,
-          message: '接受任务失败：任务不存在或已被分配'
-        });
+        return res.status(400).json({ success: false, message: '错误：任务不存在或已被分配' });
       }
 
+      // 3. 检查帮手ID是否注册
       db.get('SELECT * FROM users WHERE student_id = ?', [helperId], (err, helperRow) => {
         if (err) {
-          console.error('【数据库错误】查询助手ID失败:', err.message);
-          return res.status(500).json({
-            success: false,
-            message: '服务器错误：查询助手ID失败'
-          });
+          console.error('❌ 检查帮手ID失败:', err.message);
+          return res.status(500).json({ success: false, message: '服务器错误：检查帮手ID失败' });
         }
-
         if (!helperRow) {
-          return res.status(400).json({
-            success: false,
-            message: '接受任务失败：助手ID未注册'
-          });
+          return res.status(400).json({ success: false, message: '错误：帮手ID未注册' });
         }
 
-        const updateTaskSql = `
-          UPDATE moving_requests
-          SET helper_assigned = ?, status = 'assigned'
-          WHERE id = ?
-        `;
-        db.run(updateTaskSql, [helperId, taskId], (err) => {
+        // 4. 更新任务状态
+        const updateSql = 'UPDATE moving_requests SET helper_assigned = ?, status = ? WHERE id = ?';
+        db.run(updateSql, [helperId, 'assigned', taskId], (err) => {
           if (err) {
-            console.error('【数据库错误】更新任务失败:', err.message);
-            return res.status(500).json({
-              success: false,
-              message: '接受任务失败：更新任务状态错误'
-            });
+            console.error('❌ 接受任务失败:', err.message);
+            return res.status(500).json({ success: false, message: '服务器错误：接受任务失败' });
           }
 
-          const insertAssignmentSql = `
-            INSERT INTO task_assignments (task_id, helper_id)
-            VALUES (?, ?)
-          `;
-          db.run(insertAssignmentSql, [taskId, helperId], (err) => {
-            if (err) {
-              console.error('【数据库错误】记录分配失败:', err.message);
-            }
+          // 5. 插入任务分配记录
+          const insertSql = 'INSERT INTO task_assignments (task_id, helper_id) VALUES (?, ?)';
+          db.run(insertSql, [taskId, helperId], (err) => {
+            if (err) console.error('❌ 插入分配记录失败:', err.message);
+          });
 
-            res.status(200).json({
-              success: true,
-              message: '接受任务成功！'
-            });
+          res.status(200).json({
+            success: true,
+            message: '任务接受成功！'
           });
         });
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/accept-task:', error.message);
+  } catch (err) {
+    console.error('❌ 接受任务接口异常:', err.message);
     res.status(500).json({
       success: false,
       message: '服务器错误：接受任务失败'
@@ -637,32 +526,22 @@ app.post('/api/accept-task', (req, res) => {
   }
 });
 
-// ===================== 接口 - 获取我发布的任务 =====================
+// ===================== API接口：获取我发布的任务 =====================
 app.post('/api/my-posted-tasks', (req, res) => {
   try {
     const { studentId } = req.body;
 
+    // 1. 检查学生ID
     if (!studentId) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：学生ID为必填项',
-        tasks: []
-      });
+      return res.status(400).json({ success: false, message: '错误：学生ID不能为空', tasks: [] });
     }
 
-    const getMyTasksSql = `
-      SELECT * FROM moving_requests
-      WHERE student_id = ?
-      ORDER BY move_date ASC
-    `;
-    db.all(getMyTasksSql, [studentId], (err, rows) => {
+    // 2. 查询任务
+    const sql = 'SELECT * FROM moving_requests WHERE student_id = ? ORDER BY move_date ASC';
+    db.all(sql, [studentId], (err, rows) => {
       if (err) {
-        console.error('【数据库错误】获取我的任务失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：获取我的任务失败',
-          tasks: []
-        });
+        console.error('❌ 获取我的任务失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：获取我的任务失败', tasks: [] });
       }
 
       res.status(200).json({
@@ -670,8 +549,8 @@ app.post('/api/my-posted-tasks', (req, res) => {
         tasks: rows || []
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/my-posted-tasks:', error.message);
+  } catch (err) {
+    console.error('❌ 获取我的任务接口异常:', err.message);
     res.status(500).json({
       success: false,
       message: '服务器错误：获取我的任务失败',
@@ -680,33 +559,28 @@ app.post('/api/my-posted-tasks', (req, res) => {
   }
 });
 
-// ===================== 接口 - 获取我接受的任务 =====================
+// ===================== API接口：获取我接受的任务 =====================
 app.post('/api/my-accepted-tasks', (req, res) => {
   try {
     const { helperId } = req.body;
 
+    // 1. 检查帮手ID
     if (!helperId) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：助手ID为必填项',
-        tasks: []
-      });
+      return res.status(400).json({ success: false, message: '错误：帮手ID不能为空', tasks: [] });
     }
 
-    const getAcceptedTasksSql = `
+    // 2. 查询任务
+    const sql = `
       SELECT mr.* FROM moving_requests mr
       JOIN task_assignments ta ON mr.id = ta.task_id
       WHERE ta.helper_id = ?
       ORDER BY mr.move_date ASC
     `;
-    db.all(getAcceptedTasksSql, [helperId], (err, rows) => {
+
+    db.all(sql, [helperId], (err, rows) => {
       if (err) {
-        console.error('【数据库错误】获取接受的任务失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：获取接受的任务失败',
-          tasks: []
-        });
+        console.error('❌ 获取接受的任务失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：获取接受的任务失败', tasks: [] });
       }
 
       res.status(200).json({
@@ -714,8 +588,8 @@ app.post('/api/my-accepted-tasks', (req, res) => {
         tasks: rows || []
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/my-accepted-tasks:', error.message);
+  } catch (err) {
+    console.error('❌ 获取接受的任务接口异常:', err.message);
     res.status(500).json({
       success: false,
       message: '服务器错误：获取接受的任务失败',
@@ -724,92 +598,77 @@ app.post('/api/my-accepted-tasks', (req, res) => {
   }
 });
 
-// ===================== 接口 - 查看任务助手ID =====================
+// ===================== API接口：查看任务的帮手ID =====================
 app.post('/api/view-helper-id', (req, res) => {
   try {
     const { taskId, posterId } = req.body;
 
+    // 1. 检查必填字段
     if (!taskId || !posterId) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：任务ID和发布者ID均为必填项'
-      });
+      return res.status(400).json({ success: false, message: '错误：任务ID和发布者ID不能为空' });
     }
 
-    db.get('SELECT helper_assigned FROM moving_requests WHERE id = ? AND student_id = ?', [taskId, posterId], (err, row) => {
+    // 2. 查询帮手ID
+    const sql = 'SELECT helper_assigned FROM moving_requests WHERE id = ? AND student_id = ?';
+    db.get(sql, [taskId, posterId], (err, row) => {
       if (err) {
-        console.error('【数据库错误】查询助手ID失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：查询助手ID失败'
-        });
+        console.error('❌ 查看帮手ID失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：查看帮手ID失败' });
       }
 
       if (!row) {
-        return res.status(400).json({
-          success: false,
-          message: '查看失败：任务不存在或你不是发布者'
-        });
+        return res.status(400).json({ success: false, message: '错误：任务不存在或你不是发布者' });
       }
 
       if (!row.helper_assigned) {
-        return res.status(400).json({
-          success: false,
-          message: '查看失败：该任务尚未分配助手'
-        });
+        return res.status(400).json({ success: false, message: '错误：该任务尚未分配帮手' });
       }
 
       res.status(200).json({
         success: true,
         helperId: row.helper_assigned,
-        message: '查询成功'
+        message: '帮手ID获取成功！'
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/view-helper-id:', error.message);
+  } catch (err) {
+    console.error('❌ 查看帮手ID接口异常:', err.message);
     res.status(500).json({
       success: false,
-      message: '服务器错误：查看助手ID失败'
+      message: '服务器错误：查看帮手ID失败'
     });
   }
 });
 
-// ===================== 接口 - 查看任务发布者ID =====================
+// ===================== API接口：查看任务的发布者ID =====================
 app.post('/api/view-poster-id', (req, res) => {
   try {
     const { taskId, helperId } = req.body;
 
+    // 1. 检查必填字段
     if (!taskId || !helperId) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：任务ID和助手ID均为必填项'
-      });
+      return res.status(400).json({ success: false, message: '错误：任务ID和帮手ID不能为空' });
     }
 
-    db.get('SELECT student_id FROM moving_requests WHERE id = ? AND helper_assigned = ?', [taskId, helperId], (err, row) => {
+    // 2. 查询发布者ID
+    const sql = 'SELECT student_id FROM moving_requests WHERE id = ? AND helper_assigned = ?';
+    db.get(sql, [taskId, helperId], (err, row) => {
       if (err) {
-        console.error('【数据库错误】查询发布者ID失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：查询发布者ID失败'
-        });
+        console.error('❌ 查看发布者ID失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：查看发布者ID失败' });
       }
 
       if (!row) {
-        return res.status(400).json({
-          success: false,
-          message: '查看失败：任务不存在或你不是该任务的助手'
-        });
+        return res.status(400).json({ success: false, message: '错误：任务不存在或你不是帮手' });
       }
 
       res.status(200).json({
         success: true,
         posterId: row.student_id,
-        message: '查询成功'
+        message: '发布者ID获取成功！'
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/view-poster-id:', error.message);
+  } catch (err) {
+    console.error('❌ 查看发布者ID接口异常:', err.message);
     res.status(500).json({
       success: false,
       message: '服务器错误：查看发布者ID失败'
@@ -817,59 +676,46 @@ app.post('/api/view-poster-id', (req, res) => {
   }
 });
 
-// ===================== 接口 - 删除我发布的任务 =====================
+// ===================== API接口：删除我发布的任务 =====================
 app.post('/api/delete-task', (req, res) => {
   try {
     const { taskId, studentId } = req.body;
 
+    // 1. 检查必填字段
     if (!taskId || !studentId) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：任务ID和学生ID均为必填项'
-      });
+      return res.status(400).json({ success: false, message: '错误：任务ID和学生ID不能为空' });
     }
 
+    // 2. 检查任务是否存在且属于当前用户
     db.get('SELECT * FROM moving_requests WHERE id = ? AND student_id = ?', [taskId, studentId], (err, row) => {
       if (err) {
-        console.error('【数据库错误】查询任务失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：查询任务失败'
-        });
+        console.error('❌ 检查任务失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：检查任务失败' });
       }
-
       if (!row) {
-        return res.status(400).json({
-          success: false,
-          message: '删除失败：任务不存在或你不是发布者'
-        });
+        return res.status(400).json({ success: false, message: '错误：任务不存在或你不是发布者' });
       }
 
-      // 先删除关联的任务分配记录
+      // 3. 先删除任务分配记录
       db.run('DELETE FROM task_assignments WHERE task_id = ?', [taskId], (err) => {
+        if (err) console.error('❌ 删除分配记录失败:', err.message);
+      });
+
+      // 4. 删除任务
+      db.run('DELETE FROM moving_requests WHERE id = ?', [taskId], (err) => {
         if (err) {
-          console.error('【数据库错误】删除分配记录失败:', err.message);
+          console.error('❌ 删除任务失败:', err.message);
+          return res.status(500).json({ success: false, message: '服务器错误：删除任务失败' });
         }
 
-        // 删除任务本身
-        db.run('DELETE FROM moving_requests WHERE id = ?', [taskId], (err) => {
-          if (err) {
-            console.error('【数据库错误】删除任务失败:', err.message);
-            return res.status(500).json({
-              success: false,
-              message: '删除失败：数据库删除错误'
-            });
-          }
-
-          res.status(200).json({
-            success: true,
-            message: '任务删除成功！'
-          });
+        res.status(200).json({
+          success: true,
+          message: '任务删除成功！'
         });
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/delete-task:', error.message);
+  } catch (err) {
+    console.error('❌ 删除任务接口异常:', err.message);
     res.status(500).json({
       success: false,
       message: '服务器错误：删除任务失败'
@@ -877,64 +723,47 @@ app.post('/api/delete-task', (req, res) => {
   }
 });
 
-// ===================== 接口 - 取消我接受的任务 =====================
+// ===================== API接口：取消我接受的任务 =====================
 app.post('/api/cancel-task', (req, res) => {
   try {
     const { taskId, helperId } = req.body;
 
+    // 1. 检查必填字段
     if (!taskId || !helperId) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：任务ID和助手ID均为必填项'
-      });
+      return res.status(400).json({ success: false, message: '错误：任务ID和帮手ID不能为空' });
     }
 
+    // 2. 检查任务是否存在且分配给当前帮手
     db.get('SELECT * FROM moving_requests WHERE id = ? AND helper_assigned = ?', [taskId, helperId], (err, row) => {
       if (err) {
-        console.error('【数据库错误】查询任务失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：查询任务失败'
-        });
+        console.error('❌ 检查任务失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：检查任务失败' });
       }
-
       if (!row) {
-        return res.status(400).json({
-          success: false,
-          message: '取消失败：任务不存在或你不是该任务的助手'
-        });
+        return res.status(400).json({ success: false, message: '错误：任务不存在或你不是帮手' });
       }
 
-      // 恢复任务为未分配状态
-      const updateTaskSql = `
-        UPDATE moving_requests
-        SET helper_assigned = NULL, status = 'pending'
-        WHERE id = ?
-      `;
-      db.run(updateTaskSql, [taskId], (err) => {
+      // 3. 更新任务状态
+      const updateSql = 'UPDATE moving_requests SET helper_assigned = NULL, status = ? WHERE id = ?';
+      db.run(updateSql, ['pending', taskId], (err) => {
         if (err) {
-          console.error('【数据库错误】更新任务失败:', err.message);
-          return res.status(500).json({
-            success: false,
-            message: '取消失败：更新任务状态错误'
-          });
+          console.error('❌ 取消任务失败:', err.message);
+          return res.status(500).json({ success: false, message: '服务器错误：取消任务失败' });
         }
 
-        // 删除关联的任务分配记录
+        // 4. 删除任务分配记录
         db.run('DELETE FROM task_assignments WHERE task_id = ? AND helper_id = ?', [taskId, helperId], (err) => {
-          if (err) {
-            console.error('【数据库错误】删除分配记录失败:', err.message);
-          }
+          if (err) console.error('❌ 删除分配记录失败:', err.message);
+        });
 
-          res.status(200).json({
-            success: true,
-            message: '取消任务成功！'
-          });
+        res.status(200).json({
+          success: true,
+          message: '任务取消成功！'
         });
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/cancel-task:', error.message);
+  } catch (err) {
+    console.error('❌ 取消任务接口异常:', err.message);
     res.status(500).json({
       success: false,
       message: '服务器错误：取消任务失败'
@@ -942,35 +771,29 @@ app.post('/api/cancel-task', (req, res) => {
   }
 });
 
-// ===================== 接口 - 获取个人信息 =====================
+// ===================== API接口：获取用户信息 =====================
 app.post('/api/get-profile', (req, res) => {
   try {
     const { studentId } = req.body;
 
+    // 1. 检查学生ID
     if (!studentId) {
-      return res.status(400).json({
-        success: false,
-        message: '参数错误：学生ID为必填项'
-      });
+      return res.status(400).json({ success: false, message: '错误：学生ID不能为空' });
     }
 
+    // 2. 查询用户信息
     db.get('SELECT * FROM users WHERE student_id = ?', [studentId], (err, row) => {
       if (err) {
-        console.error('【数据库错误】查询个人信息失败:', err.message);
-        return res.status(500).json({
-          success: false,
-          message: '服务器错误：查询个人信息失败'
-        });
+        console.error('❌ 获取用户信息失败:', err.message);
+        return res.status(500).json({ success: false, message: '服务器错误：获取用户信息失败' });
       }
 
       if (!row) {
-        return res.status(400).json({
-          success: false,
-          message: '查询失败：该学生ID未注册'
-        });
+        return res.status(400).json({ success: false, message: '错误：学生ID不存在' });
       }
 
-      const userInfo = {
+      // 3. 返回用户信息（隐藏密码）
+      const profile = {
         student_id: row.student_id,
         given_name: row.given_name,
         first_name: row.first_name,
@@ -983,40 +806,33 @@ app.post('/api/get-profile', (req, res) => {
 
       res.status(200).json({
         success: true,
-        user: userInfo,
-        message: '查询个人信息成功'
+        user: profile,
+        message: '用户信息获取成功！'
       });
     });
-  } catch (error) {
-    console.error('【接口错误】/api/get-profile:', error.message);
+  } catch (err) {
+    console.error('❌ 获取用户信息接口异常:', err.message);
     res.status(500).json({
       success: false,
-      message: '服务器错误：查询个人信息失败'
+      message: '服务器错误：获取用户信息失败'
     });
   }
 });
 
 // ===================== 启动服务器 =====================
 app.listen(PORT, () => {
-  console.log(`============================================`);
-  console.log(`🚀 DormLift 后端服务已启动`);
-  console.log(`🌐 访问地址: http://localhost:${PORT}`);
-  console.log(`📅 启动时间: ${new Date().toLocaleString()}`);
-  console.log(`💡 前端界面已挂载，访问根路径即可查看`);
-  console.log(`🔧 测试模式已开启：验证码将打印在控制台`);
-  console.log(`📧 支持任意合法邮箱注册（QQ/163/Gmail/Outlook等）`);
-  console.log(`============================================`);
+  console.log(`🚀 服务器已启动，端口：${PORT}`);
+  console.log(`✅ 访问地址：http://localhost:${PORT}`);
+  console.log(`✅ 支持任意有效（valid）邮箱注册，无Outlook限制`);
+  console.log(`✅ 验证码模式：读取Railway环境变量（Variable）发送`);
 });
 
 // ===================== 进程退出处理 =====================
 process.on('SIGINT', () => {
-  console.log('\n【服务器关闭】开始关闭数据库连接...');
+  console.log('\n🔴 服务器正在关闭...');
   db.close((err) => {
-    if (err) {
-      console.error('【数据库错误】关闭连接失败:', err.message);
-    } else {
-      console.log('【数据库成功】连接已关闭');
-    }
+    if (err) console.error('❌ 数据库关闭失败:', err.message);
+    else console.log('✅ 数据库连接已关闭');
     process.exit(0);
   });
 });
