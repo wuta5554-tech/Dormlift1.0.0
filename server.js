@@ -1,41 +1,78 @@
-// 完整可运行的最终版代码（包含所有业务功能 + 适配Railway）
+// 修复版 server.js（解决 Railway 容器 SIGTERM 终止问题）
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
-// 关键：Railway 强制用这个端口，不用纠结数字
 const PORT = process.env.PORT || 3000;
+
+// ===== 关键修复1：处理容器终止信号 =====
+process.on('SIGTERM', () => {
+  console.log('👋 接收到 SIGTERM 信号，优雅关闭服务器');
+  if (db) {
+    db.close((err) => {
+      if (err) console.error('数据库关闭失败:', err.message);
+      else console.log('✅ 数据库已关闭');
+    });
+  }
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('👋 接收到 SIGINT 信号，优雅关闭服务器');
+  if (db) {
+    db.close((err) => {
+      if (err) console.error('数据库关闭失败:', err.message);
+      else console.log('✅ 数据库已关闭');
+    });
+  }
+  process.exit(0);
+});
+
+// ===== 关键修复2：使用 /tmp 目录存储数据库（Railway 可写） =====
+const DB_PATH = path.join('/tmp', 'dormlift.db');
+// 确保 /tmp 目录存在
+if (!fs.existsSync('/tmp')) {
+  fs.mkdirSync('/tmp', { recursive: true });
+}
 
 // 全局变量
 let storedCode = null;
 let db = null;
 
-// 中间件（必须放在最前面）
-app.use(cors());
+// 中间件
+app.use(cors({
+  origin: '*', // 允许所有来源（生产环境可限定域名）
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// 托管当前文件夹的静态文件（index.html）
+// 托管静态文件（index.html）
 app.use(express.static(__dirname));
 
 // 1. 健康检查接口（Railway 必过）
 app.get('/health', (req, res) => {
-  res.status(200).send('OK');
+  res.status(200).json({ status: 'ok', port: PORT });
 });
 
-// 2. 根路由（返回 index.html 而不是文字）
+// 2. 根路由返回前端页面
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 3. 连接数据库（启动后立即执行，但不阻塞）
+// 3. 连接数据库（使用 /tmp 路径）
 function connectDB() {
-  db = new sqlite3.Database('./dormlift.db', (err) => {
+  db = new sqlite3.Database(DB_PATH, (err) => {
     if (err) {
       console.error('数据库连接失败:', err.message);
+      // 重试连接
+      setTimeout(connectDB, 1000);
     } else {
-      console.log('✅ 数据库连接成功');
+      console.log(`✅ 数据库连接成功（路径：${DB_PATH}）`);
       initTables();
     }
   });
@@ -77,7 +114,6 @@ function initTables() {
 }
 
 // ========== 所有业务接口（完整保留） ==========
-// 发送验证码
 app.post('/api/send-verification-code', async (req, res) => {
   const { phone } = req.body;
   if (!phone) return res.json({ success: false, message: 'Phone number is required' });
@@ -91,7 +127,6 @@ app.post('/api/send-verification-code', async (req, res) => {
   });
 });
 
-// 注册
 app.post('/api/register', async (req, res) => {
   const { givenName, firstName, studentId, gender, phone, verifyCode, anonymousName, password } = req.body;
   
@@ -99,7 +134,6 @@ app.post('/api/register', async (req, res) => {
     return res.json({ success: false, message: 'All fields are required' });
   }
 
-  // 验证验证码
   if (!storedCode || storedCode.phone !== phone || storedCode.code !== verifyCode || Date.now() > storedCode.expireTime) {
     return res.json({ success: false, message: 'Invalid or expired verification code' });
   }
@@ -122,7 +156,6 @@ app.post('/api/register', async (req, res) => {
   });
 });
 
-// 登录
 app.post('/api/login', (req, res) => {
   const { studentId, password } = req.body;
   if (!studentId || !password) return res.json({ success: false, message: 'Student ID and password are required' });
@@ -140,7 +173,6 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// 发布搬家请求
 app.post('/api/post-request', (req, res) => {
   const { studentId, moveDate, location, helpersNeeded, items, compensation } = req.body;
   if (!studentId || !moveDate || !location || !helpersNeeded || !items || !compensation) {
@@ -154,7 +186,6 @@ app.post('/api/post-request', (req, res) => {
   });
 });
 
-// 获取所有公开任务
 app.get('/api/get-tasks', (req, res) => {
   db.all(`SELECT * FROM moving_requests 
     WHERE helper_assigned IS NULL OR helper_assigned = ''
@@ -164,7 +195,6 @@ app.get('/api/get-tasks', (req, res) => {
   });
 });
 
-// 接受任务
 app.post('/api/accept-task', (req, res) => {
   const { taskId, helperId } = req.body;
   if (!taskId || !helperId) return res.json({ success: false, message: 'Task ID and Helper ID are required' });
@@ -181,7 +211,6 @@ app.post('/api/accept-task', (req, res) => {
   });
 });
 
-// 获取我发布的任务
 app.post('/api/my-posted-tasks', (req, res) => {
   const { studentId } = req.body;
   if (!studentId) return res.json({ success: false, message: 'Student ID is required' });
@@ -192,7 +221,6 @@ app.post('/api/my-posted-tasks', (req, res) => {
   });
 });
 
-// 获取我接受的任务
 app.post('/api/my-accepted-tasks', (req, res) => {
   const { helperId } = req.body;
   if (!helperId) return res.json({ success: false, message: 'Helper ID is required' });
@@ -203,7 +231,6 @@ app.post('/api/my-accepted-tasks', (req, res) => {
   });
 });
 
-// 查看助手学号
 app.post('/api/view-helper-id', (req, res) => {
   const { taskId, posterId } = req.body;
   if (!taskId || !posterId) return res.json({ success: false, message: 'Task ID and Poster ID are required' });
@@ -215,7 +242,6 @@ app.post('/api/view-helper-id', (req, res) => {
   });
 });
 
-// 查看发布者学号
 app.post('/api/view-poster-id', (req, res) => {
   const { taskId, helperId } = req.body;
   if (!taskId || !helperId) return res.json({ success: false, message: 'Task ID and Helper ID are required' });
@@ -227,7 +253,6 @@ app.post('/api/view-poster-id', (req, res) => {
   });
 });
 
-// 删除任务
 app.post('/api/delete-task', (req, res) => {
   const { taskId, studentId } = req.body;
   if (!taskId || !studentId) return res.json({ success: false, message: 'Task ID and Student ID are required' });
@@ -243,7 +268,6 @@ app.post('/api/delete-task', (req, res) => {
   });
 });
 
-// 取消任务
 app.post('/api/cancel-task', (req, res) => {
   const { taskId, helperId } = req.body;
   if (!taskId || !helperId) return res.json({ success: false, message: 'Task ID and Helper ID are required' });
@@ -259,7 +283,6 @@ app.post('/api/cancel-task', (req, res) => {
   });
 });
 
-// 获取个人信息
 app.post('/api/get-profile', (req, res) => {
   const { studentId } = req.body;
   if (!studentId) return res.json({ success: false, message: 'Student ID is required' });
@@ -282,9 +305,14 @@ app.post('/api/get-profile', (req, res) => {
   });
 });
 
-// ========== 启动服务器（核心：先启动，再连数据库） ==========
-app.listen(PORT, '0.0.0.0', () => {
+// ===== 关键修复3：确保服务器持续运行 =====
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ 服务器已启动：http://0.0.0.0:${PORT}`);
-  // 启动后再连数据库，避免阻塞
+  console.log(`🔍 Railway 访问地址：https://${process.env.RAILWAY_STATIC_URL || 'localhost:' + PORT}`);
+  // 启动后连接数据库
   connectDB();
 });
+
+// 防止服务器空闲退出
+server.keepAliveTimeout = 60 * 1000;
+server.headersTimeout = 65 * 1000;
