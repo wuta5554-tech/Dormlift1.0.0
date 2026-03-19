@@ -2,15 +2,16 @@
   "name": "backend",
   "version": "1.0.0",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "prestart": "echo 'Starting DormLift Server...'"
+    "start": "pm2-runtime start server.js --name dormlift",
+    "stop": "pm2 stop dormlift",
+    "restart": "pm2 restart dormlift"
   },
   "dependencies": {
     "express": "^4.18.2",
     "sqlite3": "^5.1.6",
     "cors": "^2.8.5",
-    "body-parser": "^1.20.2"
+    "body-parser": "^1.20.2",
+    "pm2": "^5.3.1"
   },
   "engines": {
     "node": ">=16.0.0"
