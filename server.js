@@ -201,7 +201,7 @@ async function sendEmailVerificationCode(toEmail, code) {
   }
 }
 
-// ===================== 接口 - 验证码（支持任意邮箱） =====================
+// ===================== 接口 - 验证码（彻底无Outlook限制） =====================
 app.post('/api/send-verification-code', async (req, res) => {
   try {
     const { email } = req.body;
@@ -209,44 +209,50 @@ app.post('/api/send-verification-code', async (req, res) => {
     if (!email) {
       return res.status(400).json({
         success: false,
-        message: '参数错误：邮箱不能为空'
+        message: 'Parameter error: Email cannot be empty' // 邮箱为空的提示（英文）
       });
     }
 
-    // 通用邮箱格式验证（无Outlook限制）
-    if (!isValidEmail(email)) {
+    // 通用邮箱格式验证（无任何服务商限制，只验证合法格式）
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i;
+    if (!emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
-        message: '邮箱格式错误：请输入合法的邮箱地址（如 xxx@qq.com、xxx@163.com、xxx@gmail.com 等）'
+        message: 'Please enter a valid email (e.g. xxx@qq.com, xxx@163.com, xxx@gmail.com)'
       });
     }
 
+    // 生成6位验证码（和旧代码完全一样）
     const verificationCode = generateVerificationCode();
+    // 验证码有效期5分钟（和旧代码完全一样）
     const expireTime = Date.now() + 5 * 60 * 1000;
 
+    // 测试模式打印验证码（和旧代码完全一样）
     await sendEmailVerificationCode(email, verificationCode);
 
+    // 存储验证码（和旧代码完全一样）
     storedVerificationCode = {
       email: email,
       code: verificationCode,
       expireTime: expireTime
     };
 
+    // 返回结果（格式和旧代码完全一样，仅提示文字优化）
     res.status(200).json({
       success: true,
       message: EMAIL_TEST_MODE 
-        ? `验证码已生成：${verificationCode}（测试模式，有效期5分钟）`
-        : `验证码已发送到 ${email}，请查收`
+        ? `Verification code generated: ${verificationCode} (Test mode, valid for 5 minutes)`
+        : `Verification code sent to ${email}, please check`
     });
   } catch (error) {
+    // 错误处理（和旧代码完全一样）
     console.error('【接口错误】/api/send-verification-code:', error.message);
     res.status(500).json({
       success: false,
-      message: '服务器错误：发送验证码失败'
+      message: 'Server error: Failed to send verification code'
     });
   }
 });
-
 // ===================== 接口 - 注册（支持任意邮箱） =====================
 app.post('/api/register', (req, res) => {
   try {
