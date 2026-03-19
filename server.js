@@ -1,7 +1,7 @@
 /**
  * DormLift 后端服务 - 完整版本
  * 功能：用户注册/登录（Outlook邮箱验证）、搬家任务发布/管理
- * 保留所有原有接口，仅替换验证码为Outlook邮箱验证
+ * 保留所有原有接口，仅替换验证码为Outlook邮箱验证 + 新增静态文件服务
  */
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
@@ -11,7 +11,7 @@ const nodemailer = require('nodemailer');
 
 // 创建Express应用
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 // ===================== 中间件配置 =====================
 // 跨域配置
@@ -28,6 +28,9 @@ app.use(bodyParser.urlencoded({
   extended: true,
   limit: '1mb'
 }));
+
+// 🔥 新增：服务前端静态文件（public文件夹下的index.html）
+app.use(express.static('public'));
 
 // ===================== 数据库配置 =====================
 // 连接SQLite数据库（文件型，无需额外安装）
@@ -1134,43 +1137,43 @@ app.post('/api/get-profile', (req, res) => {
   }
 });
 
-// ===================== 基础路由 =====================
-/**
- * 首页路由：测试服务器是否运行
- */
-app.get('/', (req, res) => {
-  res.status(200).send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>DormLift Server</title>
-      <style>
-        body { font-family: Arial; text-align: center; margin-top: 50px; }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #2c3e50; }
-        .success { color: #27ae60; font-size: 18px; margin: 20px 0; }
-        .api-list { text-align: left; margin: 30px auto; max-width: 600px; }
-        .api-item { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>✅ DormLift 后端服务运行中</h1>
-        <p class="success">服务器已成功启动，所有接口可用</p>
-        <h3>核心接口列表：</h3>
-        <div class="api-list">
-          <div class="api-item">POST /api/send-verification-code - 发送Outlook邮箱验证码</div>
-          <div class="api-item">POST /api/register - 用户注册</div>
-          <div class="api-item">POST /api/login - 用户登录</div>
-          <div class="api-item">POST /api/post-request - 发布搬家请求</div>
-          <div class="api-item">GET /api/get-tasks - 获取所有公开任务</div>
-          <div class="api-item">POST /api/accept-task - 接受任务</div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `);
-});
+// ===================== 🔥 注释掉原根路由测试页面（避免冲突） =====================
+// /**
+//  * 首页路由：测试服务器是否运行
+//  */
+// app.get('/', (req, res) => {
+//   res.status(200).send(`
+//     <!DOCTYPE html>
+//     <html>
+//     <head>
+//       <title>DormLift Server</title>
+//       <style>
+//         body { font-family: Arial; text-align: center; margin-top: 50px; }
+//         .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+//         h1 { color: #2c3e50; }
+//         .success { color: #27ae60; font-size: 18px; margin: 20px 0; }
+//         .api-list { text-align: left; margin: 30px auto; max-width: 600px; }
+//         .api-item { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+//       </style>
+//     </head>
+//     <body>
+//       <div class="container">
+//         <h1>✅ DormLift 后端服务运行中</h1>
+//         <p class="success">服务器已成功启动，所有接口可用</p>
+//         <h3>核心接口列表：</h3>
+//         <div class="api-list">
+//           <div class="api-item">POST /api/send-verification-code - 发送Outlook邮箱验证码</div>
+//           <div class="api-item">POST /api/register - 用户注册</div>
+//           <div class="api-item">POST /api/login - 用户登录</div>
+//           <div class="api-item">POST /api/post-request - 发布搬家请求</div>
+//           <div class="api-item">GET /api/get-tasks - 获取所有公开任务</div>
+//           <div class="api-item">POST /api/accept-task - 接受任务</div>
+//         </div>
+//       </div>
+//     </body>
+//     </html>
+//   `);
+// });
 
 // ===================== 启动服务器 =====================
 app.listen(PORT, () => {
@@ -1178,6 +1181,7 @@ app.listen(PORT, () => {
   console.log(`🚀 DormLift 后端服务已启动`);
   console.log(`🌐 访问地址: http://localhost:${PORT}`);
   console.log(`📅 启动时间: ${new Date().toLocaleString()}`);
+  console.log(`💡 前端界面已挂载，访问根路径即可查看`);
   console.log(`============================================`);
 });
 
