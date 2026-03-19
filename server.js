@@ -11,7 +11,7 @@ const nodemailer = require('nodemailer');
 
 // 创建Express应用
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // ===================== 中间件配置 =====================
 // 跨域配置
