@@ -607,7 +607,7 @@
                 <button class="btn-submit btn-danger" onclick="logout()" style="margin-top: 20px;">Logout</button>
             </div>
 
-            <!-- 我的发布/接受任务 -->
+            <!-- 我的发布任务 -->
             <div style="margin-top: 40px;">
                 <div class="tasks-header">
                     <h2 class="tasks-title">My Posted Requests</h2>
@@ -617,6 +617,7 @@
                 </div>
             </div>
 
+            <!-- 我的接受任务 -->
             <div style="margin-top: 40px;">
                 <div class="tasks-header">
                     <h2 class="tasks-title">My Accepted Tasks</h2>
@@ -661,4 +662,670 @@
 
                     <div class="form-group">
                         <label for="reg-first-name">First Name <span class="red-star">*</span></label>
-                        <input type="text" id="reg-first-name" placeholder="
+                        <input type="text" id="reg-first-name" placeholder="Enter your first name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-student-id">Student ID <span class="red-star">*</span></label>
+                        <input type="text" id="reg-student-id" placeholder="Enter your student ID (e.g. S1234567)" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-gender">Gender <span class="red-star">*</span></label>
+                        <select id="reg-gender" required>
+                            <option value="">Select your gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- 核心：Outlook邮箱 + 验证码（验证码在邮箱下方） -->
+                    <div class="form-group">
+                        <label for="reg-email">Outlook/Hotmail Email <span class="red-star">*</span></label>
+                        <input type="email" id="reg-email" placeholder="Enter your Outlook email (e.g. xxx@outlook.com)" required>
+                        <p class="tip">Only Outlook/Hotmail emails are supported for verification</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-verification-code">Verification Code <span class="red-star">*</span></label>
+                        <div class="code-row">
+                            <input type="text" id="reg-verification-code" placeholder="Enter 6-digit code" maxlength="6" required>
+                            <button type="button" class="btn-get-code" id="btn-get-code" onclick="sendVerificationCode()">Get Code</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-phone">Phone Number <span class="red-star">*</span></label>
+                        <input type="text" id="reg-phone" placeholder="Enter your phone number (e.g. +64 123 4567)" required>
+                        <p class="tip">For emergency contact only</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-anon-name">Anonymous Name <span class="red-star">*</span></label>
+                        <input type="text" id="reg-anon-name" placeholder="Enter a nickname (will be shown to others)" required>
+                        <p class="tip">Your real name will not be displayed publicly</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password">Password <span class="red-star">*</span></label>
+                        <input type="password" id="reg-password" placeholder="Create a password (min 6 characters)" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-confirm-password">Confirm Password <span class="red-star">*</span></label>
+                        <input type="password" id="reg-confirm-password" placeholder="Re-enter your password" required>
+                    </div>
+
+                    <button type="button" class="btn-submit" onclick="register()">Register</button>
+
+                    <div class="form-switch">
+                        Already have an account? <a href="#" onclick="toggleAuthForm()">Login here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 逻辑（完整） -->
+    <script>
+        // 全局变量：当前登录用户
+        let currentUser = null;
+        // API基础地址（本地开发/部署时可修改）
+        const API_BASE_URL = window.location.origin;
+
+        // ===================== 页面切换 =====================
+        function switchPage(pageId) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            // 移除所有导航按钮的active状态
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // 显示目标页面
+            document.getElementById(pageId).classList.add('active');
+            // 激活对应导航按钮
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.onclick.toString().includes(`switchPage('${pageId}')`)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // 页面切换后的初始化逻辑
+            switch (pageId) {
+                case 'find-tasks':
+                    refreshTasks(); // 加载任务列表
+                    break;
+                case 'my-profile':
+                    if (currentUser) {
+                        loadProfile(); // 加载个人信息
+                        loadMyPostedTasks(); // 加载我发布的任务
+                        loadMyAcceptedTasks(); // 加载我接受的任务
+                    } else {
+                        switchPage('auth'); // 未登录则跳转到登录页
+                        alert('Please login to view your profile');
+                    }
+                    break;
+                case 'post-request':
+                    if (!currentUser) {
+                        switchPage('auth');
+                        alert('Please login to post a moving request');
+                    }
+                    break;
+            }
+        }
+
+        // 切换登录/注册表单
+        function toggleAuthForm() {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        // ===================== 验证码相关 =====================
+        async function sendVerificationCode() {
+            const email = document.getElementById('reg-email').value.trim();
+            const btn = document.getElementById('btn-get-code');
+
+            // 简单验证邮箱格式
+            if (!email || !email.includes('@outlook.com') && !email.includes('@hotmail.com')) {
+                alert('Please enter a valid Outlook/Hotmail email (e.g. xxx@outlook.com)');
+                return;
+            }
+
+            // 禁用按钮，防止重复点击
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            try {
+                // 调用后端发送验证码接口
+                const response = await fetch(`${API_BASE_URL}/api/send-verification-code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const result = await response.json();
+                alert(result.message);
+
+                // 如果发送成功，开始倒计时
+                if (result.success) {
+                    let countdown = 60;
+                    const timer = setInterval(() => {
+                        countdown--;
+                        btn.textContent = `${countdown}s Resend`;
+                        if (countdown <= 0) {
+                            clearInterval(timer);
+                            btn.disabled = false;
+                            btn.textContent = 'Get Code';
+                        }
+                    }, 1000);
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = 'Get Code';
+                }
+            } catch (error) {
+                console.error('Error sending verification code:', error);
+                alert('Failed to send verification code. Please try again later.');
+                btn.disabled = false;
+                btn.textContent = 'Get Code';
+            }
+        }
+
+        // ===================== 用户注册 =====================
+        async function register() {
+            // 获取表单数据
+            const givenName = document.getElementById('reg-given-name').value.trim();
+            const firstName = document.getElementById('reg-first-name').value.trim();
+            const studentId = document.getElementById('reg-student-id').value.trim();
+            const gender = document.getElementById('reg-gender').value;
+            const email = document.getElementById('reg-email').value.trim();
+            const verifyCode = document.getElementById('reg-verification-code').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const anonymousName = document.getElementById('reg-anon-name').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+            // 表单验证
+            if (!givenName || !firstName || !studentId || !gender || !email || !verifyCode || !phone || !anonymousName || !password || !confirmPassword) {
+                alert('All fields are required. Please fill in all information.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match. Please re-enter.');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+
+            try {
+                // 调用后端注册接口
+                const response = await fetch(`${API_BASE_URL}/api/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        givenName: givenName,
+                        firstName: firstName,
+                        studentId: studentId,
+                        gender: gender,
+                        email: email,
+                        verifyCode: verifyCode,
+                        phone: phone,
+                        anonymousName: anonymousName,
+                        password: password,
+                        confirmPassword: confirmPassword
+                    })
+                });
+
+                const result = await response.json();
+                alert(result.message);
+
+                // 注册成功，切换到登录表单
+                if (result.success) {
+                    toggleAuthForm();
+                    // 清空注册表单
+                    document.getElementById('register-form').reset();
+                }
+            } catch (error) {
+                console.error('Error during registration:', error);
+                alert('Registration failed. Please try again later.');
+            }
+        }
+
+        // ===================== 用户登录 =====================
+        async function login() {
+            const studentId = document.getElementById('login-student-id').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if (!studentId || !password) {
+                alert('Student ID and password are required.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: studentId,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    // 登录成功，保存用户信息
+                    currentUser = result.data;
+                    alert('Login successful!');
+                    
+                    // 更新导航栏按钮文字
+                    document.getElementById('auth-btn').textContent = 'Profile';
+                    
+                    // 跳转到首页
+                    switchPage('home');
+                    
+                    // 清空登录表单
+                    document.getElementById('login-form').reset();
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                alert('Login failed. Please try again later.');
+            }
+        }
+
+        // ===================== 用户登出 =====================
+        function logout() {
+            currentUser = null;
+            document.getElementById('auth-btn').textContent = 'Login/Register';
+            alert('Logout successful!');
+            switchPage('home');
+            
+            // 清空个人信息
+            document.getElementById('profile-student-id').textContent = 'Not logged in';
+            document.getElementById('profile-anon-name').textContent = 'Not logged in';
+            document.getElementById('profile-email').textContent = 'Not logged in';
+            document.getElementById('profile-phone').textContent = 'Not logged in';
+            document.getElementById('profile-gender').textContent = 'Not logged in';
+            
+            // 清空任务列表
+            document.getElementById('my-posted-tasks').innerHTML = '';
+            document.getElementById('my-accepted-tasks').innerHTML = '';
+        }
+
+        // ===================== 加载个人信息 =====================
+        async function loadProfile() {
+            if (!currentUser) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/get-profile`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: currentUser.studentId
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success && result.user) {
+                    // 更新个人信息显示
+                    document.getElementById('profile-student-id').textContent = result.user.student_id;
+                    document.getElementById('profile-anon-name').textContent = result.user.anonymous_name;
+                    document.getElementById('profile-email').textContent = result.user.email;
+                    document.getElementById('profile-phone').textContent = result.user.phone;
+                    document.getElementById('profile-gender').textContent = result.user.gender;
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                alert('Failed to load profile information.');
+            }
+        }
+
+        // ===================== 发布搬家请求 =====================
+        async function submitMovingRequest() {
+            if (!currentUser) {
+                alert('Please login first.');
+                switchPage('auth');
+                return;
+            }
+
+            // 获取表单数据
+            const moveDate = document.getElementById('move-date').value;
+            const fromAddress = document.getElementById('from-address').value.trim();
+            const toAddress = document.getElementById('to-address').value.trim();
+            const helpersNeeded = document.getElementById('helpers-needed').value;
+            const itemsToMove = document.getElementById('items-to-move').value.trim();
+            const compensation = document.getElementById('compensation').value.trim();
+
+            // 表单验证
+            if (!moveDate || !fromAddress || !toAddress || !helpersNeeded || !itemsToMove || !compensation) {
+                alert('All fields are required. Please fill in all information.');
+                return;
+            }
+
+            // 拼接完整地址
+            const location = `${fromAddress} → ${toAddress}`;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/post-request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: currentUser.studentId,
+                        moveDate: moveDate,
+                        location: location,
+                        helpersNeeded: helpersNeeded,
+                        items: itemsToMove,
+                        compensation: compensation
+                    })
+                });
+
+                const result = await response.json();
+                alert(result.message);
+
+                // 发布成功，清空表单
+                if (result.success) {
+                    document.getElementById('post-request-form').reset();
+                }
+            } catch (error) {
+                console.error('Error posting moving request:', error);
+                alert('Failed to post moving request. Please try again later.');
+            }
+        }
+
+        // ===================== 刷新任务列表 =====================
+        async function refreshTasks() {
+            const taskContainer = document.getElementById('task-list-container');
+            taskContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Loading tasks... Please wait.</div>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/get-tasks`);
+                const result = await response.json();
+
+                if (result.success) {
+                    if (result.tasks.length === 0) {
+                        taskContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">No available tasks at the moment.</div>';
+                        return;
+                    }
+
+                    // 渲染任务列表
+                    let taskHtml = '';
+                    result.tasks.forEach(task => {
+                        taskHtml += `
+                            <div class="task-card">
+                                <h3 class="task-title">${task.location}</h3>
+                                <div class="task-info"><span class="task-info-label">Date:</span> ${new Date(task.move_date).toLocaleString()}</div>
+                                <div class="task-info"><span class="task-info-label">Helpers Needed:</span> ${task.helpers_needed}</div>
+                                <div class="task-info"><span class="task-info-label">Items:</span> ${task.items}</div>
+                                <div class="task-info"><span class="task-info-label">Compensation:</span> ${task.compensation}</div>
+                                <div class="task-actions">
+                                    ${currentUser ? 
+                                        `<button class="btn btn-primary btn-sm" onclick="acceptTask(${task.id})">Accept Task</button>` :
+                                        `<button class="btn btn-primary btn-sm" onclick="switchPage('auth')">Login to Accept</button>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    taskContainer.innerHTML = taskHtml;
+                } else {
+                    taskContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Failed to load tasks. Please try again.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                taskContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Error loading tasks. Please try again later.</div>';
+            }
+        }
+
+        // ===================== 接受任务 =====================
+        async function acceptTask(taskId) {
+            if (!currentUser) {
+                alert('Please login first.');
+                switchPage('auth');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to accept this task?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/accept-task`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        taskId: taskId,
+                        helperId: currentUser.studentId
+                    })
+                });
+
+                const result = await response.json();
+                alert(result.message);
+
+                // 刷新任务列表
+                if (result.success) {
+                    refreshTasks();
+                    loadMyAcceptedTasks();
+                }
+            } catch (error) {
+                console.error('Error accepting task:', error);
+                alert('Failed to accept task. Please try again later.');
+            }
+        }
+
+        // ===================== 加载我发布的任务 =====================
+        async function loadMyPostedTasks() {
+            if (!currentUser) return;
+
+            const container = document.getElementById('my-posted-tasks');
+            container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Loading your posted tasks...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/my-posted-tasks`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: currentUser.studentId
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    if (result.tasks.length === 0) {
+                        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">You have not posted any tasks yet.</div>';
+                        return;
+                    }
+
+                    // 渲染我的发布任务
+                    let taskHtml = '';
+                    result.tasks.forEach(task => {
+                        taskHtml += `
+                            <div class="task-card">
+                                <h3 class="task-title">${task.location}</h3>
+                                <div class="task-info"><span class="task-info-label">Date:</span> ${new Date(task.move_date).toLocaleString()}</div>
+                                <div class="task-info"><span class="task-info-label">Helpers Needed:</span> ${task.helpers_needed}</div>
+                                <div class="task-info"><span class="task-info-label">Items:</span> ${task.items}</div>
+                                <div class="task-info"><span class="task-info-label">Compensation:</span> ${task.compensation}</div>
+                                <div class="task-info"><span class="task-info-label">Status:</span> ${task.helper_assigned ? 'Assigned' : 'Pending'}</div>
+                                ${task.helper_assigned ? 
+                                    `<div class="task-info"><span class="task-info-label">Helper ID:</span> ${task.helper_assigned}</div>
+                                    <div class="task-actions">
+                                        <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete Task</button>
+                                    </div>` :
+                                    `<div class="task-actions">
+                                        <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete Task</button>
+                                    </div>`
+                                }
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = taskHtml;
+                } else {
+                    container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Failed to load your tasks.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading my posted tasks:', error);
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Error loading your tasks.</div>';
+            }
+        }
+
+        // ===================== 加载我接受的任务 =====================
+        async function loadMyAcceptedTasks() {
+            if (!currentUser) return;
+
+            const container = document.getElementById('my-accepted-tasks');
+            container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Loading your accepted tasks...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/my-accepted-tasks`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        helperId: currentUser.studentId
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    if (result.tasks.length === 0) {
+                        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">You have not accepted any tasks yet.</div>';
+                        return;
+                    }
+
+                    // 渲染我接受的任务
+                    let taskHtml = '';
+                    result.tasks.forEach(task => {
+                        taskHtml += `
+                            <div class="task-card">
+                                <h3 class="task-title">${task.location}</h3>
+                                <div class="task-info"><span class="task-info-label">Date:</span> ${new Date(task.move_date).toLocaleString()}</div>
+                                <div class="task-info"><span class="task-info-label">Helpers Needed:</span> ${task.helpers_needed}</div>
+                                <div class="task-info"><span class="task-info-label">Items:</span> ${task.items}</div>
+                                <div class="task-info"><span class="task-info-label">Compensation:</span> ${task.compensation}</div>
+                                <div class="task-actions">
+                                    <button class="btn btn-danger btn-sm" onclick="cancelTask(${task.id})">Cancel Task</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = taskHtml;
+                } else {
+                    container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Failed to load accepted tasks.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading my accepted tasks:', error);
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Error loading accepted tasks.</div>';
+            }
+        }
+
+        // ===================== 删除我发布的任务 =====================
+        async function deleteTask(taskId) {
+            if (!currentUser) return;
+
+            if (!confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/delete-task`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        taskId: taskId,
+                        studentId: currentUser.studentId
+                    })
+                });
+
+                const result = await response.json();
+                alert(result.message);
+
+                // 刷新任务列表
+                if (result.success) {
+                    loadMyPostedTasks();
+                    refreshTasks();
+                }
+            } catch (error) {
+                console.error('Error deleting task:', error);
+                alert('Failed to delete task. Please try again later.');
+            }
+        }
+
+        // ===================== 取消我接受的任务 =====================
+        async function cancelTask(taskId) {
+            if (!currentUser) return;
+
+            if (!confirm('Are you sure you want to cancel this task?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/cancel-task`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        taskId: taskId,
+                        helperId: currentUser.studentId
+                    })
+                });
+
+                const result = await response.json();
+                alert(result.message);
+
+                // 刷新任务列表
+                if (result.success) {
+                    loadMyAcceptedTasks();
+                    refreshTasks();
+                }
+            } catch (error) {
+                console.error('Error canceling task:', error);
+                alert('Failed to cancel task. Please try again later.');
+            }
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 初始化任务列表
+            if (document.getElementById('find-tasks').classList.contains('active')) {
+                refreshTasks();
+            }
+        };
+    </script>
+</body>
+</html>
