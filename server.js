@@ -53,8 +53,280 @@ app.use((req, res, next) => {
   next();
 });
 
-// 健康检查
+// ===== 核心修改：前端页面直接内嵌，无需public文件夹 =====
 app.get('/', (req, res) => {
+  // 前端页面代码直接作为字符串返回，无需任何文件夹
+  const frontEndHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DormLift Test</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { padding: 20px; max-width: 1200px; margin: 0 auto; }
+    .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+    h2 { margin-bottom: 15px; color: #333; }
+    .form-group { margin: 10px 0; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, textarea, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    button { padding: 10px 20px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0052a3; }
+    .response { margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 4px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>DormLift Full Test Page</h1>
+  
+  <!-- 配置 -->
+  <div class="section">
+    <h2>1. API Config</h2>
+    <div class="form-group">
+      <label>API Base URL (已自动填充当前域名)</label>
+      <input type="text" id="apiBaseUrl" value="https://${req.headers.host}" placeholder="https://xxx.railway.app">
+    </div>
+  </div>
+
+  <!-- 发送验证码 -->
+  <div class="section">
+    <h2>2. Send Verification Code</h2>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="sendCodeEmail" placeholder="your@email.com">
+    </div>
+    <button onclick="sendCode()">Send Code</button>
+    <div class="response" id="sendCodeResponse"></div>
+  </div>
+
+  <!-- 注册 -->
+  <div class="section">
+    <h2>3. Register</h2>
+    <div class="form-group">
+      <label>Student ID</label>
+      <input type="text" id="regStudentId" placeholder="20240001">
+    </div>
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" id="regFirstName" placeholder="Zhang">
+    </div>
+    <div class="form-group">
+      <label>Given Name</label>
+      <input type="text" id="regGivenName" placeholder="San">
+    </div>
+    <div class="form-group">
+      <label>Gender</label>
+      <select id="regGender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Anonymous Name</label>
+      <input type="text" id="regAnonymousName" placeholder="ZS123">
+    </div>
+    <div class="form-group">
+      <label>Phone</label>
+      <input type="text" id="regPhone" placeholder="13800138000">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="regEmail" placeholder="your@email.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="regPassword" placeholder="12345678">
+    </div>
+    <div class="form-group">
+      <label>Verification Code</label>
+      <input type="text" id="regCode" placeholder="6-digit code">
+    </div>
+    <button onclick="register()">Register</button>
+    <div class="response" id="registerResponse"></div>
+  </div>
+
+  <!-- 登录 -->
+  <div class="section">
+    <h2>4. Login</h2>
+    <div class="form-group">
+      <label>Student ID</label>
+      <input type="text" id="loginStudentId" placeholder="20240001">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="12345678">
+    </div>
+    <button onclick="login()">Login</button>
+    <div class="response" id="loginResponse"></div>
+  </div>
+
+  <!-- 创建任务 -->
+  <div class="section">
+    <h2>5. Create Task</h2>
+    <div class="form-group">
+      <label>Publisher ID (Student ID)</label>
+      <input type="text" id="taskPublisherId" placeholder="20240001">
+    </div>
+    <div class="form-group">
+      <label>Move Date</label>
+      <input type="date" id="taskMoveDate">
+    </div>
+    <div class="form-group">
+      <label>Move Time</label>
+      <input type="time" id="taskMoveTime">
+    </div>
+    <div class="form-group">
+      <label>From Address</label>
+      <input type="text" id="taskFromAddress" placeholder="Building A">
+    </div>
+    <div class="form-group">
+      <label>To Address</label>
+      <input type="text" id="taskToAddress" placeholder="Building B">
+    </div>
+    <div class="form-group">
+      <label>Items Description</label>
+      <textarea id="taskItemsDesc" placeholder="2 boxes of books, 1 suitcase"></textarea>
+    </div>
+    <div class="form-group">
+      <label>People Needed</label>
+      <input type="number" id="taskPeopleNeeded" placeholder="2" min="1">
+    </div>
+    <div class="form-group">
+      <label>Reward</label>
+      <input type="text" id="taskReward" placeholder="50 RMB">
+    </div>
+    <div class="form-group">
+      <label>Note (Optional)</label>
+      <textarea id="taskNote" placeholder="Need help at afternoon"></textarea>
+    </div>
+    <button onclick="createTask()">Create Task</button>
+    <div class="response" id="createTaskResponse"></div>
+  </div>
+
+  <!-- 获取任务列表 -->
+  <div class="section">
+    <h2>6. Get Task List</h2>
+    <button onclick="getTaskList()">Get Pending Tasks</button>
+    <div class="response" id="taskListResponse"></div>
+  </div>
+
+  <script>
+    // 全局配置
+    function getApiUrl() {
+      return document.getElementById('apiBaseUrl').value.trim();
+    }
+
+    // 通用请求函数
+    async function request(url, method, data) {
+      try {
+        const options = {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+        };
+        if (data) options.body = JSON.stringify(data);
+        
+        const response = await fetch(url, options);
+        const result = await response.json();
+        return { success: true, data: result };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    // 1. 发送验证码
+    async function sendCode() {
+      const email = document.getElementById('sendCodeEmail').value.trim();
+      const responseEl = document.getElementById('sendCodeResponse');
+      
+      if (!email) {
+        responseEl.textContent = 'Error: Email is required';
+        return;
+      }
+
+      const res = await request(\`\${getApiUrl()}/api/auth/send-code\`, 'POST', { email });
+      responseEl.textContent = JSON.stringify(res, null, 2);
+    }
+
+    // 2. 注册
+    async function register() {
+      const data = {
+        student_id: document.getElementById('regStudentId').value.trim(),
+        first_name: document.getElementById('regFirstName').value.trim(),
+        given_name: document.getElementById('regGivenName').value.trim(),
+        gender: document.getElementById('regGender').value,
+        anonymous_name: document.getElementById('regAnonymousName').value.trim(),
+        phone: document.getElementById('regPhone').value.trim(),
+        email: document.getElementById('regEmail').value.trim(),
+        password: document.getElementById('regPassword').value.trim(),
+        code: document.getElementById('regCode').value.trim()
+      };
+      const responseEl = document.getElementById('registerResponse');
+
+      if (!data.student_id || !data.first_name || !data.given_name || !data.anonymous_name || !data.phone || !data.email || !data.password || !data.code) {
+        responseEl.textContent = 'Error: All fields are required';
+        return;
+      }
+
+      const res = await request(\`\${getApiUrl()}/api/auth/register\`, 'POST', data);
+      responseEl.textContent = JSON.stringify(res, null, 2);
+    }
+
+    // 3. 登录
+    async function login() {
+      const data = {
+        student_id: document.getElementById('loginStudentId').value.trim(),
+        password: document.getElementById('loginPassword').value.trim()
+      };
+      const responseEl = document.getElementById('loginResponse');
+
+      if (!data.student_id || !data.password) {
+        responseEl.textContent = 'Error: Student ID and password are required';
+        return;
+      }
+
+      const res = await request(\`\${getApiUrl()}/api/auth/login\`, 'POST', data);
+      responseEl.textContent = JSON.stringify(res, null, 2);
+    }
+
+    // 4. 创建任务
+    async function createTask() {
+      const data = {
+        publisher_id: document.getElementById('taskPublisherId').value.trim(),
+        move_date: document.getElementById('taskMoveDate').value,
+        move_time: document.getElementById('taskMoveTime').value,
+        from_address: document.getElementById('taskFromAddress').value.trim(),
+        to_address: document.getElementById('taskToAddress').value.trim(),
+        items_desc: document.getElementById('taskItemsDesc').value.trim(),
+        people_needed: document.getElementById('taskPeopleNeeded').value.trim(),
+        reward: document.getElementById('taskReward').value.trim(),
+        note: document.getElementById('taskNote').value.trim()
+      };
+      const responseEl = document.getElementById('createTaskResponse');
+
+      if (!data.publisher_id || !data.move_date || !data.move_time || !data.from_address || !data.to_address || !data.items_desc || !data.people_needed || !data.reward) {
+        responseEl.textContent = 'Error: Required fields are missing';
+        return;
+      }
+
+      const res = await request(\`\${getApiUrl()}/api/task/create\`, 'POST', data);
+      responseEl.textContent = JSON.stringify(res, null, 2);
+    }
+
+    // 5. 获取任务列表
+    async function getTaskList() {
+      const responseEl = document.getElementById('taskListResponse');
+      const res = await request(\`\${getApiUrl()}/api/task/list\`, 'GET');
+      responseEl.textContent = JSON.stringify(res, null, 2);
+    }
+  </script>
+</body>
+</html>
+  `;
+  res.send(frontEndHtml);
+});
+
+// 健康检查接口（单独的/health路径，不影响前端）
+app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'running',
     service: 'DormLift Final Backend',
