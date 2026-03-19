@@ -214,7 +214,15 @@ async function sendVerificationCode(email, code) {
     return true;
   }
 }
-
+// 在所有API接口之前，添加健康检查接口（必须！）
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'DormLift服务器运行正常',
+    port: PORT,
+    timestamp: new Date().toISOString()
+  });
+});
 // ===================== API接口：获取验证码 =====================
 app.post('/api/send-verification-code', async (req, res) => {
   try {
@@ -849,13 +857,12 @@ app.post('/api/get-profile', (req, res) => {
 });
 
 // ===================== 启动服务器 =====================
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => { // 新增 '0.0.0.0' 监听所有地址
   console.log(`🚀 服务器已启动，端口：${PORT}`);
-  console.log(`✅ 访问地址：http://localhost:${PORT}`);
+  console.log(`✅ 监听地址：0.0.0.0:${PORT}（容器内必须监听0.0.0.0）`);
   console.log(`✅ 支持任意有效（valid）邮箱注册，无Outlook限制`);
   console.log(`✅ 验证码模式：读取Railway环境变量（Variable）发送`);
 });
-
 // ===================== 优雅处理进程终止（解决SIGTERM） =====================
 // 处理Railway的SIGTERM信号
 process.on('SIGTERM', () => {
