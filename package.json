@@ -1,19 +1,39 @@
 {
-  "name": "backend",
+  "name": "campusmove",
   "version": "1.0.0",
+  "description": "Student Moving Assistance Platform (NZ Phone + Email Verification)",
+  "main": "server.js",
   "scripts": {
-    "start": "pm2-runtime start server.js --name dormlift",
-    "stop": "pm2 stop dormlift",
-    "restart": "pm2 restart dormlift"
+    "start": "pm2 start server.js --name campusmove --attach",
+    "dev": "nodemon server.js",
+    "stop": "pm2 stop campusmove",
+    "restart": "pm2 restart campusmove",
+    "delete": "pm2 delete campusmove",
+    "logs": "pm2 logs campusmove"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "sqlite3": "^5.1.6",
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7",
     "cors": "^2.8.5",
     "body-parser": "^1.20.2",
+    "nodemailer": "^6.9.13",
     "pm2": "^5.3.1"
   },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
   "engines": {
-    "node": ">=16.0.0"
-  }
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "student",
+    "moving",
+    "nz",
+    "email-verification",
+    "nodejs",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT"
 }
