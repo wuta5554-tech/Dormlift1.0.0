@@ -2,412 +2,301 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | Professional Campus Logistics</title>
+    <title>DormLift Pro | Peer Logistics Network</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     
     <style>
-        :root { --primary: #4f46e5; --success: #059669; --danger: #dc2626; --dark: #0f172a; --text: #334155; --bg: #f8fafc; --surface: #ffffff; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        :root { --primary: #4f46e5; --success: #059669; --warning: #f59e0b; --danger: #dc2626; --text: #334155; --bg: #f8fafc; --surface: #ffffff; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
         
         .page { display: none !important; }
         .page.active { display: block !important; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        nav { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--dark); cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .nav-links a { color: var(--text); margin-left: 1.5rem; text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        nav { background: white; padding: 1rem 8%; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: #0f172a; cursor: pointer; }
         
         .container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
-        .card { background: var(--surface); border-radius: 1.2rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 2rem; }
+        .card { background: var(--surface); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
 
-        .btn { background: var(--primary); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 0.6rem; cursor: pointer; font-weight: 700; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-decoration: none; }
-        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .btn-outline { background: white; color: var(--text); border: 1.5px solid #cbd5e1; }
-        .btn-danger { border: 2px solid var(--danger); color: var(--danger); background: white; width: auto; }
-
-        input, select, textarea { width: 100%; padding: 0.8rem 1rem; background: #f1f5f9; border: 2px solid transparent; border-radius: 0.6rem; margin-bottom: 1rem; box-sizing: border-box; font-family: inherit; }
-        input:focus { border-color: var(--primary); outline: none; background: white; }
-
-        /* 主页特性展示 */
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
-        .feature-item { text-align: center; padding: 2.5rem 1.5rem; border-radius: 1.5rem; background: white; border: 1px solid #f1f5f9; transition: 0.3s; }
-        .feature-item:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08); }
-        .feature-item i { font-size: 2.5rem; color: var(--primary); margin-bottom: 1.2rem; display: block; }
-
-        /* 任务大厅 */
-        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
-        .task-card { cursor: pointer; transition: 0.3s; }
-        .task-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .task-img { width: 100%; height: 180px; object-fit: cover; border-radius: 0.8rem; margin-bottom: 1rem; }
-        .tag { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; background: #eff6ff; color: var(--primary); font-weight: 700; margin-right: 5px; }
-
-        /* 详情与评论弹窗 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); z-index: 2000; backdrop-filter: blur(8px); align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 95%; max-width: 750px; max-height: 90vh; overflow-y: auto; border-radius: 1.5rem; position: relative; padding: 0; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); }
+        /* 市场列表：无图高密度样式 */
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
+        .task-card { cursor: pointer; transition: 0.3s; border: 1px solid #e2e8f0; background: white; border-radius: 1rem; padding: 1.2rem; display: flex; flex-direction: column; gap: 8px; }
+        .task-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         
-        #map { height: 380px; border-radius: 1rem; margin-bottom: 1rem; border: 2px solid #e2e8f0; }
-        .comment-section { background: #f8fafc; padding: 2rem; border-top: 1px solid #e2e8f0; }
-        .comment-item { background: white; padding: 1rem; border-radius: 0.8rem; border: 1px solid #e2e8f0; margin-bottom: 1rem; }
+        .reward-badge { font-size: 1.25rem; font-weight: 800; color: var(--success); }
+        .info-row { display: flex; align-items: flex-start; gap: 8px; font-size: 0.9rem; }
+        .info-row i { color: var(--primary); width: 16px; margin-top: 4px; }
+        .meta-text { font-size: 0.8rem; color: #64748b; }
+
+        /* 详情弹窗与缩略图 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 95%; max-width: 650px; max-height: 90vh; overflow-y: auto; border-radius: 1.5rem; padding: 2rem; position: relative; }
+        
+        .thumb-strip { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 1rem; }
+        .thumb-img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; }
+
+        /* 互动区：留言与评价 */
+        .interaction-section { background: #f8fafc; border-radius: 1rem; padding: 1.5rem; margin-top: 1.5rem; border: 1px solid #e2e8f0; }
+        .comment-item { background: white; padding: 0.8rem; border-radius: 0.8rem; margin-bottom: 0.8rem; font-size: 0.9rem; border: 1px solid #f1f5f9; }
+        .star-rating { color: var(--warning); display: flex; gap: 5px; margin: 10px 0; font-size: 1.2rem; }
+        .star-rating i { cursor: pointer; }
+
+        .btn { background: var(--primary); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 0.6rem; cursor: pointer; font-weight: 700; width: 100%; }
+        input, textarea { width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; margin-bottom: 1rem; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo" onclick="navigate('home')"><i class="fas fa-box-open"></i> DormLift Pro</div>
+    <div class="logo" onclick="navigate('home')">DormLift Pro</div>
     <div class="nav-links" id="menu"></div>
 </nav>
 
 <div class="container">
     <div id="home" class="page active">
-        <section class="card" style="text-align:center; padding: 5rem 1rem;">
-            <h1 style="font-size:3.5rem; margin:0; letter-spacing:-1px;">Moving, <span style="color:var(--primary)">Simplified.</span></h1>
-            <p style="color:var(--text-muted); font-size:1.2rem; max-width:650px; margin: 2rem auto;">The trusted peer-to-peer logistics network for the University of Auckland community.</p>
-            <div style="display:flex; justify-content:center; gap:1.2rem;">
-                <button class="btn" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('post-task')">Post Request</button>
-                <button class="btn btn-outline" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('hall')">Explore Market</button>
-            </div>
-
-            <div class="features-grid">
-                <div class="feature-item">
-                    <i class="fas fa-piggy-bank"></i>
-                    <h3>Low Cost</h3>
-                    <p>Transparent pricing. Save up to 60% compared to commercial movers.</p>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-bolt"></i>
-                    <h3>Flexible</h3>
-                    <p>On-demand scheduling that works around your lecture timetable.</p>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <h3>Trusted</h3>
-                    <p>Verified student profiles and real peer-to-peer reviews.</p>
-                </div>
+        <section class="card" style="text-align:center; padding: 4rem 1rem;">
+            <h1>Moving, Made Effortless.</h1>
+            <p>Connect with verified UoA peers for safe campus logistics.</p>
+            <div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+                <button class="btn" style="width:auto" onclick="navigate('post-task')">Post Task</button>
+                <button class="btn" style="width:auto; background:#f1f5f9; color:#334155" onclick="navigate('hall')">Market</button>
             </div>
         </section>
     </div>
 
     <div id="hall" class="page">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-            <h2 style="font-size:2rem; margin:0;">Task Market</h2>
-            <button class="btn btn-outline" style="width:auto; border-radius:2rem;" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+            <h2 style="margin:0;">Task Market</h2>
+            <button class="btn" style="width:auto" onclick="loadHall()"><i class="fas fa-sync"></i></button>
         </div>
         <div id="hall_list" class="task-grid"></div>
     </div>
 
     <div id="post-task" class="page">
         <div class="card">
-            <h2 style="margin-top:0;"><i class="fas fa-map-marked-alt"></i> Request Logistics</h2>
-            <div id="map"></div>
-            <div id="route_info" style="text-align:center; padding:10px; background:#eff6ff; border-radius:0.8rem; color:var(--primary); font-weight:700; margin-bottom:1.5rem;">📍 Click map to set Pickup & Destination</div>
-            
+            <h2>Post Logistics Request</h2>
             <form id="taskForm">
-                <input type="text" id="p_from" placeholder="Pickup Address (Click map or type)" required>
-                <input type="text" id="p_to" placeholder="Destination Address (Click map or type)" required>
-                <div class="form-grid">
-                    <input type="date" id="p_date" required>
-                    <input type="text" id="p_reward" placeholder="Reward (e.g. $50)" required>
-                    <input type="text" id="p_phone" placeholder="Your Contact Phone" required>
-                    <select id="p_lift">
-                        <option value="No">No Elevator (Stairs)</option>
-                        <option value="Yes">Elevator Available</option>
-                    </select>
-                </div>
-                <textarea id="p_desc" placeholder="Details: 'Heavy Desk', 'Meet at Gate 3'..." rows="3" required></textarea>
+                <input type="text" id="p_from" placeholder="Pickup (Auto-fills on map click)" required>
+                <input type="text" id="p_to" placeholder="Destination (Auto-fills on map click)" required>
+                <input type="datetime-local" id="p_date" required>
+                <input type="text" id="p_reward" placeholder="Reward Offer (e.g. $50)" required>
+                <textarea id="p_desc" placeholder="Items & Instructions..." rows="3" required></textarea>
                 <input type="file" id="p_file" multiple accept="image/*" required>
-                <button type="submit" class="btn" id="btnPost">Publish Task</button>
+                <button type="submit" class="btn">Publish to Market</button>
             </form>
         </div>
     </div>
 
     <div id="profile" class="page">
-        <div class="card" style="display:flex; gap:2rem; align-items:center;">
-            <div id="u_avatar" style="width:90px; height:90px; background:var(--primary); border-radius:2rem; display:flex; align-items:center; justify-content:center; color:white; font-size:2.5rem; font-weight:800;">?</div>
-            <div>
-                <h2 id="u_name" style="margin:0; font-size:2rem;">User</h2>
-                <p id="u_email" style="margin:0.3rem 0; color:var(--text-muted);">-</p>
-                <span class="tag" style="background:#dcfce7; color:#166534;"><i class="fas fa-check-circle"></i> Identity Verified</span>
-            </div>
-        </div>
-        <h3>My Posted Tasks</h3>
-        <div id="my_posts"></div>
-        <h3>My Accepted Shifts</h3>
-        <div id="my_shifts"></div>
-
-        <div style="margin-top:6rem; padding-top:2rem; border-top:1px dashed #cbd5e1; text-align:center;">
-            <p style="color:var(--text-muted); font-size:0.8rem; font-weight:700; margin-bottom:1rem;">DEVELOPER TOOLS</p>
-            <button class="btn btn-danger" onclick="nukeDatabase()">Wipe All Database Data (Reset Everything)</button>
-        </div>
+        <div class="card"><h2 id="u_name">Profile</h2><div id="my_posts"></div><button class="btn" style="background:var(--danger); margin-top:2rem" onclick="nukeDatabase()">Nuke Data (DEV)</button></div>
     </div>
 
-    <div id="register" class="page">
-        <div class="card" style="max-width:550px; margin:auto;">
-            <h2 style="text-align:center;">Join the Network</h2>
-            <form id="regForm">
-                <div class="form-grid">
-                    <input type="text" id="r_full" placeholder="Full Name" required>
-                    <input type="text" id="r_anon" placeholder="Nickname" required>
-                </div>
-                <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
-                    <input type="email" id="r_email" placeholder="Student Email" required style="margin-bottom:0;">
-                    <button type="button" class="btn btn-outline" style="width:140px;" onclick="sendCode()">Get Code</button>
-                </div>
-                <input type="text" id="r_code" placeholder="Verification Code (Default: 8888)" required>
-                
-                <input type="text" id="r_phone" placeholder="Contact Phone Number" required>
-                
-                <div class="form-grid">
-                    <input type="password" id="r_pwd" placeholder="Password" required>
-                    <input type="password" id="r_pwd2" placeholder="Confirm Password" required>
-                </div>
-                <button type="submit" class="btn">Complete Registration</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="login" class="page">
-        <div class="card" style="max-width:400px; margin:auto;">
-            <h2 style="text-align:center;">Portal Login</h2>
-            <form id="loginForm">
-                <input type="email" id="l_email" placeholder="Email" required>
-                <input type="password" id="l_pwd" placeholder="Password" required>
-                <button type="submit" class="btn">Sign In</button>
-            </form>
-            <p style="text-align:center; margin-top:1.5rem;">New student? <a onclick="navigate('register')" style="color:var(--primary); font-weight:700; cursor:pointer;">Create Account</a></p>
-        </div>
-    </div>
+    <div id="login" class="page"><div class="card" style="max-width:400px; margin:auto;"><h2>Login</h2><form id="loginForm"><input type="email" id="l_email" placeholder="Email"><input type="password" id="l_pwd" placeholder="Password"><button class="btn">Login</button></form></div></div>
+    <div id="register" class="page"><div class="card" style="max-width:400px; margin:auto;"><h2>Register</h2><form id="regForm"><input type="text" id="r_full" placeholder="Full Name"><input type="text" id="r_anon" placeholder="Nickname"><input type="email" id="r_email" placeholder="Email"><input type="text" id="r_phone" placeholder="Phone"><input type="password" id="r_pwd" placeholder="Password"><button class="btn">Register</button></form></div></div>
 </div>
 
-<div id="taskModal" class="modal" onclick="closeTaskModal(event)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <div style="padding:2rem;">
-            <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:#f1f5f9; width:40px; height:40px; border-radius:50%; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('taskModal').style.display='none'">&times;</button>
-            <div id="task_detail_body"></div>
+<div id="taskModal" class="modal" onclick="if(event.target.id==='taskModal') this.style.display='none'">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <h3 id="m_reward" class="reward-badge"></h3>
+            <button onclick="document.getElementById('taskModal').style.display='none'" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
         </div>
-        <div class="comment-section">
-            <h4 style="margin-top:0;"><i class="far fa-comments"></i> Questions & Reviews</h4>
-            <div id="comment_list" style="max-height:200px; overflow-y:auto; margin-bottom:1.5rem;"></div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="comment_input" placeholder="Ask a question..." style="margin-bottom:0;">
-                <button class="btn" style="width:100px;" onclick="addComment()">Send</button>
+
+        <div id="m_thumbs" class="thumb-strip"></div>
+
+        <div id="m_details" style="display:flex; flex-direction:column; gap:10px; margin: 1rem 0;">
             </div>
+
+        <div id="m_interaction" class="interaction-section"></div>
+
+        <div style="margin-top:1.5rem;">
+            <button class="btn" id="m_action_btn">Accept Task</button>
         </div>
     </div>
 </div>
 
 <script>
     let user = JSON.parse(localStorage.getItem('user'));
-    let map, markers = [], routingControl, sentCode = "8888";
-    let activeTaskId = null, marketTasks = [];
+    let marketTasks = [];
+    let selectedRating = 5;
 
-    // 1. SPA 导航与路由
     function navigate(p) {
         if(!user && ['post-task', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
         document.getElementById(p).classList.add('active');
-        window.scrollTo(0,0); updateMenu();
-        if(p==='post-task') initMap();
         if(p==='hall') loadHall();
         if(p==='profile') loadProfile();
+        updateMenu();
     }
 
     function updateMenu() {
         const m = document.getElementById('menu');
-        if(!user) m.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('login')">Sign In</a>`;
-        else m.innerHTML = `<a onclick="navigate('hall')">Market</a><a onclick="navigate('post-task')">Post</a><a onclick="navigate('profile')">Profile</a><a onclick="logout()" style="color:var(--danger)">Logout</a>`;
-    }
-    function logout() { localStorage.clear(); location.reload(); }
-
-    // 2. 地图定位与地址自动填入
-    function initMap() {
-        if(map) return;
-        setTimeout(() => {
-            map = L.map('map').setView([-36.8509, 174.7645], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-            map.on('click', async e => {
-                if(markers.length >= 2) { 
-                    markers.forEach(m => map.removeLayer(m)); markers = []; 
-                    if(routingControl) map.removeControl(routingControl);
-                }
-                let m = L.marker(e.latlng).addTo(map); markers.push(m);
-                const coord = `${e.latlng.lat.toFixed(5)},${e.latlng.lng.toFixed(5)}`;
-                
-                try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
-                    const data = await res.json();
-                    const addr = data.display_name.split(',').slice(0,3).join(',');
-
-                    if(markers.length === 1) {
-                        document.getElementById('p_from').value = addr;
-                        document.getElementById('p_from').dataset.gps = coord;
-                        document.getElementById('route_info').innerText = "🏁 Now select Destination";
-                    } else {
-                        document.getElementById('p_to').value = addr;
-                        document.getElementById('p_to').dataset.gps = coord;
-                        routingControl = L.Routing.control({
-                            waypoints: [markers[0].getLatLng(), markers[1].getLatLng()],
-                            createMarker: () => null, show: false
-                        }).addTo(map);
-                        document.getElementById('route_info').innerText = "✅ Route confirmed. You can still edit address text.";
-                    }
-                } catch(err) { console.log("Geocoding service busy"); }
-            });
-        }, 300);
+        m.innerHTML = user ? `<a onclick="navigate('hall')">Market</a> <a onclick="navigate('post-task')">Post</a> <a onclick="navigate('profile')">Profile</a>` : `<a onclick="navigate('login')">Login</a>`;
     }
 
-    // 3. 市场大厅与评价系统
+    // 核心：加载高密度市场列表
     async function loadHall() {
         const res = await fetch('/api/task/all');
         const data = await res.json();
         marketTasks = data.list;
+
         document.getElementById('hall_list').innerHTML = data.list.map(t => {
-            let imgs = []; try { imgs = JSON.parse(t.img_url); } catch(e) {}
-            return `<div class="card task-card" onclick="showTaskDetail('${t._id}')">
-                <img src="${imgs[0] || 'https://via.placeholder.com/400x200'}" class="task-img">
+            const fromStr = t.from_addr.includes('@@') ? t.from_addr.split('@@')[1] : t.from_addr;
+            const toStr = t.to_addr.includes('@@') ? t.to_addr.split('@@')[1] : t.to_addr;
+            const postDate = new Date(t.created_at).toLocaleDateString();
+
+            return `
+            <div class="task-card" onclick="showTaskDetail('${t._id}')">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3 style="margin:0; color:var(--success)">${t.reward}</h3>
-                    <span class="tag">${t.move_date}</span>
+                    <span class="reward-badge">${t.reward}</span>
+                    <span class="meta-text">Posted: ${postDate}</span>
                 </div>
-                <p style="font-size:0.85rem; color:var(--text-muted); margin:10px 0; height:40px; overflow:hidden;">${t.items_desc}</p>
-                <div style="font-size:0.75rem; color:var(--primary); font-weight:700;">Click to view full details & route</div>
+                <div class="info-row"><i class="fas fa-circle"></i> <b>From:</b> ${fromStr}</div>
+                <div class="info-row"><i class="fas fa-location-arrow"></i> <b>To:</b> ${toStr}</div>
+                <div class="info-row"><i class="fas fa-box"></i> <b>Items:</b> ${t.items_desc.substring(0, 50)}...</div>
+                <div class="info-row"><i class="fas fa-user-circle"></i> <b>By:</b> ${t.publisher_id.split('@')[0]} (Student)</div>
+                <div class="info-row"><i class="far fa-clock"></i> <b>Move:</b> ${t.move_date.replace('T', ' ')}</div>
             </div>`;
-        }).join('') || '<p style="text-align:center; grid-column:1/-1;">Market is currently empty.</p>';
+        }).join('') || '<p>Market is currently empty.</p>';
     }
 
+    // 核心：显示互动详情
     function showTaskDetail(id) {
-        activeTaskId = id;
         const t = marketTasks.find(x => x._id === id);
-        let imgs = []; try { imgs = JSON.parse(t.img_url); } catch(e) {}
-        document.getElementById('task_detail_body').innerHTML = `
-            <img src="${imgs[0] || ''}" style="width:100%; border-radius:1rem; margin-bottom:1.5rem; max-height:300px; object-fit:cover;">
-            <h2 style="font-size:2rem; margin:0 0 1rem 0;">${t.reward}</h2>
-            <div style="background:#f1f5f9; padding:1.2rem; border-radius:1rem; margin-bottom:1.5rem;">
-                <p style="margin:0 0 8px 0;"><b>📍 Pickup:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</p>
-                <p style="margin:0;"><b>🏁 Destination:</b> ${t.to_addr.split('@@')[1] || t.to_addr}</p>
-            </div>
-            <p><b>Instructions:</b> ${t.items_desc}</p>
-            ${user && t.publisher_id !== user.email ? `<button class="btn" style="margin-top:1rem;" onclick="acceptTask('${t._id}')">Accept Task & Contact Publisher</button>` : ''}
+        const modal = document.getElementById('taskModal');
+        const isOwner = user && user.email === t.publisher_id;
+
+        document.getElementById('m_reward').innerText = t.reward;
+        
+        // 缩略图预览
+        let imgs = JSON.parse(t.img_url || '[]');
+        document.getElementById('m_thumbs').innerHTML = imgs.map(url => `
+            <img src="${url}" class="thumb-img" onclick="window.open('${url}')">
+        `).join('') || '<small>No photos</small>';
+
+        document.getElementById('m_details').innerHTML = `
+            <p><b>Pickup:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</p>
+            <p><b>Dest:</b> ${t.to_addr.split('@@')[1] || t.to_addr}</p>
+            <p><b>Items:</b> ${t.items_desc}</p>
         `;
-        renderComments(t.comments || []);
-        document.getElementById('taskModal').style.display = 'flex';
-    }
 
-    function renderComments(arr) {
-        document.getElementById('comment_list').innerHTML = arr.map(c => `
-            <div class="comment-item">
-                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                    <b style="color:var(--primary)">${c.user_name}</b>
-                    <small style="color:grey">${c.time}</small>
+        // 动态加载互动区
+        const interArea = document.getElementById('m_interaction');
+        if (t.status !== 'finished') {
+            // 留言模式 (Q&A)
+            interArea.innerHTML = `
+                <h4>Questions & Comments</h4>
+                <div id="comment_list" style="margin-bottom:1rem;">
+                    ${(t.comments || []).map(c => `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`).join('') || '<p style="font-size:0.8rem">No questions yet.</p>'}
                 </div>
-                <div style="font-size:0.95rem;">${c.text}</div>
-            </div>`).join('') || '<p style="color:grey; text-align:center;">No questions yet.</p>';
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="comment_input" placeholder="Ask publisher..." style="margin:0">
+                    <button class="btn" style="width:80px" onclick="postComment('${t._id}')">Send</button>
+                </div>
+            `;
+        } else {
+            // 评价模式 (Reviews)
+            interArea.innerHTML = `
+                <h4>Task Reviews</h4>
+                <div id="review_list">
+                    ${t.reviews?.publisher_review ? `<div class="review-item"><b>Owner:</b> ${'⭐'.repeat(t.reviews.publisher_review.rating)}<br>${t.reviews.publisher_review.text}</div>` : ''}
+                    ${t.reviews?.helper_review ? `<div class="review-item"><b>Helper:</b> ${'⭐'.repeat(t.reviews.helper_review.rating)}<br>${t.reviews.helper_review.text}</div>` : ''}
+                </div>
+                ${renderReviewForm(t)}
+            `;
+        }
+
+        const actionBtn = document.getElementById('m_action_btn');
+        if (t.status === 'pending' && !isOwner) {
+            actionBtn.style.display = 'block';
+            actionBtn.innerText = "Accept Task";
+            actionBtn.onclick = () => acceptTask(id);
+        } else {
+            actionBtn.style.display = 'none';
+        }
+
+        modal.style.display = 'flex';
     }
 
-    async function addComment() {
+    // 渲染评价表单逻辑
+    function renderReviewForm(task) {
+        const isOwner = user.email === task.publisher_id;
+        const isHelper = user.email === task.helper_id;
+        const hasOwnerReviewed = task.reviews?.publisher_review;
+        const hasHelperReviewed = task.reviews?.helper_review;
+
+        if ((isOwner && !hasOwnerReviewed) || (isHelper && !hasHelperReviewed)) {
+            return `
+                <div style="margin-top:1.5rem; border-top:1px dashed #ccc; padding-top:1rem;">
+                    <b>Rate your partner:</b>
+                    <div class="star-rating" id="star_box">
+                        ${[1,2,3,4,5].map(i => `<i class="fas fa-star" onclick="setStar(${i})"></i>`).join('')}
+                    </div>
+                    <textarea id="rev_text" placeholder="Share your experience..."></textarea>
+                    <button class="btn" onclick="submitReview('${task._id}', '${isOwner?'publisher':'helper'}')">Submit Review</button>
+                </div>
+            `;
+        }
+        return '';
+    }
+
+    function setStar(n) {
+        selectedRating = n;
+        const stars = document.querySelectorAll('#star_box i');
+        stars.forEach((s, i) => s.style.color = (i < n) ? 'var(--warning)' : '#ccc');
+    }
+
+    async function submitReview(taskId, role) {
+        const text = document.getElementById('rev_text').value;
+        await fetch('/api/task/review', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ task_id: taskId, role, rating: selectedRating, text })
+        });
+        alert("Review submitted!");
+        location.reload();
+    }
+
+    async function postComment(taskId) {
         const text = document.getElementById('comment_input').value;
         if(!text) return;
-        if(!user) return alert("Please sign in to leave a comment.");
-        const c = { user_name: user.anonymous_name, text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
-        
-        await fetch('/api/task/comment', { 
-            method:'POST', 
-            headers:{'Content-Type':'application/json'}, 
-            body:JSON.stringify({ task_id: activeTaskId, comment: c }) 
+        await fetch('/api/task/comment', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ task_id: taskId, comment: { user: user.anonymous_name, text, time: new Date() } })
         });
-        
-        document.getElementById('comment_input').value = "";
-        const t = marketTasks.find(x => x._id === activeTaskId);
-        if(!t.comments) t.comments = []; t.comments.push(c);
-        renderComments(t.comments);
+        location.reload();
     }
 
-    // 4. 核心功能 (注册/发布/接单)
-    async function sendCode() {
-        const email = document.getElementById('r_email').value;
-        if(!email) return alert("Please enter email first");
-        const res = await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
+    // --- 其他工具函数 ---
+    async function acceptTask(id) {
+        await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, status:'assigned', helper_id:user.email})});
+        navigate('profile');
+    }
+    async function nukeDatabase() { if(prompt("Type YES to wipe")==="YES") { await fetch('/api/dev/nuke', {method:'POST'}); localStorage.clear(); location.reload(); }}
+    async function loadProfile() {
+        document.getElementById('u_name').innerText = user.anonymous_name;
+        const res = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
         const d = await res.json();
-        if(d.success) { sentCode = d.code; alert("Code sent! (Check your email)"); }
+        document.getElementById('my_posts').innerHTML = d.list.map(t => `<div class="card"><b>${t.reward}</b> - ${t.status} <button class="btn btn-outline" style="width:auto; padding:5px" onclick="showTaskDetail('${t._id}')">View/Review</button></div>`).join('');
     }
-
     document.getElementById('regForm').onsubmit = async e => {
         e.preventDefault();
-        console.log("🚀 Submit registration...");
-        if(document.getElementById('r_code').value !== sentCode) return alert("Invalid Code");
-        if(document.getElementById('r_pwd').value !== document.getElementById('r_pwd2').value) return alert("Password mismatch");
-        
-        const b = { 
-            full_name: document.getElementById('r_full').value, 
-            anonymous_name: document.getElementById('r_anon').value,
-            email: document.getElementById('r_email').value,
-            phone: document.getElementById('r_phone').value, // 现在这里不会报错了
-            password: document.getElementById('r_pwd').value
-        };
-        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        if(res.ok) { alert("Registration successful! Please log in."); navigate('login'); }
+        const b = { full_name: document.getElementById('r_full').value, anonymous_name: document.getElementById('r_anon').value, email: document.getElementById('r_email').value, phone: document.getElementById('r_phone').value, password: document.getElementById('r_pwd').value };
+        await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
+        navigate('login');
     };
-
     document.getElementById('loginForm').onsubmit = async e => {
         e.preventDefault();
         const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_email').value, password: document.getElementById('l_pwd').value})});
         const d = await res.json();
-        if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('hall'); } else alert("Login failed");
+        if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); }
     };
-
-    document.getElementById('taskForm').onsubmit = async e => {
-        e.preventDefault();
-        const btn = document.getElementById('btnPost'); btn.disabled = true; btn.innerText = "Uploading...";
-        
-        const f = new FormData();
-        f.append('publisher_id', user.email);
-        f.append('from_addr', (document.getElementById('p_from').dataset.gps || "") + "@@" + document.getElementById('p_from').value);
-        f.append('to_addr', (document.getElementById('p_to').dataset.gps || "") + "@@" + document.getElementById('p_to').value);
-        f.append('move_date', document.getElementById('p_date').value);
-        f.append('reward', document.getElementById('p_reward').value);
-        f.append('phone', document.getElementById('p_phone').value);
-        f.append('items_desc', document.getElementById('p_desc').value);
-        f.append('elevator', document.getElementById('p_lift').value);
-        
-        const files = document.getElementById('p_file').files;
-        for(let i=0; i<files.length; i++) f.append('task_images', files[i]);
-
-        const res = await fetch('/api/task/create', { method:'POST', body:f });
-        if(res.ok) { alert("Success! Your task is now live."); navigate('hall'); }
-        btn.disabled = false; btn.innerText = "Publish Task";
-    };
-
-    async function acceptTask(id) {
-        if(!confirm("Are you sure you want to help with this move?")) return;
-        await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, status:'assigned', helper_id:user.email})});
-        document.getElementById('taskModal').style.display = 'none';
-        navigate('profile');
-    }
-
-    // 5. 开发者一键重置
-    async function nukeDatabase() {
-        if(prompt("DANGER! Type YES to wipe all accounts and tasks") !== "YES") return;
-        await fetch('/api/dev/nuke', { method:'POST' });
-        localStorage.clear(); location.reload();
-    }
-
-    async function loadProfile() {
-        document.getElementById('u_name').innerText = user.anonymous_name;
-        document.getElementById('u_email').innerText = user.email;
-        document.getElementById('u_avatar').innerText = user.anonymous_name[0].toUpperCase();
-        const res = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
-        const d = await res.json();
-        document.getElementById('my_posts').innerHTML = d.list.filter(t => t.publisher_id === user.email).map(t => `<div class="list-row"><div><b>${t.reward}</b> - ${t.status}</div><button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="cancelTask('${t._id}', 'delete')"><i class="fas fa-trash"></i></button></div>`).join('') || 'None';
-        document.getElementById('my_shifts').innerHTML = d.list.filter(t => t.helper_id === user.email).map(t => `<div class="list-row"><div><b>${t.reward}</b></div><button class="btn btn-outline" style="width:auto; padding:5px 10px;" onclick="cancelTask('${t._id}', 'unassign')">Quit</button></div>`).join('') || 'None';
-    }
-
-    async function cancelTask(id, type) { if(confirm("Are you sure?")) { await fetch('/api/task/cancel', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, type:type})}); loadProfile(); } }
-    function closeTaskModal(e) { if(e.target.id === 'taskModal') e.target.style.display = 'none'; }
 
     updateMenu(); navigate('home');
 </script>
