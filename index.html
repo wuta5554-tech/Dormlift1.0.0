@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V9.0.3 Ultimate Hub Edition (8pt Grid)
+           DESIGN SYSTEM: V9.0.4 Ultimate Hub Edition (8pt Grid)
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -33,14 +33,14 @@
             --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
         }
 
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
         
         /* SPA Transition Animation */
         .page { display: none !important; opacity: 0; }
         .page.active { display: block !important; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Navigation: Glassmorphism */
+        /* Navigation: Glassmorphism (Req-5.2) */
         nav { 
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); 
             padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; 
@@ -57,7 +57,7 @@
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
         /* =============================================================
-           MISSION HUB: Timeline Strip Layout (Optimized Density)
+           MISSION HUB: Timeline Strip Layout (Req-4.1 Optimized)
         ============================================================= */
         .hub-container { display: flex; flex-direction: column; gap: 1rem; }
         .hub-row { 
@@ -81,12 +81,21 @@
         .strip-header { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.05rem; color: var(--dark); }
         .strip-header i { color: var(--primary); font-size: 0.85rem; }
         .strip-route { font-size: 0.88rem; color: var(--muted); display: flex; align-items: center; gap: 10px; font-weight: 500; }
-        .strip-route i { font-size: 0.7rem; opacity: 0.5; }
         .strip-inventory { font-size: 0.85rem; color: var(--text); background: #f8fafc; padding: 6px 14px; border-radius: 8px; display: inline-block; width: fit-content; border: 1px solid #f1f5f9; }
 
         .reward-col { text-align: right; font-size: 1.5rem; font-weight: 900; color: var(--success); letter-spacing: -0.5px; }
 
-        /* Interactive Components */
+        /* Premium Map Styling (Req-2.2 Enhanced) */
+        #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; }
+        .route-info-strip { 
+            background: var(--dark); color: white; padding: 1.25rem 2rem; border-radius: 0 0 1.5rem 1.5rem; 
+            display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; 
+            border-bottom: 4px solid var(--primary); 
+        }
+        .route-info-strip span { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; letter-spacing: 0.5px; }
+        .route-info-strip i { color: var(--primary); }
+
+        /* Forms & Interactive Components (Req-1.1/2.4) */
         .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; justify-content: center; transition: 0.3s; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4); }
         .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
@@ -98,25 +107,27 @@
         input:focus { border-color: var(--primary); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
         label { font-size: 0.8rem; font-weight: 800; color: var(--muted); margin-bottom: 0.6rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Modal & Infinite Threads */
+        /* Modal & Infinite Threads (Req-4.4/9.3) */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; backdrop-filter: blur(12px); align-items: center; justify-content: center; }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
         .interaction-box { background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6; }
         .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
         .comment-reply { margin-left: 3.5rem; margin-top: 1rem; border-left: 4px solid var(--primary); padding-left: 1.5rem; background: #fafafa; border-radius: 0 1.2rem 1.2rem 0; }
         .reply-btn { font-size: 0.7rem; color: var(--primary); font-weight: 800; cursor: pointer; text-transform: uppercase; margin-left: 15px; }
-        
-        #map { height: 420px; border-radius: 1.5rem; margin-bottom: 2rem; border: 2px solid #e2e8f0; z-index: 10; }
+        .reply-hint { display: none; background: #eef2ff; padding: 12px 20px; border-radius: 12px; margin-bottom: 15px; font-size: 0.88rem; border-left: 6px solid var(--primary); }
+
         .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
         .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; border: 2px solid #f1f5f9; cursor: pointer; flex-shrink: 0; transition: 0.3s; }
         .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); }
+
+        .leaflet-routing-container { display: none !important; }
     </style>
 </head>
 <body>
 
 <nav>
     <a class="brand" onclick="navigate('home')">
-        <div class="brand-icon"><i class="fas fa-box-open"></i></div>
+        <div class="brand-icon"><i class="fas fa-truck-fast"></i></div>
         <div class="brand-text">DormLift Pro</div>
     </a>
     <div class="nav-links" id="menu"></div>
@@ -125,8 +136,8 @@
 <div class="container">
     <div id="home" class="page active">
         <section class="card" style="text-align:center; padding: 7rem 2rem; border:none; background: radial-gradient(circle at top right, #ffffff 0%, #f1f5f9 100%);">
-            <h1 style="font-size:4rem; margin:0; line-height:1; letter-spacing:-2.5px;">Peer Logistics,<br><span style="color:var(--primary)">Perfectly Engineered.</span></h1>
-            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">The trusted, building-to-building logistics hub for University of Auckland students.</p>
+            <h1 style="font-size:4rem; margin:0; line-height:1; letter-spacing:-2.5px;">Campus Logistics,<br><span style="color:var(--primary)">Perfectly Engineered.</span></h1>
+            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">Verified, building-to-building logistics hub for University of Auckland students.</p>
             <div style="display:flex; justify-content:center; gap:1.5rem;">
                 <button class="btn" style="padding: 1.2rem 4.5rem;" onclick="navigate('post-task')">Post Mission</button>
                 <button class="btn btn-outline" style="padding: 1.2rem 4.5rem;" onclick="navigate('hall')">Mission Hub</button>
@@ -144,26 +155,35 @@
     </div>
 
     <div id="post-task" class="page">
-        <div class="card">
-            <h2 style="margin-top:0; font-size:2rem;">Broadcast New Mission</h2>
-            <div id="map"></div>
-            <div id="route_info" style="text-align:center; padding:15px; background:rgba(79, 70, 229, 0.1); border-radius:14px; color:var(--primary); font-weight:800; margin-bottom:2.5rem; border: 1.5px dashed var(--primary);">📍 Please click the map to identify Pickup & Destination buildings</div>
+        <div class="card" style="padding:0; overflow:hidden;">
+            <div style="padding: 2.5rem 3rem 1.5rem;">
+                <h2 style="margin:0; font-size:2rem;">Broadcast New Mission</h2>
+                <p style="color:var(--muted); font-size:0.9rem;">Mark buildings on the map to calculate real driving distance & estimated time.</p>
+            </div>
             
-            <form id="taskForm">
+            <div id="map"></div>
+            <div class="route-info-strip">
+                <span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal">0.00</b> km</span>
+                <span><i class="fas fa-hourglass-half"></i> EST. DRIVING: <b id="timeVal">0</b> min</span>
+            </div>
+
+            <form id="taskForm" style="padding: 0 3rem 3rem;">
                 <div class="form-grid">
-                    <div><label>Pickup (Auto-filled via Map)</label><input type="text" id="p_from" readonly required placeholder="Pin on map"></div>
-                    <div><label>Destination (Auto-filled via Map)</label><input type="text" id="p_to" readonly required placeholder="Pin on map"></div>
+                    <div><label>Pickup Building (Auto-fetched)</label><input type="text" id="p_from" readonly required placeholder="Pin start on map"></div>
+                    <div><label>Destination Building (Auto-fetched)</label><input type="text" id="p_to" readonly required placeholder="Pin end on map"></div>
                 </div>
                 <div class="form-grid">
-                    <div><label>Move Date & Precision Time</label><input type="datetime-local" id="p_date" required></div>
-                    <div><label>Compensation Offer (NZD)</label><input type="text" id="p_reward" placeholder="e.g. $45" required></div>
+                    <div><label>Moving Date & Precision Time</label><input type="datetime-local" id="p_date" required></div>
+                    <div><label>Offer Reward (NZD)</label><input type="text" id="p_reward" placeholder="e.g. $45" required></div>
                 </div>
                 <label>Mission Inventory & Item Details</label>
-                <textarea id="p_desc" rows="4" placeholder="List items (e.g. 3 boxes, 1 desk). Note stairs or parking constraints." required></textarea>
+                <textarea id="p_desc" rows="4" placeholder="List items (e.g. 3 boxes, 1 desk). Describe any stairs or parking constraints." required></textarea>
+                
                 <label>Evidence Photos (Max 5)</label>
                 <input type="file" id="p_file" multiple accept="image/*" onchange="handlePreview(event)">
                 <div id="p_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:2rem; padding:1.5rem; font-size:1.1rem;">Post to Mission Hub</button>
+                
+                <button type="submit" class="btn" style="width:100%; margin-top:2rem; padding:1.5rem; font-size:1.1rem;">Broadcast to Hub</button>
             </form>
         </div>
     </div>
@@ -178,9 +198,9 @@
             </div>
         </div>
         <div class="card" style="border-left: 8px solid var(--warning); background: linear-gradient(to right, #fffbeb, #ffffff);">
-            <h3 style="margin-top:0;">Reputation Node</h3>
+            <h3 style="margin:0;">Reputation Node</h3>
             <div style="font-size:3.5rem; font-weight:900; color:var(--dark);">★ <span id="p_rating">5.0</span></div>
-            <p style="color:var(--muted); font-weight:600;">Accumulated Score based on <b id="p_task_count">0</b> fulfillments</p>
+            <p style="color:var(--muted); font-weight:600;">System verified student credit based on <b id="p_task_count">0</b> fulfillments</p>
         </div>
         <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:5rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
     </div>
@@ -202,9 +222,12 @@
                     <input type="email" id="r_email" required style="margin:0">
                     <button type="button" class="btn btn-outline btn-sm" style="width:140px;" onclick="sendCode()">Get Code</button>
                 </div>
-                <input type="text" id="r_code" placeholder="Enter verification code" required>
-                <input type="password" id="r_pwd" placeholder="Create Hub Password" required>
-                <button type="submit" class="btn" style="width:100%; margin-top:2rem; padding:1.2rem; font-size:1.1rem;">Authorize Account</button>
+                <div class="form-grid">
+                    <div><label>Verification Code</label><input type="text" id="r_code" required></div>
+                    <div><label>Phone Number</label><input type="text" id="r_phone" required></div>
+                </div>
+                <label>Create Secure Password</label><input type="password" id="r_pwd" required>
+                <button type="submit" class="btn" style="width:100%; margin-top:2rem; padding:1.2rem; font-size:1.1rem;">Authorize & Join</button>
             </form>
         </div>
     </div>
@@ -215,7 +238,7 @@
             <form id="loginForm">
                 <label>Email Address / SID</label><input type="text" id="l_user" required>
                 <label>Password</label><input type="password" id="l_pwd" required>
-                <button type="submit" class="btn" style="width:100%; margin-top:1.5rem;">Access Dashboard</button>
+                <button type="submit" class="btn" style="width:100%; margin-top:1.5rem;">Access Hub</button>
             </form>
             <p style="text-align:center; margin-top:2rem; font-size:0.95rem;">New to DormLift? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('register')">Register Now</b></p>
         </div>
@@ -231,16 +254,16 @@
         <div id="m_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
         
         <div id="m_interaction" class="interaction-box">
-            <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="margin-right:10px; color:var(--primary);"></i> Mission Thread</h4>
+            <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="margin-right:10px; color:var(--primary);"></i> Mission Discussion</h4>
             <div id="c_list" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; scrollbar-width:thin;"></div>
             
-            <div id="reply_hint" style="display:none; background:#eef2ff; padding:12px 20px; border-radius:12px; margin-bottom:15px; font-size:0.88rem; border-left:6px solid var(--primary);">
+            <div id="reply_hint" class="reply-hint">
                 Replying to <b id="reply_name"></b> 
-                <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800;">[Cancel Reply]</span>
+                <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span>
             </div>
             
             <div style="display:flex; gap:12px;">
-                <input type="text" id="c_in" placeholder="Ask publisher or reply to discussion..." style="margin:0; height:54px;">
+                <input type="text" id="c_in" placeholder="Ask publisher or reply..." style="margin:0; height:54px;">
                 <button class="btn btn-sm" style="width:120px; height:54px;" onclick="postComment()">Send</button>
             </div>
         </div>
@@ -265,11 +288,12 @@
     }
 
     function renderMenu() {
-        const menu = document.getElementById('menu');
+        const menu = document.getElementById('mainMenu');
+        const mNode = document.getElementById('menu');
         if(!user) {
-            menu.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Hub</a><a onclick="navigate('login')">Login</a>`;
+            mNode.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Hub</a><a onclick="navigate('login')">Login</a>`;
         } else {
-            menu.innerHTML = `
+            mNode.innerHTML = `
                 <span class="user-tag"><i class="fas fa-user-graduate"></i> ${user.anonymous_name}</span>
                 <a onclick="navigate('hall')">Market</a><a onclick="navigate('post-task')">Post</a><a onclick="navigate('profile')">Profile</a>
                 <a onclick="logout()" style="color:var(--danger); font-weight:800;">Logout</a>`;
@@ -285,28 +309,57 @@
         });
     }
 
-    // ======================= 2. REVERSE GEOCODING ENGINE (Nominatim) =======================
+    // ======================= 2. REFINED MAP ENGINE (CartoDB Voyager + OSRM) =======================
     function initMap() {
         if(map) return;
         setTimeout(() => {
             map = L.map('map', {zoomControl: false}).setView([-36.8509, 174.7645], 14);
             L.control.zoom({position: 'topright'}).addTo(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; CARTO'
+            }).addTo(map);
 
             map.on('click', async e => {
+                // RESET Mechanism: Clean slate on 3rd click (Req-2.1/84)
                 if (markers.length >= 2) {
                     markers.forEach(m => map.removeLayer(m)); markers = [];
                     if (routingControl) { map.removeControl(routingControl); routingControl = null; }
+                    document.getElementById('distVal').innerText = "0.00";
+                    document.getElementById('timeVal').innerText = "0";
+                    document.getElementById('p_from').value = "";
+                    document.getElementById('p_to').value = "";
                 }
-                let m = L.marker(e.latlng).addTo(map); markers.push(m);
 
-                // Fetch Human-Readable Campus Addresses (Req-10.1)
+                let customIcon = L.divIcon({
+                    className: 'custom-pin',
+                    html: `<div style="background:white; border:2px solid var(--primary); border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.2);"><i class="fas ${markers.length===0?'fa-street-view':'fa-flag-checkered'}" style="color:var(--primary); font-size:14px;"></i></div>`,
+                    iconSize: [30, 30], iconAnchor: [15, 30]
+                });
+
+                let m = L.marker(e.latlng, {icon: customIcon}).addTo(map);
+                markers.push(m);
+
+                // NOMINATIM REVERSE GEOCODING (Building Recognition)
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
                 const d = await res.json();
-                const buildingName = d.display_name.split(',').slice(0, 3).join(',');
+                const address = d.display_name.split(',').slice(0, 3).join(',');
 
-                if (markers.length === 1) document.getElementById('p_from').value = buildingName;
-                else if (markers.length === 2) document.getElementById('p_to').value = buildingName;
+                if (markers.length === 1) document.getElementById('p_from').value = address;
+                else if (markers.length === 2) {
+                    document.getElementById('p_to').value = address;
+                    // CALL OSRM ROUTING ENGINE (Req-2.2/87)
+                    routingControl = L.Routing.control({
+                        waypoints: [markers[0].getLatLng(), markers[1].getLatLng()],
+                        lineOptions: { styles: [{ color: '#4f46e5', weight: 6, opacity: 0.8 }] },
+                        createMarker: () => null,
+                        show: false, addWaypoints: false
+                    }).on('routesfound', ev => {
+                        const sum = ev.routes[0].summary;
+                        document.getElementById('distVal').innerText = (sum.totalDistance / 1000).toFixed(2);
+                        document.getElementById('timeVal').innerText = Math.round(sum.totalTime / 60);
+                    }).addTo(map);
+                }
             });
         }, 300);
     }
@@ -322,46 +375,46 @@
             <div class="hub-row" onclick="openDetails('${t._id}')">
                 <div class="posted-col">PUB<span>${pubDate}</span></div>
                 <div class="details-strip">
-                    <div class="strip-header"><i class="far fa-clock"></i> Scheduled: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
+                    <div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
                     <div class="strip-route">${t.from_addr} <i class="fas fa-arrow-right"></i> ${t.to_addr}</div>
-                    <div class="strip-inventory"><b>Inventory:</b> ${t.items_desc.substring(0, 75)}...</div>
+                    <div class="strip-inventory"><b>Items:</b> ${t.items_desc.substring(0, 75)}...</div>
                 </div>
                 <div class="reward-col">${t.reward}</div>
             </div>`;
-        }).join('') || '<div style="padding:5rem; text-align:center; color:grey; font-weight:600;">No active missions in Hub. Check back later!</div>';
+        }).join('') || '<div style="padding:5rem; text-align:center; color:grey; font-weight:600;">No active missions in Hub.</div>';
     }
 
     // ======================= 4. THREADED COMMENTS & MODAL =======================
     async function openDetails(id) {
         activeTaskId = id;
-        // Forced truth sync from server (Req-9.1)
+        // Forced Server Sync (Req-9.1)
         const res = await fetch('/api/task/all'); const d = await res.json(); updatePool(d.list);
         let t = globalTaskPool.find(x => x._id === id);
         if(!t) {
             const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
             const d2 = await resT.json(); updatePool(d2.list); t = globalTaskPool.find(x => x._id === id);
         }
-        if(!t) return alert("Task status unavailable.");
+        if(!t) return alert("Task sync failed.");
 
-        document.getElementById('m_header').innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.6rem; letter-spacing:-1.5px;">${t.reward} Mission</h2><span class="user-pill" style="background:var(--primary); color:white; border:none;">${t.status.toUpperCase()}</span></div>`;
+        document.getElementById('m_header').innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.6rem; letter-spacing:-1.5px;">${t.reward} Mission</h2><span class="user-tag" style="background:var(--primary); color:white; border:none;">${t.status.toUpperCase()}</span></div>`;
         const imgs = JSON.parse(t.img_url || '[]');
-        document.getElementById('m_thumbs').innerHTML = imgs.map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('') || '<small>No evidence photos provided.</small>';
+        document.getElementById('m_thumbs').innerHTML = imgs.map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('') || '<small>No evidence photos.</small>';
         
         document.getElementById('m_body').innerHTML = `
             <div style="display:flex; flex-direction:column; gap:12px;">
                 <p><b>📍 Pickup:</b> ${t.from_addr}</p>
                 <p><b>🏁 Destination:</b> ${t.to_addr}</p>
-                <p><b>📝 Complete Inventory:</b> ${t.items_desc}</p>
-                <div style="margin-top:1rem; font-size:0.8rem; color:var(--muted); font-weight:700;">Publisher ID: ${t.publisher_id}</div>
+                <p><b>📝 Inventory:</b> ${t.items_desc}</p>
+                <div style="font-size:0.8rem; color:var(--muted); font-weight:700;">Publisher: ${t.publisher_id}</div>
             </div>`;
 
         renderThreadedComments(t.comments || []);
         
         const foot = document.getElementById('m_footer');
-        let footBtns = '';
-        if(t.status === 'pending' && t.publisher_id !== user.email) footBtns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="workflow('${t._id}', 'assigned')">Accept Mission & Help</button>`;
-        if(t.publisher_id === user.email) footBtns += `<button class="btn btn-danger" onclick="deleteTask('${t._id}')">Withdraw Task</button>`;
-        foot.innerHTML = footBtns || '<span style="font-size:0.85rem; color:grey; font-weight:700;">MISSION ARCHIVED / READ-ONLY</span>';
+        let btns = '';
+        if(t.status === 'pending' && t.publisher_id !== user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="workflow('${t._id}', 'assigned')">Accept Mission & Help</button>`;
+        if(user.email === t.publisher_id) btns += `<button class="btn btn-danger" onclick="deleteTask('${t._id}')">Withdraw Task</button>`;
+        foot.innerHTML = btns || '<span style="font-weight:700; color:grey;">ARCHIVED MISSION</span>';
         
         document.getElementById('taskModal').style.display = 'flex';
     }
@@ -380,13 +433,11 @@
                         <small class="comment-meta"><b>${r2.user}</b> replied to <b>${p.user}</b></small>
                         <div>${r2.text} <span class="reply-btn" onclick="setReply('${r2.id}', '${r2.user}')">Reply</span></div>
                         ${comments.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `
-                            <div class="comment-item comment-reply" style="border-left-color:var(--warning)">
-                                <small class="comment-meta"><b>${r3.user}</b> replied to <b>${r2.user}</b></small>
-                                <div>${r3.text}</div>
-                            </div>`).join('')}
+                            <div class="comment-item comment-reply" style="border-left-color:var(--warning)"><b>${r3.user}</b>: ${r3.text}</div>
+                        `).join('')}
                     </div>`).join('')}
             </div>`;
-        }).join('') || '<p style="color:grey; text-align:center; padding:2rem; font-weight:600;">No discussion yet. Ask the publisher!</p>';
+        }).join('') || '<p style="color:grey; text-align:center; padding:2rem;">No discussion yet.</p>';
     }
 
     function setReply(id, name) { activeReplyId = String(id); document.getElementById('reply_hint').style.display='block'; document.getElementById('reply_name').innerText=name; document.getElementById('c_in').focus(); }
@@ -399,17 +450,17 @@
         document.getElementById('c_in').value = ""; cancelReply(); openDetails(activeTaskId);
     }
 
-    // ======================= 5. CORE WORKFLOW & UTILS =======================
+    // ======================= 5. CORE WORKFLOW & API =======================
     async function workflow(id, status) {
-        if(!confirm("Are you sure? This commitment is binding within the UoA peer network.")) return;
+        if(!confirm("Once accepted, you are committed to the UoA peer protocol.")) return;
         const body = { task_id: id, status };
         if(status === 'assigned') body.helper_id = user.email;
         const res = await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
-        if(res.ok) { alert("🎉 Mission Accepted! Go to Dashboard to coordinate."); document.getElementById('taskModal').style.display='none'; navigate('profile'); }
+        if(res.ok) { alert("🎉 Mission Secured!"); document.getElementById('taskModal').style.display='none'; navigate('profile'); }
     }
 
     async function deleteTask(id) {
-        if(!confirm("Permanently withdraw this mission from Hub?")) return;
+        if(!confirm("Permanently remove mission?")) return;
         await fetch('/api/task/delete', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, email:user.email})});
         document.getElementById('taskModal').style.display='none'; loadHall();
     }
@@ -417,8 +468,8 @@
     async function loadProfileData() {
         const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json();
         const u = d.user;
-        const fields = [['UoA Student ID', u.student_id], ['Full Name', `${u.first_name} ${u.given_name}`], ['Display Nickname', u.anonymous_name], ['Gender', u.gender], ['Campus Email', u.email], ['Contact Phone', u.phone], ['Average Credit', `★ ${u.rating_avg.toFixed(1)}`]];
-        document.getElementById('profileDetails').innerHTML = fields.map(f => `<div><label>${f[0]}</label><div style="font-weight:700; font-size:1.1rem; color:var(--dark);">${f[1]}</div></div>`).join('');
+        const fields = [['Student ID', u.student_id], ['Full Name', `${u.first_name} ${u.given_name}`], ['Nickname', u.anonymous_name], ['Gender', u.gender], ['Email', u.email], ['Phone', u.phone], ['Credit', `★ ${u.rating_avg.toFixed(1)}`]];
+        document.getElementById('profileDetails').innerHTML = fields.map(f => `<div><label>${f[0]}</label><div style="font-weight:700; color:var(--dark);">${f[1]}</div></div>`).join('');
         document.getElementById('p_rating').innerText = u.rating_avg.toFixed(1);
         document.getElementById('p_task_count').innerText = u.task_count;
     }
@@ -426,25 +477,32 @@
     async function sendCode() {
         const email = document.getElementById('r_email').value; if(!email) return alert("Email required");
         const res = await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
-        const d = await res.json(); if(d.success) alert("6-digit code sent! Check your university email.");
+        if(res.ok) alert("6-digit code sent to UoA email.");
     }
 
     document.getElementById('regForm').onsubmit = async e => {
         e.preventDefault();
-        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: '021000000', gender: 'Male' };
+        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, gender: 'Male' };
         const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        if(res.ok) { alert("Registration Success! Please Login."); navigate('login'); } else alert("Error: Check code or fields.");
+        if(res.ok) { alert("Registration Success!"); navigate('login'); }
     };
 
     document.getElementById('loginForm').onsubmit = async e => {
         e.preventDefault();
         const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})});
-        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Credentials Invalid.");
+        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); }
     };
 
     document.getElementById('taskForm').onsubmit = async e => {
-        e.preventDefault(); const f = new FormData();
-        f.append('publisher_id', user.email); f.append('from_addr', document.getElementById('p_from').value); f.append('to_addr', document.getElementById('p_to').value); f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1]); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value);
+        e.preventDefault();
+        const f = new FormData();
+        f.append('publisher_id', user.email);
+        f.append('from_addr', document.getElementById('p_from').value);
+        f.append('to_addr', document.getElementById('p_to').value);
+        f.append('move_date', document.getElementById('p_date').value.split('T')[0]);
+        f.append('move_time', document.getElementById('p_date').value.split('T')[1]);
+        f.append('reward', document.getElementById('p_reward').value);
+        f.append('items_desc', document.getElementById('p_desc').value);
         Array.from(document.getElementById('p_file').files).forEach(fi => f.append('task_images', fi));
         await fetch('/api/task/create', { method:'POST', body: f }); navigate('hall');
     };
@@ -453,7 +511,8 @@
         const strip = document.getElementById('p_preview'); strip.innerHTML = "";
         Array.from(e.target.files).slice(0, 5).forEach(f => {
             const r = new FileReader(); r.onload = ev => {
-                const img = document.createElement('img'); img.src = ev.target.result; img.className = 'thumb-img'; strip.appendChild(img);
+                const img = document.createElement('img'); img.src = ev.target.result;
+                img.className = 'thumb-img'; strip.appendChild(img);
             }; r.readAsDataURL(f);
         });
     }
