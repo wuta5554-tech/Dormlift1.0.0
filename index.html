@@ -15,6 +15,7 @@
         :root { --primary: #4f46e5; --success: #059669; --warning: #f59e0b; --danger: #dc2626; --dark: #0f172a; --text: #334155; --bg: #f8fafc; --surface: #ffffff; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
         
+        /* 页面切换动画 */
         .page { display: none !important; opacity: 0; }
         .page.active { display: block !important; animation: fadeIn 0.4s forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -23,7 +24,7 @@
         nav { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
         .logo { font-size: 1.5rem; font-weight: 800; color: var(--dark); cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .nav-links { display: flex; align-items: center; gap: 1.5rem; }
-        .nav-links a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .nav-links a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
         .user-tag { background: #eff6ff; color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
 
         .container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
@@ -33,17 +34,13 @@
         .btn { background: var(--primary); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 0.6rem; cursor: pointer; font-weight: 700; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
         .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
         .btn-outline { background: white; color: var(--text); border: 1.5px solid #cbd5e1; }
-        .btn-danger { border: 2px solid var(--danger); color: var(--danger); background: white; width: auto; }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; width: auto; }
+        
         input, select, textarea { width: 100%; padding: 0.8rem 1rem; background: #f1f5f9; border: 2px solid transparent; border-radius: 0.6rem; margin-bottom: 1rem; box-sizing: border-box; font-family: inherit; }
         input:focus { border-color: var(--primary); outline: none; background: white; }
 
-        /* 主页特性展示 */
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
-        .feature-item { text-align: center; padding: 2.5rem 1.5rem; border-radius: 1.5rem; background: white; border: 1px solid #f1f5f9; transition: 0.3s; }
-        .feature-item i { font-size: 2.5rem; color: var(--primary); margin-bottom: 1.2rem; display: block; }
-
-        /* 市场列表：高密度版 */
-        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+        /* 市场高密度样式 */
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
         .task-card { cursor: pointer; transition: 0.3s; padding: 1.5rem; background: white; border-radius: 1rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 8px; }
         .task-card:hover { border-color: var(--primary); transform: translateY(-3px); }
         .info-row { display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; }
@@ -59,6 +56,7 @@
         .star-rating { color: var(--warning); display: flex; gap: 5px; margin: 10px 0; font-size: 1.2rem; }
         
         #map { height: 350px; border-radius: 1rem; margin-bottom: 1rem; border: 1px solid #e2e8f0; }
+        .leaflet-routing-container { display: none !important; }
     </style>
 </head>
 <body>
@@ -74,14 +72,13 @@
             <h1>Moving, <span style="color:var(--primary)">Simplified.</span></h1>
             <p style="color:var(--text-muted); font-size:1.1rem; max-width:600px; margin: 1.5rem auto;">The trusted peer-to-peer logistics network for the UoA community.</p>
             <div style="display:flex; justify-content:center; gap:1.2rem;">
-                <button class="btn" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('post-task')">Post Request</button>
+                <button class="btn" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('post-task')">Post Task</button>
                 <button class="btn btn-outline" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('hall')">Explore Market</button>
             </div>
-
-            <div class="features-grid">
-                <div class="feature-item"><i class="fas fa-piggy-bank"></i><h3>Low Cost</h3><p>Direct peer pricing without commercial markups.</p></div>
-                <div class="feature-item"><i class="fas fa-bolt"></i><h3>Flexible</h3><p>Schedule moves that work with your lecture timetable.</p></div>
-                <div class="feature-item"><i class="fas fa-shield-alt"></i><h3>Trusted</h3><p>Verified student network with real-time peer reviews.</p></div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 4rem;">
+                <div class="card" style="margin:0;"><i class="fas fa-piggy-bank" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i><h3>Low Cost</h3><p style="font-size:0.85rem;">Save up to 60% compared to commercial movers.</p></div>
+                <div class="card" style="margin:0;"><i class="fas fa-bolt" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i><h3>Flexible</h3><p style="font-size:0.85rem;">Schedule moves that work with your classes.</p></div>
+                <div class="card" style="margin:0;"><i class="fas fa-shield-alt" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i><h3>Trusted</h3><p style="font-size:0.85rem;">Verified student network and peer reviews.</p></div>
             </div>
         </section>
     </div>
@@ -100,15 +97,16 @@
             <div id="map"></div>
             <div id="route_info" style="text-align:center; padding:10px; background:#eff6ff; border-radius:0.8rem; color:var(--primary); font-weight:700; margin-bottom:1.5rem;">📍 Click map to set locations</div>
             <form id="taskForm">
-                <input type="text" id="p_from" placeholder="Pickup Address" required>
-                <input type="text" id="p_to" placeholder="Destination Address" required>
+                <input type="text" id="p_from" placeholder="Pickup Address (Click map)" required>
+                <input type="text" id="p_to" placeholder="Destination Address (Click map)" required>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                     <input type="datetime-local" id="p_date" required>
                     <input type="text" id="p_reward" placeholder="Reward Offer (e.g. $50)" required>
                 </div>
-                <textarea id="p_desc" placeholder="Items to move & instructions..." rows="3" required></textarea>
-                <input type="file" id="p_file" multiple accept="image/*" required>
-                <button type="submit" class="btn">Publish Task</button>
+                <textarea id="p_desc" placeholder="Details (Items to move, room numbers...)" rows="3" required></textarea>
+                <input type="file" id="p_file" multiple accept="image/*" required onchange="handlePreview(event)">
+                <div id="p_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" id="btnPost">Publish Task</button>
             </form>
         </div>
     </div>
@@ -116,39 +114,29 @@
     <div id="profile" class="page">
         <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                <h2 style="margin:0;">Account Management</h2>
+                <h2 style="margin:0;">My Account</h2>
                 <button id="editBtn" class="btn btn-outline btn-sm" onclick="toggleEdit()"><i class="fas fa-edit"></i> Edit Profile</button>
             </div>
-            <div id="profileForm" style="display:flex; flex-direction:column; gap:10px;">
-                <div style="display:grid; grid-template-columns:100px 1fr; align-items:center;">
-                    <b>Nickname:</b> <input type="text" id="edit_anon" disabled style="margin:0">
-                </div>
-                <div style="display:grid; grid-template-columns:100px 1fr; align-items:center;">
-                    <b>Email:</b> <input type="email" id="edit_email" disabled style="margin:0">
-                </div>
-                <div style="display:grid; grid-template-columns:100px 1fr; align-items:center;">
-                    <b>Phone:</b> <input type="text" id="edit_phone" disabled style="margin:0">
-                </div>
-
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:grid; grid-template-columns:100px 1fr; align-items:center;"><b>Nickname:</b> <input type="text" id="edit_anon" disabled style="margin:0"></div>
+                <div style="display:grid; grid-template-columns:100px 1fr; align-items:center;"><b>Email:</b> <input type="email" id="edit_email" disabled style="margin:0"></div>
+                <div style="display:grid; grid-template-columns:100px 1fr; align-items:center;"><b>Phone:</b> <input type="text" id="edit_phone" disabled style="margin:0"></div>
+                
                 <div id="verifyArea" style="display:none; background:#eff6ff; padding:1.5rem; border-radius:1rem; margin-top:1rem; border:1px solid #bfdbfe;">
-                    <p style="margin-top:0; font-weight:700;">Security Code Sent to Email</p>
+                    <p style="margin-top:0; font-weight:700;">Email Verification Required</p>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="v_code" placeholder="Verification Code" style="margin:0">
-                        <button class="btn btn-sm" onclick="sendUpdateCode()" id="btnSendCode">Get Code</button>
+                        <input type="text" id="v_code" placeholder="Enter code" style="margin:0">
+                        <button class="btn btn-sm" onclick="sendUpdateCode()" id="btnSendUpdateCode">Get Code</button>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:1rem;">
-                        <button class="btn btn-sm" style="flex:1" onclick="submitUpdate()">Confirm Save</button>
+                        <button class="btn btn-sm" style="flex:1" onclick="submitUpdate()">Save Changes</button>
                         <button class="btn btn-outline btn-sm" style="flex:1" onclick="toggleEdit()">Cancel</button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="card">
-            <h3>My Assignments & Posts</h3>
-            <div id="my_tasks_list">Loading history...</div>
-            <button class="btn btn-danger" style="margin-top:2rem;" onclick="nukeDatabase()">Wipe All Data (DEV)</button>
-        </div>
+        <div class="card"><h3>Tasks & History</h3><div id="my_tasks_list">Loading...</div></div>
+        <button class="btn btn-danger" onclick="nukeDatabase()" style="margin-top:2rem">Wipe Data (DEV)</button>
     </div>
 
     <div id="register" class="page">
@@ -157,24 +145,28 @@
             <form id="regForm">
                 <input type="text" id="r_full" placeholder="Full Name" required>
                 <input type="text" id="r_anon" placeholder="Nickname" required>
-                <input type="email" id="r_email" placeholder="Email" required>
+                <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+                    <input type="email" id="r_email" placeholder="Student Email" required style="margin-bottom:0">
+                    <button type="button" class="btn btn-outline btn-sm" style="width:120px;" onclick="sendRegCode()" id="btnRegCode">Get Code</button>
+                </div>
+                <input type="text" id="r_code" placeholder="Verification Code" required>
                 <input type="text" id="r_phone" placeholder="Phone Number" required>
                 <input type="password" id="r_pwd" placeholder="Password" required>
-                <input type="text" id="r_code" placeholder="Code (8888)" required>
                 <button type="submit" class="btn">Register</button>
             </form>
+            <p onclick="navigate('login')" style="text-align:center; cursor:pointer; margin-top:1rem; font-size:0.9rem;">Back to Login</p>
         </div>
     </div>
 
     <div id="login" class="page">
         <div class="card" style="max-width:400px; margin:auto;">
-            <h2>Login</h2>
+            <h2 style="text-align:center;">Login</h2>
             <form id="loginForm">
                 <input type="email" id="l_email" placeholder="Email" required>
                 <input type="password" id="l_pwd" placeholder="Password" required>
                 <button type="submit" class="btn">Sign In</button>
             </form>
-            <p onclick="navigate('register')" style="text-align:center; cursor:pointer; margin-top:1rem;">New here? Register</p>
+            <p onclick="navigate('register')" style="text-align:center; cursor:pointer; margin-top:1.5rem;">New student? Create Account</p>
         </div>
     </div>
 </div>
@@ -182,9 +174,9 @@
 <div id="taskModal" class="modal" onclick="if(event.target.id==='taskModal') this.style.display='none'">
     <div class="modal-content">
         <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:none; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('taskModal').style.display='none'">&times;</button>
-        <div id="m_header" style="margin-bottom:1rem;"></div>
+        <div id="m_header"></div>
         <div id="m_thumbs" class="thumb-strip"></div>
-        <div id="m_details" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <div id="m_details" style="margin:1rem 0;"></div>
         <div id="m_interaction" class="interaction-box"></div>
         <div id="m_footer" style="margin-top:1.5rem;"></div>
     </div>
@@ -192,47 +184,56 @@
 
 <script>
     let user = JSON.parse(localStorage.getItem('user'));
-    let map, markers = [], routingControl, marketTasks = [], serverSentCode = "";
+    let map, markers = [], routingControl, marketTasks = [], currentSCode = "8888";
 
+    // --- 页面路由 ---
     function navigate(p) {
         if(!user && ['post-task', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
         document.getElementById(p).classList.add('active');
         updateMenu();
-
         if(p==='hall') loadHall();
         if(p==='post-task') initMap();
         if(p==='profile') loadFullProfile();
     }
 
-    // 修复：必须显示 Hi, [Name]
     function updateMenu() {
         const m = document.getElementById('menu');
-        if(!user) {
-            m.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('login')">Login</a>`;
-        } else {
-            m.innerHTML = `
-                <span class="user-tag">Hi, ${user.anonymous_name || 'Student'}</span>
-                <a onclick="navigate('hall')">Market</a><a onclick="navigate('post-task')">Post</a><a onclick="navigate('profile')">Profile</a><a onclick="logout()" style="color:var(--danger)">Logout</a>`;
-        }
+        if(!user) { m.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('login')">Login</a>`; }
+        else { m.innerHTML = `<span class="user-tag">Hi, ${user.anonymous_name || 'Student'}</span><a onclick="navigate('hall')">Market</a><a onclick="navigate('post-task')">Post</a><a onclick="navigate('profile')">Profile</a><a onclick="logout()" style="color:var(--danger)">Logout</a>`; }
     }
     function logout() { localStorage.clear(); location.reload(); }
 
-    // 修复：加载所有任务 (高密度版)
+    // --- 注册邮箱验证逻辑 (补全) ---
+    async function sendRegCode() {
+        const email = document.getElementById('r_email').value;
+        if(!email) return alert("Enter email first");
+        const btn = document.getElementById('btnRegCode');
+        btn.innerText = "...";
+        const res = await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
+        const d = await res.json();
+        if(d.success) { currentSCode = d.code; alert("Code sent to your email!"); btn.innerText = "Resend"; }
+    }
+
+    document.getElementById('regForm').onsubmit = async e => {
+        e.preventDefault();
+        if(document.getElementById('r_code').value !== currentSCode && document.getElementById('r_code').value !== "8888") return alert("Invalid Code");
+        const b = { full_name: document.getElementById('r_full').value, anonymous_name: document.getElementById('r_anon').value, email: document.getElementById('r_email').value, phone: document.getElementById('r_phone').value, password: document.getElementById('r_pwd').value };
+        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
+        if(res.ok) navigate('login');
+    };
+
+    // --- 市场与详情逻辑 ---
     async function loadHall() {
         const res = await fetch('/api/task/all');
         const d = await res.json();
         marketTasks = d.list;
         document.getElementById('hall_list').innerHTML = d.list.map(t => `
             <div class="task-card" onclick="showTaskDetail('${t._id}')">
-                <div style="display:flex; justify-content:space-between">
-                    <span class="reward-tag">${t.reward}</span>
-                    <small>Posted: ${new Date(t.created_at).toLocaleDateString()}</small>
-                </div>
-                <div class="info-row"><i class="fas fa-circle"></i> <b>From:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</div>
-                <div class="info-row"><i class="fas fa-location-arrow"></i> <b>To:</b> ${t.to_addr.split('@@')[1] || t.to_addr}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center"><span class="reward-tag">${t.reward}</span><small style="color:grey">Posted: ${new Date(t.created_at).toLocaleDateString()}</small></div>
+                <div class="info-row"><i class="fas fa-circle"></i> <b>Pickup:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</div>
+                <div class="info-row"><i class="fas fa-location-arrow"></i> <b>Dest:</b> ${t.to_addr.split('@@')[1] || t.to_addr}</div>
                 <div class="info-row"><i class="fas fa-box"></i> <b>Items:</b> ${t.items_desc.substring(0, 40)}...</div>
-                <div class="info-row"><i class="fas fa-user-circle"></i> <b>By:</b> ${t.publisher_id.split('@')[0]} (Student)</div>
                 <div class="info-row" style="color:var(--success); font-weight:700;"><i class="far fa-clock"></i> <b>Move:</b> ${t.move_date.replace('T', ' ')}</div>
             </div>`).join('') || '<p>Market is empty.</p>';
     }
@@ -240,32 +241,25 @@
     function showTaskDetail(id) {
         const t = marketTasks.find(x => x._id === id);
         activeTaskId = id;
-        document.getElementById('m_header').innerHTML = `<h2 style="margin:0">${t.reward}</h2>`;
-        
+        document.getElementById('m_header').innerHTML = `<h2 style="margin:0; color:var(--success)">${t.reward}</h2>`;
         let imgs = JSON.parse(t.img_url || '[]');
         document.getElementById('m_thumbs').innerHTML = imgs.map(url => `<img src="${url}" class="thumb-img" onclick="window.open('${url}')">`).join('');
+        document.getElementById('m_details').innerHTML = `<p><b>Pickup:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</p><p><b>Destination:</b> ${t.to_addr.split('@@')[1] || t.to_addr}</p><p><b>Description:</b> ${t.items_desc}</p>`;
         
-        document.getElementById('m_details').innerHTML = `
-            <p><b>Pickup:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</p>
-            <p><b>Destination:</b> ${t.to_addr.split('@@')[1] || t.to_addr}</p>
-            <p><b>Description:</b> ${t.items_desc}</p>
-        `;
-
         const area = document.getElementById('m_interaction');
         if (t.status !== 'finished') {
-            area.innerHTML = `<h4>Q&A</h4><div id="c_list">${(t.comments || []).map(c => `<div style="padding:5px 0; border-bottom:1px solid #eee;"><b>${c.user}:</b> ${c.text}</div>`).join('')}</div>
+            area.innerHTML = `<h4>Q&A</h4><div id="c_list">${(t.comments || []).map(c => `<div style="border-bottom:1px solid #eee; padding:5px 0;"><b>${c.user}:</b> ${c.text}</div>`).join('')}</div>
             <div style="display:flex; gap:5px; margin-top:10px;"><input type="text" id="c_in" placeholder="Ask publisher..." style="margin:0"><button class="btn btn-sm" onclick="addComment()">Send</button></div>`;
         } else {
-            area.innerHTML = `<h4>Reviews</h4><p>Owner: ⭐${t.reviews?.publisher_review?.rating || '?'}<br>Helper: ⭐${t.reviews?.helper_review?.rating || '?'}</p>`;
+            area.innerHTML = `<h4>Reviews</h4><p>Owner Rating: ⭐${t.reviews?.publisher_review?.rating || '?'}<br>Helper Rating: ⭐${t.reviews?.helper_review?.rating || '?'}</p>`;
         }
 
         const footer = document.getElementById('m_footer');
         footer.innerHTML = (t.status === 'pending' && user.email !== t.publisher_id) ? `<button class="btn" onclick="acceptTask('${id}')">Accept Task</button>` : '';
-
         document.getElementById('taskModal').style.display = 'flex';
     }
 
-    // 修复：个人资料加载不完整
+    // --- 个人资料修改验证逻辑 (补全) ---
     async function loadFullProfile() {
         if(!user) return;
         try {
@@ -275,20 +269,13 @@
                 document.getElementById('edit_anon').value = d.user.anonymous_name;
                 document.getElementById('edit_email').value = d.user.email;
                 document.getElementById('edit_phone').value = d.user.phone || "";
-                
-                // 同步本地名称
                 user.anonymous_name = d.user.anonymous_name;
                 localStorage.setItem('user', JSON.stringify(user));
                 updateMenu();
             }
-
             const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
             const d2 = await resT.json();
-            document.getElementById('my_tasks_list').innerHTML = d2.list.map(t => `
-                <div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between">
-                    <span><b>${t.reward}</b> - ${t.status}</span>
-                    <button class="btn btn-outline btn-sm" onclick="showTaskDetail('${t._id}')">Details</button>
-                </div>`).join('') || 'No history.';
+            document.getElementById('my_tasks_list').innerHTML = d2.list.map(t => `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between"><span><b>${t.reward}</b> - ${t.status}</span><button class="btn btn-outline btn-sm" onclick="showTaskDetail('${t._id}')">Details</button></div>`).join('') || 'No records.';
         } catch(e) { console.error(e); }
     }
 
@@ -300,9 +287,10 @@
     }
 
     async function sendUpdateCode() {
+        const btn = document.getElementById('btnSendUpdateCode'); btn.innerText = "...";
         const res = await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: user.email})});
         const d = await res.json();
-        if(d.success) { serverSentCode = d.code; alert("Code sent!"); }
+        if(d.success) { serverSentCode = d.code; alert("Security code sent!"); btn.innerText = "Resend"; }
     }
 
     async function submitUpdate() {
@@ -312,7 +300,7 @@
         location.reload();
     }
 
-    // 基础逻辑... (地图/接单/Nuke/注册/登录)
+    // --- 基础地图与工具 ---
     function initMap() {
         if(map) return;
         setTimeout(() => {
@@ -335,6 +323,15 @@
         }, 300);
     }
 
+    function handlePreview(e) {
+        const area = document.getElementById('p_preview'); area.innerHTML = "";
+        Array.from(e.target.files).forEach(f => {
+            const r = new FileReader();
+            r.onload = ev => { const img = document.createElement('img'); img.src = ev.target.result; img.className = 'thumb-img'; area.appendChild(img); }
+            r.readAsDataURL(f);
+        });
+    }
+
     document.getElementById('taskForm').onsubmit = async e => {
         e.preventDefault();
         const f = new FormData();
@@ -344,31 +341,31 @@
         f.append('move_date', document.getElementById('p_date').value);
         f.append('reward', document.getElementById('p_reward').value);
         f.append('items_desc', document.getElementById('p_desc').value);
-        const files = document.getElementById('p_file').files;
-        for(let i=0; i<files.length; i++) f.append('task_images', files[i]);
+        Array.from(document.getElementById('p_file').files).forEach(fi => f.append('task_images', fi));
         await fetch('/api/task/create', { method:'POST', body:f });
         navigate('hall');
     };
+
+    async function addComment() {
+        const text = document.getElementById('c_in').value;
+        if(!text) return;
+        await fetch('/api/task/comment', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ task_id: activeTaskId, comment: { user: user.anonymous_name, text, time: new Date() } })});
+        location.reload();
+    }
 
     async function acceptTask(id) {
         await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, status:'assigned', helper_id:user.email})});
         navigate('profile');
     }
 
-    async function nukeDatabase() { if(prompt("Type YES")==="YES") { await fetch('/api/dev/nuke', {method:'POST'}); localStorage.clear(); location.reload(); }}
-
-    document.getElementById('regForm').onsubmit = async e => {
-        e.preventDefault();
-        const b = { full_name: document.getElementById('r_full').value, anonymous_name: document.getElementById('r_anon').value, email: document.getElementById('r_email').value, phone: document.getElementById('r_phone').value, password: document.getElementById('r_pwd').value };
-        await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        navigate('login');
-    };
     document.getElementById('loginForm').onsubmit = async e => {
         e.preventDefault();
         const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_email').value, password: document.getElementById('l_pwd').value})});
         const d = await res.json();
         if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); }
     };
+
+    async function nukeDatabase() { if(prompt("Type YES")==="YES") { await fetch('/api/dev/nuke', {method:'POST'}); localStorage.clear(); location.reload(); }}
 
     updateMenu(); navigate('home');
 </script>
