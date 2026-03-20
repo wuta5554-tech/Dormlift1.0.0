@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V9.0.4 Ultimate Hub Edition (8pt Grid)
+           DESIGN SYSTEM: V10.1 Workflow & Kanban Edition
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -30,17 +30,18 @@
             --surface: #ffffff;
             --radius-lg: 1.25rem;
             --radius-md: 0.75rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
         }
 
+        * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
         
-        /* SPA Transition Animation */
         .page { display: none !important; opacity: 0; }
-        .page.active { display: block !important; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .page.active { display: block !important; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Navigation: Glassmorphism (Req-5.2) */
+        /* Navigation */
         nav { 
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); 
             padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; 
@@ -51,76 +52,78 @@
         .brand-text { font-size: 1.5rem; font-weight: 800; color: var(--dark); letter-spacing: -1px; }
         .nav-links { display: flex; align-items: center; gap: 2rem; }
         .nav-links a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .nav-links a:hover { color: var(--primary); }
         .user-tag { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 18px; border-radius: 24px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(79, 70, 229, 0.2); }
 
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
         /* =============================================================
-           MISSION HUB: Timeline Strip Layout (Req-4.1 Optimized)
+           MISSION HUB (Market)
         ============================================================= */
         .hub-container { display: flex; flex-direction: column; gap: 1rem; }
         .hub-row { 
-            display: grid; 
-            grid-template-columns: 100px 1fr 120px; 
-            align-items: center; 
-            background: white; 
-            border-radius: 16px; 
-            padding: 1.25rem 2rem; 
-            border: 1px solid #eef2f6;
-            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
-            position: relative;
+            display: grid; grid-template-columns: 100px 1fr 120px; align-items: center; 
+            background: white; border-radius: 16px; padding: 1.25rem 2rem; border: 1px solid #eef2f6;
+            transition: 0.3s; cursor: pointer;
         }
         .hub-row:hover { transform: translateX(8px); border-color: var(--primary); box-shadow: var(--shadow-premium); }
-        
-        .posted-col { font-size: 0.7rem; font-weight: 800; color: var(--muted); text-transform: uppercase; border-right: 2px solid #f1f5f9; line-height: 1.2; }
-        .posted-col span { display: block; font-size: 1rem; color: var(--dark); margin-top: 2px; }
-        
-        .details-strip { padding: 0 2.5rem; display: flex; flex-direction: column; gap: 6px; }
+        .posted-col { font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; border-right: 2px solid #f1f5f9; line-height: 1.3; }
+        .posted-col span { display: block; font-size: 1.05rem; color: var(--dark); margin-top: 2px; }
+        .details-strip { padding: 0 2.5rem; display: flex; flex-direction: column; gap: 8px; }
         .strip-header { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.05rem; color: var(--dark); }
-        .strip-header i { color: var(--primary); font-size: 0.85rem; }
-        .strip-route { font-size: 0.88rem; color: var(--muted); display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .strip-route { font-size: 0.9rem; color: var(--muted); display: flex; align-items: center; gap: 12px; font-weight: 500; }
         .strip-inventory { font-size: 0.85rem; color: var(--text); background: #f8fafc; padding: 6px 14px; border-radius: 8px; display: inline-block; width: fit-content; border: 1px solid #f1f5f9; }
+        .reward-col { text-align: right; font-size: 1.6rem; font-weight: 900; color: var(--success); letter-spacing: -0.5px; }
 
-        .reward-col { text-align: right; font-size: 1.5rem; font-weight: 900; color: var(--success); letter-spacing: -0.5px; }
+        /* =============================================================
+           KANBAN WORKFLOW DASHBOARD (Restored & Upgraded)
+        ============================================================= */
+        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 65vh; border: 1px dashed #e2e8f0; }
+        .kanban-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 1.5rem; }
+        .kanban-badge { background: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; box-shadow: var(--shadow-sm); color: var(--primary); border: 1px solid #eef2f6; }
+        
+        .kanban-card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: var(--shadow-sm); border: 1px solid transparent; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .kanban-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--shadow-premium); }
+        .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
+        .kb-pub { background: #f1f5f9; color: var(--muted); }
+        .kb-help { background: var(--primary-gradient); color: white; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
 
-        /* Premium Map Styling (Req-2.2 Enhanced) */
-        #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; }
-        .route-info-strip { 
-            background: var(--dark); color: white; padding: 1.25rem 2rem; border-radius: 0 0 1.5rem 1.5rem; 
-            display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; 
-            border-bottom: 4px solid var(--primary); 
-        }
-        .route-info-strip span { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; letter-spacing: 0.5px; }
-        .route-info-strip i { color: var(--primary); }
+        /* =============================================================
+           MAP & ROUTING
+        ============================================================= */
+        #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
+        .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; border-bottom: 4px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .leaflet-routing-container { display: none !important; }
+        .custom-pin { background: transparent; border: none; }
+        .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
-        /* Forms & Interactive Components (Req-1.1/2.4) */
+        /* General Inputs & Buttons */
         .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; justify-content: center; transition: 0.3s; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4); }
         .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
+        .btn-outline:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .btn-danger { background: #fee2e2; color: var(--danger); border: 1.5px solid #fecaca; }
-        .btn-danger:hover { background: var(--danger); color: white; }
         
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
         input, select, textarea { width: 100%; padding: 1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: 0.2s; }
-        input:focus { border-color: var(--primary); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        input:read-only { background: #f1f5f9; cursor: not-allowed; color: var(--muted); font-weight: 500; }
         label { font-size: 0.8rem; font-weight: 800; color: var(--muted); margin-bottom: 0.6rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Modal & Infinite Threads (Req-4.4/9.3) */
+        /* Modal & Threads */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; backdrop-filter: blur(12px); align-items: center; justify-content: center; }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
         .interaction-box { background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6; }
-        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: var(--shadow-sm); }
         .comment-reply { margin-left: 3.5rem; margin-top: 1rem; border-left: 4px solid var(--primary); padding-left: 1.5rem; background: #fafafa; border-radius: 0 1.2rem 1.2rem 0; }
-        .reply-btn { font-size: 0.7rem; color: var(--primary); font-weight: 800; cursor: pointer; text-transform: uppercase; margin-left: 15px; }
+        .reply-btn { font-size: 0.75rem; color: var(--primary); font-weight: 800; cursor: pointer; text-transform: uppercase; margin-left: 15px; }
         .reply-hint { display: none; background: #eef2ff; padding: 12px 20px; border-radius: 12px; margin-bottom: 15px; font-size: 0.88rem; border-left: 6px solid var(--primary); }
 
         .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
         .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; border: 2px solid #f1f5f9; cursor: pointer; flex-shrink: 0; transition: 0.3s; }
-        .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); }
-
-        .leaflet-routing-container { display: none !important; }
+        .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
     </style>
 </head>
 <body>
@@ -136,11 +139,11 @@
 <div class="container">
     <div id="home" class="page active">
         <section class="card" style="text-align:center; padding: 7rem 2rem; border:none; background: radial-gradient(circle at top right, #ffffff 0%, #f1f5f9 100%);">
-            <h1 style="font-size:4rem; margin:0; line-height:1; letter-spacing:-2.5px;">Campus Logistics,<br><span style="color:var(--primary)">Perfectly Engineered.</span></h1>
-            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">Verified, building-to-building logistics hub for University of Auckland students.</p>
+            <h1 style="font-size:4.2rem; margin:0; line-height:1; letter-spacing:-2.5px;">Campus Logistics,<br><span style="color:var(--primary)">Perfectly Engineered.</span></h1>
+            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">The trusted, building-to-building logistics hub exclusively for University of Auckland students.</p>
             <div style="display:flex; justify-content:center; gap:1.5rem;">
-                <button class="btn" style="padding: 1.2rem 4.5rem;" onclick="navigate('post-task')">Post Mission</button>
-                <button class="btn btn-outline" style="padding: 1.2rem 4.5rem;" onclick="navigate('hall')">Mission Hub</button>
+                <button class="btn" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('post-task')">Broadcast Task</button>
+                <button class="btn btn-outline" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('hall')">Mission Hub</button>
             </div>
         </section>
     </div>
@@ -150,97 +153,106 @@
             <h2 style="font-size:2.5rem; margin:0; letter-spacing:-1.5px;">Live Mission Hub</h2>
             <button class="btn btn-outline btn-sm" style="border-radius:50px; padding: 0.8rem 1.8rem;" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh Feed</button>
         </div>
-        <div id="hall_list" class="hub-container">
+        <div id="hall_list" class="hub-container"></div>
+    </div>
+
+    <div id="dashboard" class="page">
+        <h2 style="font-size:2.5rem; margin:0 0 2rem 0; letter-spacing:-1.5px;">My Workflow</h2>
+        <div class="kanban-board">
+            
+            <div class="kanban-col">
+                <div class="kanban-header">
+                    <span><i class="fas fa-hourglass-half" style="color:var(--warning); margin-right:5px;"></i> Pending</span>
+                    <span class="kanban-badge" id="cnt_pending">0</span>
+                </div>
+                <div id="col_pending"></div>
             </div>
+
+            <div class="kanban-col">
+                <div class="kanban-header">
+                    <span><i class="fas fa-truck-ramp-box" style="color:var(--primary); margin-right:5px;"></i> In Progress</span>
+                    <span class="kanban-badge" id="cnt_progress">0</span>
+                </div>
+                <div id="col_progress"></div>
+            </div>
+
+            <div class="kanban-col">
+                <div class="kanban-header">
+                    <span><i class="fas fa-check-circle" style="color:var(--success); margin-right:5px;"></i> History</span>
+                    <span class="kanban-badge" id="cnt_history">0</span>
+                </div>
+                <div id="col_history"></div>
+            </div>
+            
+        </div>
     </div>
 
     <div id="post-task" class="page">
         <div class="card" style="padding:0; overflow:hidden;">
             <div style="padding: 2.5rem 3rem 1.5rem;">
-                <h2 style="margin:0; font-size:2rem;">Broadcast New Mission</h2>
-                <p style="color:var(--muted); font-size:0.9rem;">Mark buildings on the map to calculate real driving distance & estimated time.</p>
+                <h2 style="margin:0; font-size:2.2rem; letter-spacing:-1px;">Broadcast New Mission</h2>
+                <p style="color:var(--muted); font-size:0.95rem;">Mark buildings on the map to auto-fetch campus addresses and calculate driving route.</p>
             </div>
-            
             <div id="map"></div>
             <div class="route-info-strip">
-                <span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal">0.00</b> km</span>
-                <span><i class="fas fa-hourglass-half"></i> EST. DRIVING: <b id="timeVal">0</b> min</span>
+                <span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal" style="font-size:1.2rem;">0.00</b> km</span>
+                <span><i class="fas fa-hourglass-half"></i> EST. DRIVING: <b id="timeVal" style="font-size:1.2rem;">0</b> min</span>
             </div>
-
             <form id="taskForm" style="padding: 0 3rem 3rem;">
                 <div class="form-grid">
-                    <div><label>Pickup Building (Auto-fetched)</label><input type="text" id="p_from" readonly required placeholder="Pin start on map"></div>
-                    <div><label>Destination Building (Auto-fetched)</label><input type="text" id="p_to" readonly required placeholder="Pin end on map"></div>
+                    <div><label>Pickup Building (Auto-fetched)</label><input type="text" id="p_from" readonly required placeholder="Waiting for map pin..."></div>
+                    <div><label>Destination Building (Auto-fetched)</label><input type="text" id="p_to" readonly required placeholder="Waiting for map pin..."></div>
                 </div>
                 <div class="form-grid">
                     <div><label>Moving Date & Precision Time</label><input type="datetime-local" id="p_date" required></div>
                     <div><label>Offer Reward (NZD)</label><input type="text" id="p_reward" placeholder="e.g. $45" required></div>
                 </div>
-                <label>Mission Inventory & Item Details</label>
-                <textarea id="p_desc" rows="4" placeholder="List items (e.g. 3 boxes, 1 desk). Describe any stairs or parking constraints." required></textarea>
-                
+                <label>Mission Inventory & Logistics Notes</label>
+                <textarea id="p_desc" rows="4" placeholder="List items, stairs, elevators, or specific parking instructions." required></textarea>
                 <label>Evidence Photos (Max 5)</label>
                 <input type="file" id="p_file" multiple accept="image/*" onchange="handlePreview(event)">
                 <div id="p_preview" class="thumb-strip"></div>
-                
-                <button type="submit" class="btn" style="width:100%; margin-top:2rem; padding:1.5rem; font-size:1.1rem;">Broadcast to Hub</button>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">Post to Hub <i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
     </div>
 
     <div id="profile" class="page">
         <div class="card">
-            <h2 style="margin-top:0; font-size:2rem;">UoA Verified Profile</h2>
-            <div id="profileDetails" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-                </div>
-            <div style="margin-top:2.5rem; border-top: 1px solid #f1f5f9; padding-top:2rem;">
-                <button class="btn btn-outline btn-sm" onclick="logout()">Sign Out of Hub</button>
+            <h2 style="margin-top:0; font-size:2.2rem; letter-spacing:-1px;">UoA Verified Profile</h2>
+            <div id="profileDetails" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:2rem;"></div>
+            <div style="margin-top:3rem; border-top: 1px solid #f1f5f9; padding-top:2.5rem; display:flex; gap:1rem;">
+                <button class="btn btn-outline" style="width:auto;" onclick="logout()">Sign Out of Hub</button>
             </div>
         </div>
         <div class="card" style="border-left: 8px solid var(--warning); background: linear-gradient(to right, #fffbeb, #ffffff);">
-            <h3 style="margin:0;">Reputation Node</h3>
-            <div style="font-size:3.5rem; font-weight:900; color:var(--dark);">★ <span id="p_rating">5.0</span></div>
-            <p style="color:var(--muted); font-weight:600;">System verified student credit based on <b id="p_task_count">0</b> fulfillments</p>
+            <h3 style="margin-top:0; font-size:1.8rem;">Reputation Node</h3>
+            <div style="font-size:4rem; font-weight:900; color:var(--dark); line-height:1;">★ <span id="p_rating">5.0</span></div>
+            <p style="color:var(--muted); font-weight:600; font-size:1.1rem; margin-top:1rem;">System verified student credit based on <b id="p_task_count" style="color:var(--primary);">0</b> fulfillments.</p>
         </div>
         <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:5rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
     </div>
 
     <div id="register" class="page">
-        <div class="card" style="max-width:600px; margin:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);">
+        <div class="card" style="max-width:650px; margin:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);">
             <h2 style="text-align:center; font-size:2.5rem; letter-spacing:-1.5px;">Join the Hub</h2>
             <form id="regForm">
-                <div class="form-grid">
-                    <div><label>UoA Student ID</label><input type="text" id="r_sid" required></div>
-                    <div><label>Display Nickname</label><input type="text" id="r_anon" required></div>
-                </div>
-                <div class="form-grid">
-                    <div><label>First Name</label><input type="text" id="r_fn" required></div>
-                    <div><label>Last Name</label><input type="text" id="r_ln" required></div>
-                </div>
+                <div class="form-grid"><div><label>UoA Student ID</label><input type="text" id="r_sid" required></div><div><label>Display Nickname</label><input type="text" id="r_anon" required></div></div>
+                <div class="form-grid"><div><label>First Name</label><input type="text" id="r_fn" required></div><div><label>Last Name</label><input type="text" id="r_ln" required></div></div>
                 <label>University Email</label>
-                <div style="display:flex; gap:10px; margin-bottom:1.5rem;">
-                    <input type="email" id="r_email" required style="margin:0">
-                    <button type="button" class="btn btn-outline btn-sm" style="width:140px;" onclick="sendCode()">Get Code</button>
-                </div>
-                <div class="form-grid">
-                    <div><label>Verification Code</label><input type="text" id="r_code" required></div>
-                    <div><label>Phone Number</label><input type="text" id="r_phone" required></div>
-                </div>
-                <label>Create Secure Password</label><input type="password" id="r_pwd" required>
-                <button type="submit" class="btn" style="width:100%; margin-top:2rem; padding:1.2rem; font-size:1.1rem;">Authorize & Join</button>
+                <div style="display:flex; gap:12px; margin-bottom:1.5rem;"><input type="email" id="r_email" required style="margin:0"><button type="button" class="btn btn-outline btn-sm" style="width:150px; font-weight:800;" onclick="sendCode()" id="btnSendCode">Get Code</button></div>
+                <div class="form-grid"><div><label>Verification Code</label><input type="text" id="r_code" required></div><div><label>Create Password</label><input type="password" id="r_pwd" required></div></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Authorize & Join</button>
             </form>
+            <p style="text-align:center; margin-top:2rem; font-size:0.95rem;">Already registered? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('login')">Sign In</b></p>
         </div>
     </div>
 
     <div id="login" class="page">
         <div class="card" style="max-width:440px; margin:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);">
             <h2 style="text-align:center; font-size:2.5rem; letter-spacing:-1.5px;">Portal Login</h2>
-            <form id="loginForm">
-                <label>Email Address / SID</label><input type="text" id="l_user" required>
-                <label>Password</label><input type="password" id="l_pwd" required>
-                <button type="submit" class="btn" style="width:100%; margin-top:1.5rem;">Access Hub</button>
-            </form>
-            <p style="text-align:center; margin-top:2rem; font-size:0.95rem;">New to DormLift? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('register')">Register Now</b></p>
+            <form id="loginForm"><label>Email Address or SID</label><input type="text" id="l_user" required><label>Password</label><input type="password" id="l_pwd" required><button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Access Hub</button></form>
+            <p style="text-align:center; margin-top:2.5rem; font-size:0.95rem;">New to DormLift? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('register')">Register Now</b></p>
         </div>
     </div>
 </div>
@@ -248,55 +260,49 @@
 <div id="taskModal" class="modal" onclick="if(event.target.id==='taskModal') this.style.display='none'">
     <div class="modal-content">
         <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:52px; height:52px; border-radius:50%; font-size:1.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;" onclick="document.getElementById('taskModal').style.display='none'">&times;</button>
-        
         <div id="m_header" style="margin-bottom:2rem;"></div>
         <div class="thumb-strip" id="m_thumbs"></div>
         <div id="m_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
-        
         <div id="m_interaction" class="interaction-box">
-            <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="margin-right:10px; color:var(--primary);"></i> Mission Discussion</h4>
-            <div id="c_list" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; scrollbar-width:thin;"></div>
-            
-            <div id="reply_hint" class="reply-hint">
-                Replying to <b id="reply_name"></b> 
-                <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span>
-            </div>
-            
-            <div style="display:flex; gap:12px;">
-                <input type="text" id="c_in" placeholder="Ask publisher or reply..." style="margin:0; height:54px;">
-                <button class="btn btn-sm" style="width:120px; height:54px;" onclick="postComment()">Send</button>
-            </div>
+            <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="margin-right:10px; color:var(--primary);"></i> Discussion Thread</h4>
+            <div id="c_list" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; scrollbar-width:thin; padding-right:10px;"></div>
+            <div id="reply_hint" class="reply-hint"><i class="fas fa-reply fa-flip-horizontal" style="margin-right:5px;"></i> Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span></div>
+            <div style="display:flex; gap:12px;"><input type="text" id="c_in" placeholder="Ask publisher or reply to discussion..." style="margin:0; height:54px;"><button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postComment()">Send</button></div>
         </div>
-        
         <div id="m_footer" style="margin-top:3rem; display:flex; justify-content:flex-end; gap:15px;"></div>
     </div>
 </div>
 
 <script>
-    // ======================= 1. GLOBAL STATE & NAVIGATION =======================
+    // ======================= 1. GLOBAL STATE & ROUTING =======================
     let user = JSON.parse(localStorage.getItem('user'));
     let map, markers = [], routingControl, globalTaskPool = [], activeTaskId = null, activeReplyId = null;
 
     function navigate(p) {
-        if (!user && ['post-task', 'profile'].includes(p)) p = 'login';
+        if (!user && ['post-task', 'dashboard', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
         document.getElementById(p).classList.add('active');
         renderMenu(); window.scrollTo(0,0);
+        
         if(p === 'hall') loadHall();
+        if(p === 'dashboard') loadKanbanDashboard();
         if(p === 'post-task') initMap();
         if(p === 'profile') loadProfileData();
     }
 
     function renderMenu() {
-        const menu = document.getElementById('mainMenu');
-        const mNode = document.getElementById('menu');
+        const menu = document.getElementById('menu');
         if(!user) {
-            mNode.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Hub</a><a onclick="navigate('login')">Login</a>`;
+            menu.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Hub</a><a onclick="navigate('login')">Login</a>`;
         } else {
-            mNode.innerHTML = `
-                <span class="user-tag"><i class="fas fa-user-graduate"></i> ${user.anonymous_name}</span>
-                <a onclick="navigate('hall')">Market</a><a onclick="navigate('post-task')">Post</a><a onclick="navigate('profile')">Profile</a>
-                <a onclick="logout()" style="color:var(--danger); font-weight:800;">Logout</a>`;
+            // Re-added Workflow (Dashboard) to navigation!
+            menu.innerHTML = `
+                <span class="user-tag"><i class="fas fa-user-check" style="margin-right:5px;"></i> ${user.anonymous_name}</span>
+                <a onclick="navigate('hall')">Market</a>
+                <a onclick="navigate('post-task')">Post</a>
+                <a onclick="navigate('dashboard')">Workflow</a>
+                <a onclick="navigate('profile')">Profile</a>
+            `;
         }
     }
 
@@ -309,19 +315,17 @@
         });
     }
 
-    // ======================= 2. REFINED MAP ENGINE (CartoDB Voyager + OSRM) =======================
+    // ======================= 2. MAP ENGINE (CartoDB + Nominatim Geocoding + OSRM) =======================
     function initMap() {
         if(map) return;
         setTimeout(() => {
             map = L.map('map', {zoomControl: false}).setView([-36.8509, 174.7645], 14);
             L.control.zoom({position: 'topright'}).addTo(map);
-            
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; CARTO'
             }).addTo(map);
 
             map.on('click', async e => {
-                // RESET Mechanism: Clean slate on 3rd click (Req-2.1/84)
                 if (markers.length >= 2) {
                     markers.forEach(m => map.removeLayer(m)); markers = [];
                     if (routingControl) { map.removeControl(routingControl); routingControl = null; }
@@ -331,27 +335,44 @@
                     document.getElementById('p_to').value = "";
                 }
 
+                let isStart = markers.length === 0;
                 let customIcon = L.divIcon({
                     className: 'custom-pin',
-                    html: `<div style="background:white; border:2px solid var(--primary); border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.2);"><i class="fas ${markers.length===0?'fa-street-view':'fa-flag-checkered'}" style="color:var(--primary); font-size:14px;"></i></div>`,
-                    iconSize: [30, 30], iconAnchor: [15, 30]
+                    html: `<div class="pin-wrapper" style="border-color:${isStart?'var(--primary)':'var(--success)'}">
+                            <i class="fas ${isStart?'fa-street-view':'fa-flag-checkered'}" style="color:${isStart?'var(--primary)':'var(--success)'}; font-size:14px;"></i>
+                           </div>`,
+                    iconSize: [34, 34], iconAnchor: [17, 34]
                 });
 
                 let m = L.marker(e.latlng, {icon: customIcon}).addTo(map);
                 markers.push(m);
 
-                // NOMINATIM REVERSE GEOCODING (Building Recognition)
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
-                const d = await res.json();
-                const address = d.display_name.split(',').slice(0, 3).join(',');
+                const targetInput = document.getElementById(isStart ? 'p_from' : 'p_to');
+                targetInput.value = "Fetching campus address...";
 
-                if (markers.length === 1) document.getElementById('p_from').value = address;
-                else if (markers.length === 2) {
-                    document.getElementById('p_to').value = address;
-                    // CALL OSRM ROUTING ENGINE (Req-2.2/87)
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, {
+                        headers: {
+                            'Accept-Language': 'en-US,en;q=0.9',
+                            'User-Agent': 'DormLiftPro/10.1 (Contact: admin@dormlift.com)'
+                        }
+                    });
+                    const d = await res.json();
+                    
+                    if (d.display_name) {
+                        const addrParts = d.display_name.split(',');
+                        targetInput.value = addrParts.slice(0, 3).join(',').trim();
+                    } else {
+                        targetInput.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+                    }
+                } catch (err) {
+                    targetInput.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+                }
+
+                if (markers.length === 2) {
                     routingControl = L.Routing.control({
                         waypoints: [markers[0].getLatLng(), markers[1].getLatLng()],
-                        lineOptions: { styles: [{ color: '#4f46e5', weight: 6, opacity: 0.8 }] },
+                        lineOptions: { styles: [{ color: '#4f46e5', weight: 6, opacity: 0.8, dashArray: '10, 10' }] },
                         createMarker: () => null,
                         show: false, addWaypoints: false
                     }).on('routesfound', ev => {
@@ -364,7 +385,7 @@
         }, 300);
     }
 
-    // ======================= 3. MISSION HUB: STRIP RENDERER (Req-12.1) =======================
+    // ======================= 3. MISSION HUB (Timeline Strip) =======================
     async function loadHall() {
         const res = await fetch('/api/task/all'); const d = await res.json(); updatePool(d.list);
         const listDiv = document.getElementById('hall_list');
@@ -375,46 +396,75 @@
             <div class="hub-row" onclick="openDetails('${t._id}')">
                 <div class="posted-col">PUB<span>${pubDate}</span></div>
                 <div class="details-strip">
-                    <div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
-                    <div class="strip-route">${t.from_addr} <i class="fas fa-arrow-right"></i> ${t.to_addr}</div>
+                    <div class="strip-header"><i class="far fa-clock"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
+                    <div class="strip-route"><i class="fas fa-circle"></i> ${t.from_addr} <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> <i class="fas fa-flag-checkered"></i> ${t.to_addr}</div>
                     <div class="strip-inventory"><b>Items:</b> ${t.items_desc.substring(0, 75)}...</div>
                 </div>
                 <div class="reward-col">${t.reward}</div>
             </div>`;
-        }).join('') || '<div style="padding:5rem; text-align:center; color:grey; font-weight:600;">No active missions in Hub.</div>';
+        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active missions in Hub.</div>';
     }
 
-    // ======================= 4. THREADED COMMENTS & MODAL =======================
+    // ======================= 4. KANBAN DASHBOARD (Restored & Upgraded) =======================
+    async function loadKanbanDashboard() {
+        const res = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: user.email})});
+        const d = await res.json(); updatePool(d.list);
+
+        const renderKanbanCol = (targetCol, validStatuses) => {
+            const list = d.list.filter(t => validStatuses.includes(t.status));
+            document.getElementById(`cnt_${targetCol}`).innerText = list.length;
+            
+            document.getElementById(`col_${targetCol}`).innerHTML = list.map(t => {
+                const isPub = t.publisher_id === user.email;
+                return `
+                <div class="kanban-card" onclick="openDetails('${t._id}')">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <span class="kb-role-tag ${isPub?'kb-pub':'kb-help'}">${isPub?'Publisher':'Helper'}</span>
+                        <span style="font-size:0.7rem; color:var(--muted); font-weight:700;"><i class="far fa-calendar-alt"></i> ${new Date(t.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <div style="font-size:1.25rem; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-0.5px;">${t.reward}</div>
+                    <div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${t.from_addr}</div>
+                </div>`;
+            }).join('');
+        };
+
+        renderKanbanCol('pending', ['pending']);
+        renderKanbanCol('progress', ['assigned']);
+        renderKanbanCol('history', ['completed', 'reviewed']);
+    }
+
+    // ======================= 5. THREADED MODAL & WORKFLOW =======================
     async function openDetails(id) {
         activeTaskId = id;
-        // Forced Server Sync (Req-9.1)
+        // Fetch fresh truth
         const res = await fetch('/api/task/all'); const d = await res.json(); updatePool(d.list);
         let t = globalTaskPool.find(x => x._id === id);
         if(!t) {
             const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
             const d2 = await resT.json(); updatePool(d2.list); t = globalTaskPool.find(x => x._id === id);
         }
-        if(!t) return alert("Task sync failed.");
+        if(!t) return alert("Task data unavailable.");
 
-        document.getElementById('m_header').innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.6rem; letter-spacing:-1.5px;">${t.reward} Mission</h2><span class="user-tag" style="background:var(--primary); color:white; border:none;">${t.status.toUpperCase()}</span></div>`;
+        document.getElementById('m_header').innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem; letter-spacing:-1.5px;">${t.reward} Mission</h2><span style="background:var(--primary); color:white; padding:6px 16px; border-radius:20px; font-size:0.85rem; font-weight:800; text-transform:uppercase; letter-spacing:1px;">${t.status}</span></div>`;
         const imgs = JSON.parse(t.img_url || '[]');
-        document.getElementById('m_thumbs').innerHTML = imgs.map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('') || '<small>No evidence photos.</small>';
+        document.getElementById('m_thumbs').innerHTML = imgs.map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('') || '<small style="color:var(--muted); font-weight:600;">No evidence photos attached.</small>';
         
         document.getElementById('m_body').innerHTML = `
-            <div style="display:flex; flex-direction:column; gap:12px;">
-                <p><b>📍 Pickup:</b> ${t.from_addr}</p>
-                <p><b>🏁 Destination:</b> ${t.to_addr}</p>
-                <p><b>📝 Inventory:</b> ${t.items_desc}</p>
-                <div style="font-size:0.8rem; color:var(--muted); font-weight:700;">Publisher: ${t.publisher_id}</div>
+            <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
+                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup Location</b> <br><span style="font-weight:700; color:var(--dark);">${t.from_addr}</span></div>
+                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">🏁 Destination Location</b> <br><span style="font-weight:700; color:var(--dark);">${t.to_addr}</span></div>
+                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Complete Inventory</b> <br><span style="color:var(--text);">${t.items_desc}</span></div>
+                <div style="margin-top:1rem; font-size:0.85rem; color:var(--muted); font-weight:700;">Publisher ID: ${t.publisher_id}</div>
             </div>`;
 
         renderThreadedComments(t.comments || []);
         
         const foot = document.getElementById('m_footer');
-        let btns = '';
-        if(t.status === 'pending' && t.publisher_id !== user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="workflow('${t._id}', 'assigned')">Accept Mission & Help</button>`;
-        if(user.email === t.publisher_id) btns += `<button class="btn btn-danger" onclick="deleteTask('${t._id}')">Withdraw Task</button>`;
-        foot.innerHTML = btns || '<span style="font-weight:700; color:grey;">ARCHIVED MISSION</span>';
+        let footBtns = '';
+        if(t.status === 'pending' && t.publisher_id !== user.email) footBtns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="workflow('${t._id}', 'assigned')">Accept Mission & Start Helping <i class="fas fa-check-circle"></i></button>`;
+        if(t.status === 'assigned' && t.publisher_id === user.email) footBtns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="workflow('${t._id}', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>`;
+        if(t.publisher_id === user.email) footBtns += `<button class="btn btn-danger" onclick="deleteTask('${t._id}')">Withdraw Task</button>`;
+        foot.innerHTML = footBtns || '<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>';
         
         document.getElementById('taskModal').style.display = 'flex';
     }
@@ -426,18 +476,24 @@
             const replies = comments.filter(r => String(r.parentId) === String(p.id));
             return `
             <div class="comment-item">
-                <small class="comment-meta"><b>${p.user}</b> • ${new Date(p.time).toLocaleString()}</small>
-                <div>${p.text} <span class="reply-btn" onclick="setReply('${p.id}', '${p.user}')">Reply</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <b style="color:var(--dark);">${p.user}</b><small style="color:var(--muted);">${new Date(p.time).toLocaleString()}</small>
+                </div>
+                <div style="font-size:1rem;">${p.text} <span class="reply-btn" onclick="setReply('${p.id}', '${p.user}')">Reply</span></div>
+                
                 ${replies.map(r2 => `
                     <div class="comment-item comment-reply">
-                        <small class="comment-meta"><b>${r2.user}</b> replied to <b>${p.user}</b></small>
-                        <div>${r2.text} <span class="reply-btn" onclick="setReply('${r2.id}', '${r2.user}')">Reply</span></div>
+                        <div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r2.user}</b> replied to <b>${p.user}</b></small></div>
+                        <div style="font-size:0.95rem;">${r2.text} <span class="reply-btn" onclick="setReply('${r2.id}', '${r2.user}')">Reply</span></div>
+                        
                         ${comments.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `
-                            <div class="comment-item comment-reply" style="border-left-color:var(--warning)"><b>${r3.user}</b>: ${r3.text}</div>
-                        `).join('')}
+                            <div class="comment-item comment-reply" style="border-left-color:var(--warning); background:white;">
+                                <div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r3.user}</b> replied to <b>${r2.user}</b></small></div>
+                                <div style="font-size:0.95rem;">${r3.text}</div>
+                            </div>`).join('')}
                     </div>`).join('')}
             </div>`;
-        }).join('') || '<p style="color:grey; text-align:center; padding:2rem;">No discussion yet.</p>';
+        }).join('') || '<p style="color:var(--muted); text-align:center; padding:2rem; font-weight:600;">No discussion yet. Start the thread!</p>';
     }
 
     function setReply(id, name) { activeReplyId = String(id); document.getElementById('reply_hint').style.display='block'; document.getElementById('reply_name').innerText=name; document.getElementById('c_in').focus(); }
@@ -450,74 +506,95 @@
         document.getElementById('c_in').value = ""; cancelReply(); openDetails(activeTaskId);
     }
 
-    // ======================= 5. CORE WORKFLOW & API =======================
     async function workflow(id, status) {
-        if(!confirm("Once accepted, you are committed to the UoA peer protocol.")) return;
+        if(!confirm("Please confirm this workflow transition. This action is recorded in the network.")) return;
         const body = { task_id: id, status };
         if(status === 'assigned') body.helper_id = user.email;
         const res = await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
-        if(res.ok) { alert("🎉 Mission Secured!"); document.getElementById('taskModal').style.display='none'; navigate('profile'); }
+        
+        if(res.ok) { 
+            alert("Success! Workflow updated."); 
+            document.getElementById('taskModal').style.display='none'; 
+            
+            // AUTOMATIC REDIRECT TO KANBAN DASHBOARD INSTEAD OF PROFILE
+            navigate('dashboard'); 
+        }
     }
 
     async function deleteTask(id) {
-        if(!confirm("Permanently remove mission?")) return;
+        if(!confirm("Permanently withdraw this mission from the Hub?")) return;
         await fetch('/api/task/delete', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, email:user.email})});
         document.getElementById('taskModal').style.display='none'; loadHall();
     }
 
+    // ======================= 6. PROFILE & AUTH =======================
     async function loadProfileData() {
         const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json();
         const u = d.user;
-        const fields = [['Student ID', u.student_id], ['Full Name', `${u.first_name} ${u.given_name}`], ['Nickname', u.anonymous_name], ['Gender', u.gender], ['Email', u.email], ['Phone', u.phone], ['Credit', `★ ${u.rating_avg.toFixed(1)}`]];
-        document.getElementById('profileDetails').innerHTML = fields.map(f => `<div><label>${f[0]}</label><div style="font-weight:700; color:var(--dark);">${f[1]}</div></div>`).join('');
-        document.getElementById('p_rating').innerText = u.rating_avg.toFixed(1);
-        document.getElementById('p_task_count').innerText = u.task_count;
+        const fields = [
+            ['UoA Student ID', u.student_id], ['University', u.school_name || 'University of Auckland'], 
+            ['Full Legal Name', `${u.first_name} ${u.given_name}`], ['Display Nickname', u.anonymous_name], 
+            ['Gender', u.gender || 'Not Specified'], ['Campus Email', u.email], 
+            ['Contact Phone', u.phone || 'None'], ['Join Date', new Date(u.created_at).toLocaleDateString()]
+        ];
+        
+        document.getElementById('profileDetails').innerHTML = fields.map(f => `
+            <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                <label style="margin-bottom:8px;">${f[0]}</label>
+                <div style="font-weight:800; font-size:1.1rem; color:var(--dark);">${f[1]}</div>
+            </div>`).join('');
+            
+        document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0";
+        document.getElementById('p_task_count').innerText = u.task_count || 0;
     }
 
     async function sendCode() {
-        const email = document.getElementById('r_email').value; if(!email) return alert("Email required");
+        const email = document.getElementById('r_email').value; if(!email) return alert("UoA Email required");
+        const btn = document.getElementById('btnSendCode'); btn.innerText = "Sending...";
         const res = await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
-        if(res.ok) alert("6-digit code sent to UoA email.");
+        if(res.ok) { alert("6-digit security code dispatched to campus email."); btn.innerText = "Resend Code"; }
     }
 
     document.getElementById('regForm').onsubmit = async e => {
         e.preventDefault();
-        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, gender: 'Male' };
+        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value };
         const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        if(res.ok) { alert("Registration Success!"); navigate('login'); }
+        if(res.ok) { alert("Registration Verified & Successful!"); navigate('login'); } else alert("Registration Failed. Check code or duplicate email.");
     };
 
     document.getElementById('loginForm').onsubmit = async e => {
         e.preventDefault();
         const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})});
-        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); }
+        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Authentication Failed.");
     };
 
     document.getElementById('taskForm').onsubmit = async e => {
         e.preventDefault();
+        if(markers.length < 2) return alert("Please select both Pickup and Destination buildings on the map.");
         const f = new FormData();
         f.append('publisher_id', user.email);
         f.append('from_addr', document.getElementById('p_from').value);
         f.append('to_addr', document.getElementById('p_to').value);
         f.append('move_date', document.getElementById('p_date').value.split('T')[0]);
-        f.append('move_time', document.getElementById('p_date').value.split('T')[1]);
+        f.append('move_time', document.getElementById('p_date').value.split('T')[1] || '');
         f.append('reward', document.getElementById('p_reward').value);
         f.append('items_desc', document.getElementById('p_desc').value);
         Array.from(document.getElementById('p_file').files).forEach(fi => f.append('task_images', fi));
-        await fetch('/api/task/create', { method:'POST', body: f }); navigate('hall');
+        
+        await fetch('/api/task/create', { method:'POST', body: f });
+        navigate('hall');
     };
 
     function handlePreview(e) {
         const strip = document.getElementById('p_preview'); strip.innerHTML = "";
         Array.from(e.target.files).slice(0, 5).forEach(f => {
             const r = new FileReader(); r.onload = ev => {
-                const img = document.createElement('img'); img.src = ev.target.result;
-                img.className = 'thumb-img'; strip.appendChild(img);
+                const img = document.createElement('img'); img.src = ev.target.result; img.className = 'thumb-img'; strip.appendChild(img);
             }; r.readAsDataURL(f);
         });
     }
 
-    function nuke() { if(confirm("NUKE DATABASE?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
+    function nuke() { if(confirm("NUKE ALL GLOBAL DATA?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
 
     navigate('home');
 </script>
