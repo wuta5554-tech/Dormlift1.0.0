@@ -3,1335 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift - Affordable Moving Help for University Students</title>
+    <title>DormLift Pro | Professional Student Logistics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        /* ===================== 全局样式 ===================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f5f7fa;
-            color: #34495e;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* ===================== 顶部导航栏 ===================== */
-        .top-nav {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .nav-brand {
-            font-size: 24px;
-            font-weight: 700;
-            color: white;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2px;
-        }
-
-        .nav-btn {
-            padding: 12px 20px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-btn:hover:not(.active) {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-btn.active {
-            background-color: #3498db;
-        }
-
-        /* ===================== 页面容器 ===================== */
-        .page {
-            display: none;
-            padding: 40px 0;
-            min-height: calc(100vh - 80px);
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        /* ===================== 首页样式 ===================== */
-        .hero-section {
-            background-color: white;
-            border-radius: 10px;
-            padding: 60px 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .hero-title {
-            font-size: 42px;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-
-        .hero-subtitle {
-            font-size: 20px;
-            color: #7f8c8d;
-            max-width: 800px;
-            margin: 0 auto 30px;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: #95a5a6;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #7f8c8d;
-            transform: translateY(-2px);
-        }
-
-        .features-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .feature-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .feature-icon {
-            font-size: 40px;
-            color: #3498db;
-            margin-bottom: 20px;
-        }
-
-        .feature-title {
-            font-size: 22px;
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-
-        .feature-desc {
-            font-size: 16px;
-            color: #7f8c8d;
-            line-height: 1.6;
-        }
-
-        /* ===================== 表单样式 ===================== */
-        .form-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .form-title {
-            font-size: 28px;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            font-size: 16px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 16px;
-            color: #34495e;
-            transition: border-color 0.3s ease;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
-
-        .input-error {
-            border-color: #e74c3c;
-        }
-
-        .tip {
-            font-size: 14px;
-            color: #7f8c8d;
-            margin-top: 6px;
-        }
-
-        .red-star {
-            color: #e74c3c;
-        }
-
-        .code-row {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-        }
-
-        .code-row input {
-            flex: 1;
-        }
-
-        .btn-get-code {
-            padding: 12px 24px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-get-code:hover:not(:disabled) {
-            background-color: #2980b9;
-        }
-
-        .btn-get-code:disabled {
-            background-color: #85c1e9;
-            cursor: not-allowed;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .btn-submit:hover {
-            background-color: #2980b9;
-        }
-
-        .form-switch {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 16px;
-        }
-
-        .form-switch a {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .form-switch a:hover {
-            text-decoration: underline;
-        }
-
-        /* ===================== 任务列表样式 ===================== */
-        .tasks-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .tasks-title {
-            font-size: 28px;
-            color: #2c3e50;
-        }
-
-        .task-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .task-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .task-card:hover {
-            transform: translateY(-3px);
-        }
-
-        .task-title {
-            font-size: 20px;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .task-info {
-            margin-bottom: 10px;
-            font-size: 16px;
-            color: #34495e;
-        }
-
-        .task-info-label {
-            font-weight: 600;
-            color: #7f8c8d;
-            margin-right: 5px;
-        }
-
-        .task-actions {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-
-        .btn-danger {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-
-        /* ===================== 个人中心样式 ===================== */
-        .profile-info {
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .profile-item {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .profile-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .profile-label {
-            font-size: 16px;
-            color: #7f8c8d;
-            margin-bottom: 5px;
-        }
-
-        .profile-value {
-            font-size: 18px;
-            color: #2c3e50;
-            font-weight: 500;
-        }
-
-        /* ===================== 响应式样式 ===================== */
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 32px;
-            }
-
-            .hero-subtitle {
-                font-size: 18px;
-            }
-
-            .nav-container {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .nav-links {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .form-card {
-                padding: 30px 20px;
-            }
-
-            .feature-card {
-                padding: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero-title {
-                font-size: 26px;
-            }
-
-            .btn {
-                padding: 12px 20px;
-                font-size: 14px;
-            }
-
-            .code-row {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .btn-get-code {
-                width: 100%;
-            }
-        }
+        :root { --primary: #3498db; --success: #27ae60; --danger: #e74c3c; --dark: #2c3e50; --gray: #95a5a6; --light: #f4f7f6; --border: #e2e8f0; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--light); color: #333; }
+        
+        /* UI 隔离逻辑 */
+        .page { display: none !important; }
+        .page.active { display: block !important; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity:0; transform: translateY(5px); } to { opacity:1; transform: translateY(0); } }
+
+        /* 导航栏 */
+        nav { background: var(--dark); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .logo { font-size: 22px; font-weight: 800; cursor: pointer; }
+        .nav-links a { color: #bdc3c7; margin-left: 20px; text-decoration: none; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: white; }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 25px; }
+
+        /* 表单与按钮 */
+        input, select, textarea { width: 100%; padding: 13px; border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; font-size: 14px; }
+        .btn { background: var(--primary); color: white; padding: 14px 25px; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; transition: 0.3s; }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-outline { background: #f1f5f9; color: #475569; border: 1px solid var(--border); }
+
+        /* 注册页特有 */
+        .verify-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-verify { width: 140px; font-size: 12px; white-space: nowrap; }
+
+        /* 个人资料卡 */
+        .profile-header { display: flex; gap: 25px; align-items: center; margin-bottom: 30px; }
+        .avatar { width: 90px; height: 90px; background: var(--primary); border-radius: 22px; display: flex; align-items: center; justify-content: center; color: white; font-size: 35px; font-weight: bold; }
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .info-item { background: #fdfdfd; padding: 12px; border-radius: 12px; border: 1px solid #f0f0f0; }
+        .info-item label { display: block; font-size: 11px; color: var(--gray); font-weight: 700; margin-bottom: 4px; }
+        .info-item div { font-weight: 600; font-size: 14px; }
+
+        /* 任务列表 */
+        .task-row { display: flex; justify-content: space-between; align-items: center; background: white; padding: 18px; border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--border); }
+        .status-tag { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+
+        #map { height: 350px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
-    <!-- 顶部导航栏 -->
-    <nav class="top-nav">
-        <div class="container nav-container">
-            <a href="#" class="nav-brand" onclick="switchPage('home')">DormLift</a>
-            <div class="nav-links">
-                <button class="nav-btn active" onclick="switchPage('home')">Home</button>
-                <button class="nav-btn" onclick="switchPage('post-request')">Post a Request</button>
-                <button class="nav-btn" onclick="switchPage('find-tasks')">Find Tasks</button>
-                <button class="nav-btn" onclick="switchPage('my-profile')">My Profile</button>
-                <button class="nav-btn" onclick="switchPage('auth')" id="auth-btn">Login/Register</button>
-            </div>
-        </div>
-    </nav>
 
-    <!-- 页面容器 -->
-    <div class="container">
-        <!-- 1. 首页 -->
-        <div id="home" class="page active">
-            <div class="hero-section">
-                <h1 class="hero-title">Affordable Moving Help for University Students</h1>
-                <p class="hero-subtitle">Connect with fellow students to get help moving your belongings into or out of dorms - cheap, reliable, and community-focused.</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary" onclick="switchPage('post-request')">Post a Moving Request</button>
-                    <button class="btn btn-secondary" onclick="switchPage('find-tasks')">Become a Helper</button>
-                </div>
-            </div>
+<nav>
+    <div class="logo" onclick="navigate('home')">DormLift Pro</div>
+    <div class="nav-links" id="menu"></div>
+</nav>
 
-            <div class="features-section">
-                <div class="feature-card">
-                    <div class="feature-icon">💰</div>
-                    <h3 class="feature-title">Low Cost</h3>
-                    <p class="feature-desc">Cheaper than professional movers - pay small amounts or offer campus credits to fellow students.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">📅</div>
-                    <h3 class="feature-title">Flexible</h3>
-                    <p class="feature-desc">Schedule moves around your class timetable - no rigid time slots or expensive last-minute charges.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🤝</div>
-                    <h3 class="feature-title">Trusted</h3>
-                    <p class="feature-desc">Student-to-student network with ratings and basic checks for peace of mind when moving your belongings.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. 发布搬家请求 -->
-        <div id="post-request" class="page">
-            <div class="form-card">
-                <h2 class="form-title">Post a Moving Request</h2>
-                <form id="post-request-form">
-                    <div class="form-group">
-                        <label for="move-date">Move Date & Time <span class="red-star">*</span></label>
-                        <input type="datetime-local" id="move-date" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="from-address">From Address <span class="red-star">*</span></label>
-                        <input type="text" id="from-address" placeholder="e.g. 123 Campus Dorm, Auckland" required>
-                        <p class="tip">Enter the full address of your current location</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="to-address">To Address <span class="red-star">*</span></label>
-                        <input type="text" id="to-address" placeholder="e.g. 456 Student Apartment, Auckland" required>
-                        <p class="tip">Enter the full address of your new location</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="helpers-needed">Number of Helpers Needed <span class="red-star">*</span></label>
-                        <input type="number" id="helpers-needed" min="1" value="1" required>
-                        <p class="tip">How many students do you need to help with your move?</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="items-to-move">Items to Move <span class="red-star">*</span></label>
-                        <textarea id="items-to-move" rows="4" placeholder="e.g. 2 large boxes, 1 bed frame, 1 desk, 3 suitcases" required></textarea>
-                        <p class="tip">Be specific to help helpers prepare for the move</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="compensation">Compensation (NZD) <span class="red-star">*</span></label>
-                        <input type="text" id="compensation" placeholder="e.g. $20 per helper, free meal + $10, or campus credits" required>
-                        <p class="tip">How will you compensate the helpers for their time?</p>
-                    </div>
-
-                    <button type="button" class="btn-submit" onclick="submitMovingRequest()">Post Request</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- 3. 查找任务 -->
-        <div id="find-tasks" class="page">
-            <div class="tasks-header">
-                <h2 class="tasks-title">Available Moving Tasks</h2>
-                <button class="btn btn-primary btn-sm" onclick="refreshTasks()">Refresh Tasks</button>
-            </div>
-
-            <div id="task-list-container" class="task-list">
-                <!-- 任务列表将通过JS动态加载 -->
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">
-                    Loading tasks... Please wait.
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. 个人中心 -->
-        <div id="my-profile" class="page">
-            <div class="profile-info">
-                <h2 class="form-title">My Profile</h2>
-                
-                <div class="profile-item">
-                    <div class="profile-label">Student ID</div>
-                    <div class="profile-value" id="profile-student-id">Not logged in</div>
-                </div>
-
-                <div class="profile-item">
-                    <div class="profile-label">Anonymous Name</div>
-                    <div class="profile-value" id="profile-anon-name">Not logged in</div>
-                </div>
-
-                <div class="profile-item">
-                    <div class="profile-label">Outlook Email</div>
-                    <div class="profile-value" id="profile-email">Not logged in</div>
-                </div>
-
-                <div class="profile-item">
-                    <div class="profile-label">Phone Number</div>
-                    <div class="profile-value" id="profile-phone">Not logged in</div>
-                </div>
-
-                <div class="profile-item">
-                    <div class="profile-label">Gender</div>
-                    <div class="profile-value" id="profile-gender">Not logged in</div>
-                </div>
-
-                <button class="btn-submit btn-danger" onclick="logout()" style="margin-top: 20px;">Logout</button>
-            </div>
-
-            <!-- 我的发布任务 -->
-            <div style="margin-top: 40px;">
-                <div class="tasks-header">
-                    <h2 class="tasks-title">My Posted Requests</h2>
-                </div>
-                <div id="my-posted-tasks" class="task-list">
-                    <!-- 我的发布任务将动态加载 -->
-                </div>
-            </div>
-
-            <!-- 我的接受任务 -->
-            <div style="margin-top: 40px;">
-                <div class="tasks-header">
-                    <h2 class="tasks-title">My Accepted Tasks</h2>
-                </div>
-                <div id="my-accepted-tasks" class="task-list">
-                    <!-- 我的接受任务将动态加载 -->
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. 登录/注册 -->
-        <div id="auth" class="page">
-            <div class="form-card">
-                <!-- 登录表单 -->
-                <div id="login-form">
-                    <h2 class="form-title">Login to DormLift</h2>
-                    <div class="form-group">
-                        <label for="login-student-id">Student ID <span class="red-star">*</span></label>
-                        <input type="text" id="login-student-id" placeholder="Enter your student ID" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="login-password">Password <span class="red-star">*</span></label>
-                        <input type="password" id="login-password" placeholder="Enter your password" required>
-                    </div>
-
-                    <button type="button" class="btn-submit" onclick="login()">Login</button>
-
-                    <div class="form-switch">
-                        Don't have an account? <a href="#" onclick="toggleAuthForm()">Register here</a>
-                    </div>
-                </div>
-
-                <!-- 注册表单 -->
-                <div id="register-form" style="display: none;">
-                    <h2 class="form-title">Register for DormLift</h2>
-                    
-                    <div class="form-group">
-                        <label for="reg-given-name">Given Name (Surname) <span class="red-star">*</span></label>
-                        <input type="text" id="reg-given-name" placeholder="Enter your family name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reg-first-name">First Name <span class="red-star">*</span></label>
-                        <input type="text" id="reg-first-name" placeholder="Enter your first name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reg-student-id">Student ID <span class="red-star">*</span></label>
-                        <input type="text" id="reg-student-id" placeholder="Enter your student ID (e.g. S1234567)" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reg-gender">Gender <span class="red-star">*</span></label>
-                        <select id="reg-gender" required>
-                            <option value="">Select your gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <!-- 核心：Outlook邮箱 + 验证码（验证码在邮箱下方） -->
-                    <div class="form-group">
-                        <label for="reg-email">Outlook/Hotmail Email <span class="red-star">*</span></label>
-                        <input type="email" id="reg-email" placeholder="Enter your Outlook email (e.g. xxx@outlook.com)" required>
-                        <p class="tip">Only Outlook/Hotmail emails are supported for verification</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reg-verification-code">Verification Code <span class="red-star">*</span></label>
-                        <div class="code-row">
-                            <input type="text" id="reg-verification-code" placeholder="Enter 6-digit code" maxlength="6" required>
-                            <button type="button" class="btn-get-code" id="btn-get-code" onclick="sendVerificationCode()">Get Code</button>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reg-phone">Phone Number <span class="red-star">*</span></label>
-                        <input type="text" id="reg-phone" placeholder="Enter your phone number (e.g. +64 123 4567)" required>
-                        <p class="tip">For emergency contact only</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reg-anon-name">Anonymous Name <span class="red-star">*</span></label>
-                        <input type="text" id="reg-anon-name" placeholder="Enter a nickname (will be shown to others)" required>
-                        <p class="tip">Your real name will not be displayed publicly</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reg-password">Password <span class="red-star">*</span></label>
-                        <input type="password" id="reg-password" placeholder="Create a password (min 6 characters)" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reg-confirm-password">Confirm Password <span class="red-star">*</span></label>
-                        <input type="password" id="reg-confirm-password" placeholder="Re-enter your password" required>
-                    </div>
-
-                    <button type="button" class="btn-submit" onclick="register()">Register</button>
-
-                    <div class="form-switch">
-                        Already have an account? <a href="#" onclick="toggleAuthForm()">Login here</a>
-                    </div>
-                </div>
+<div class="container">
+    <div id="home" class="page active">
+        <div class="card" style="text-align:center; padding: 60px 20px;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 15px;">Affordable Moving Help</h1>
+            <p style="color:var(--gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto 30px auto;">
+                The student-powered platform for reliable, flexible, and affordable campus moving assistance.
+            </p>
+            <div style="display:flex; justify-content:center; gap:15px;">
+                <button class="btn" style="width:200px" onclick="navigate('post-task')">Post a Request</button>
+                <button class="btn btn-outline" style="width:200px" onclick="navigate('hall')">Find Tasks</button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript 逻辑（完整） -->
-    <script>
-        // 全局变量：当前登录用户
-        let currentUser = null;
-        // API基础地址（本地开发/部署时可修改）
-        const API_BASE_URL = window.location.origin;
+    <div id="post-task" class="page">
+        <div class="card">
+            <h2><i class="fas fa-plus-circle"></i> Create New Request</h2>
+            <p style="font-size:13px; color:var(--gray); margin-bottom:20px;">Click on the map to set <b>Pickup</b> and <b>Destination</b> points.</p>
+            <div id="map"></div>
+            <form id="taskForm">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                    <input type="text" id="p_from" placeholder="Pickup (Click Map)" readonly required>
+                    <input type="text" id="p_to" placeholder="Destination (Click Map)" readonly required>
+                    <input type="date" id="p_date" required>
+                    <input type="text" id="p_reward" placeholder="Reward Offer (e.g. $50)" required>
+                    <select id="p_people">
+                        <option value="1">1 Person Needed</option>
+                        <option value="2">2 People Needed</option>
+                        <option value="3+">3+ People Needed</option>
+                    </select>
+                    <select id="p_lift">
+                        <option value="Yes">Elevator Available</option>
+                        <option value="No">No Elevator (Stairs)</option>
+                    </select>
+                </div>
+                <textarea id="p_desc" placeholder="Details (e.g. '3rd floor, heavy sofa, meet at gate 4')" rows="4"></textarea>
+                <label style="font-size:12px; font-weight:bold; color:var(--primary);">Upload Item Photos:</label>
+                <input type="file" id="p_file" multiple accept="image/*" style="margin-top:5px;">
+                <button type="submit" class="btn" id="btnPost">Publish Task</button>
+            </form>
+        </div>
+    </div>
 
-        // ===================== 页面切换 =====================
-        function switchPage(pageId) {
-            // 隐藏所有页面
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
+    <div id="hall" class="page">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2>Task Market</h2>
+            <button class="btn btn-outline" style="width:auto; padding:8px 15px;" onclick="loadHall()"><i class="fas fa-sync"></i> Refresh</button>
+        </div>
+        <div id="hall_list"></div>
+    </div>
+
+    <div id="profile" class="page">
+        <div class="card">
+            <div class="profile-header">
+                <div id="prof_avatar" class="avatar">?</div>
+                <div>
+                    <h1 id="prof_nickname" style="margin:0;">User Name</h1>
+                    <p style="margin:5px 0 0 0; color:var(--primary); font-weight:600;">Verified Member</p>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item"><label>FULL NAME</label><div id="d-name">-</div></div>
+                <div class="info-item"><label>ANONYMOUS NAME</label><div id="d-anon">-</div></div>
+                <div class="info-item"><label>UNIVERSITY</label><div id="d-school">-</div></div>
+                <div class="info-item"><label>EMAIL</label><div id="d-email">-</div></div>
+                <div class="info-item"><label>PHONE</label><div id="d-phone">-</div></div>
+                <div class="info-item"><label>GENDER</label><div id="d-gender">-</div></div>
+            </div>
+        </div>
+
+        <h3 style="margin:30px 0 15px 0;">MY POSTED REQUESTS</h3>
+        <div id="my_posts"></div>
+
+        <h3 style="margin:30px 0 15px 0;">MY ACCEPTED SHIFTS</h3>
+        <div id="my_shifts"></div>
+    </div>
+
+    <div id="register" class="page">
+        <div class="card" style="max-width:600px; margin:auto;">
+            <h2 style="text-align:center;">Create Account</h2>
+            <form id="regForm">
+                <input type="text" id="r_full" placeholder="Full Name (for verification)" required>
+                <input type="text" id="r_anon" placeholder="Anonymous Nickname" required>
+                <input type="text" id="r_school" placeholder="University/School Name" required>
+                <select id="r_gender">
+                    <option>Male</option><option>Female</option><option>Other</option>
+                </select>
+                <div class="verify-row">
+                    <input type="email" id="r_email" placeholder="Email Address" required style="margin-bottom:0;">
+                    <button type="button" class="btn btn-verify" id="btnGetCode" onclick="sendCode()">GET CODE</button>
+                </div>
+                <input type="text" id="r_code" placeholder="Enter 4-digit Code" required>
+                <input type="text" id="r_phone" placeholder="Phone Number" required>
+                <input type="password" id="r_pwd" placeholder="Create Password" required>
+                <input type="password" id="r_pwd2" placeholder="Confirm Password" required>
+                <button type="submit" class="btn">Establish Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="login" class="page">
+        <div class="card" style="max-width:400px; margin:auto; text-align:center;">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" id="l_email" placeholder="Email" required>
+                <input type="password" id="l_pwd" placeholder="Password" required>
+                <button type="submit" class="btn">Access Portal</button>
+            </form>
+            <p style="margin-top:20px; font-size:14px;">No account? <a href="#" onclick="navigate('register')">Register here</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let user = JSON.parse(localStorage.getItem('user'));
+    let map, markers = [], sentCode = "";
+
+    // 路由导航逻辑
+    function navigate(p) {
+        if(!user && ['post-task', 'profile'].includes(p)) p = 'login';
+        document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+        const target = document.getElementById(p);
+        if(target) target.classList.add('active');
+        window.scrollTo(0,0);
+        updateMenu();
+
+        if(p === 'post-task') initMap();
+        if(p === 'hall') loadHall();
+        if(p === 'profile') loadProfile();
+    }
+
+    function updateMenu() {
+        const m = document.getElementById('menu');
+        if(!user) {
+            m.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('login')">Log In</a><a onclick="navigate('register')">Register</a>`;
+        } else {
+            m.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('post-task')">Post Task</a><a onclick="navigate('hall')">Find Tasks</a><a onclick="navigate('profile')">My Profile</a><a onclick="logout()" style="color:var(--danger)">Log Out</a>`;
+        }
+    }
+
+    function logout() { localStorage.clear(); location.reload(); }
+
+    // [Auth] 发送验证码 (对接 GAS)
+    async function sendCode() {
+        const email = document.getElementById('r_email').value;
+        if(!email) return alert("Please enter email first");
+        
+        const btn = document.getElementById('btnGetCode');
+        btn.disabled = true; btn.innerText = "Sending...";
+
+        try {
+            const res = await fetch('/api/auth/send-code', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ email })
             });
-            // 移除所有导航按钮的active状态
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
+            const data = await res.json();
+            if(data.success) {
+                sentCode = data.code; 
+                alert("Verification code sent to your email!");
+            }
+        } catch(e) { alert("Failed to connect to email gateway."); }
+        
+        setTimeout(() => { btn.disabled = false; btn.innerText = "GET CODE"; }, 30000);
+    }
+
+    // [Map] 初始化地图
+    function initMap() {
+        if(map) return;
+        setTimeout(() => {
+            map = L.map('map').setView([-36.8509, 174.7645], 13); // 默认坐标奥大
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            map.on('click', e => {
+                if(markers.length >= 2) { markers.forEach(m => map.removeLayer(m)); markers = []; }
+                let m = L.marker(e.latlng).addTo(map);
+                markers.push(m);
+                const loc = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+                if(markers.length === 1) document.getElementById('p_from').value = loc;
+                else document.getElementById('p_to').value = loc;
             });
-            // 显示目标页面
-            document.getElementById(pageId).classList.add('active');
-            // 激活对应导航按钮
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                if (btn.onclick.toString().includes(`switchPage('${pageId}')`)) {
-                    btn.classList.add('active');
-                }
-            });
+        }, 300);
+    }
 
-            // 页面切换后的初始化逻辑
-            switch (pageId) {
-                case 'find-tasks':
-                    refreshTasks(); // 加载任务列表
-                    break;
-                case 'my-profile':
-                    if (currentUser) {
-                        loadProfile(); // 加载个人信息
-                        loadMyPostedTasks(); // 加载我发布的任务
-                        loadMyAcceptedTasks(); // 加载我接受的任务
-                    } else {
-                        switchPage('auth'); // 未登录则跳转到登录页
-                        alert('Please login to view your profile');
-                    }
-                    break;
-                case 'post-request':
-                    if (!currentUser) {
-                        switchPage('auth');
-                        alert('Please login to post a moving request');
-                    }
-                    break;
-            }
+    // [Task] 加载任务市场
+    async function loadHall() {
+        const res = await fetch('/api/task/all');
+        const d = await res.json();
+        document.getElementById('hall_list').innerHTML = d.list.map(t => {
+            const imgs = JSON.parse(t.img_url || '[]');
+            return `
+            <div class="card" style="padding:15px;">
+                <div style="display:flex; gap:15px;">
+                    <img src="${imgs[0] || 'https://via.placeholder.com/100'}" style="width:100px; height:100px; object-fit:cover; border-radius:12px;">
+                    <div style="flex:1">
+                        <h3 style="margin:0; color:var(--success)">${t.reward}</h3>
+                        <p style="font-size:12px; margin:5px 0;">📅 ${t.move_date} | 👥 ${t.people_needed} People | 🛗 Lift: ${t.elevator}</p>
+                        <p style="font-size:13px; color:var(--gray); line-height:1.4;">${t.items_desc}</p>
+                        ${user && t.publisher_id !== user.email ? `<button class="btn" style="padding:8px; margin-top:10px; font-size:12px;" onclick="acceptTask('${t._id}')">Accept Shift</button>` : ''}
+                    </div>
+                </div>
+            </div>`;
+        }).join('') || '<p style="text-align:center; color:var(--gray)">No pending tasks available.</p>';
+    }
+
+    // [Task] 接单逻辑
+    async function acceptTask(id) {
+        if(!confirm("Accept this mission?")) return;
+        const res = await fetch('/api/task/workflow', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ task_id: id, status: 'assigned', helper_id: user.email })
+        });
+        if(res.ok) { alert("Task assigned to you!"); navigate('profile'); }
+    }
+
+    // [Profile] 加载个人看板
+    async function loadProfile() {
+        // 加载基本信息
+        const resProfile = await fetch('/api/user/profile', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ email: user.email })
+        });
+        const dProf = await resProfile.json();
+        if(dProf.success) {
+            const u = dProf.user;
+            document.getElementById('prof_nickname').innerText = u.anonymous_name;
+            document.getElementById('prof_avatar').innerText = u.anonymous_name[0].toUpperCase();
+            document.getElementById('d-name').innerText = u.full_name;
+            document.getElementById('d-anon').innerText = u.anonymous_name;
+            document.getElementById('d-school').innerText = u.school_name;
+            document.getElementById('d-email').innerText = u.email;
+            document.getElementById('d-phone').innerText = u.phone;
+            document.getElementById('d-gender').innerText = u.gender;
         }
 
-        // 切换登录/注册表单
-        function toggleAuthForm() {
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            
-            if (loginForm.style.display === 'none') {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-            } else {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
-            }
-        }
+        // 加载任务列表
+        const resDash = await fetch('/api/user/dashboard', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ email: user.email })
+        });
+        const dDash = await resDash.json();
+        
+        // 渲染我发布的任务
+        document.getElementById('my_posts').innerHTML = dDash.list.filter(t => t.publisher_id === user.email).map(t => `
+            <div class="task-row">
+                <div><b>${t.reward}</b> - ${t.move_date} <br> <span class="status-tag" style="background:#eee">${t.status}</span></div>
+                <button class="btn" style="background:var(--danger); width:auto; padding:8px 15px;" onclick="cancelTask('${t._id}', 'delete')">Delete</button>
+            </div>
+        `).join('') || '<p>No posted requests.</p>';
 
-        // ===================== 验证码相关 =====================
-        async function sendVerificationCode() {
-            const email = document.getElementById('reg-email').value.trim();
-            const btn = document.getElementById('btn-get-code');
+        // 渲染我接受的任务
+        document.getElementById('my_shifts').innerHTML = dDash.list.filter(t => t.helper_id === user.email).map(t => `
+            <div class="task-row">
+                <div><b>${t.reward}</b> - From: ${t.publisher_id}</div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn" style="background:var(--success); width:auto; padding:8px 15px;" onclick="updateStatus('${t._id}', 'finished')">Finish</button>
+                    <button class="btn" style="background:var(--gray); width:auto; padding:8px 15px;" onclick="cancelTask('${t._id}', 'unassign')">Quit</button>
+                </div>
+            </div>
+        `).join('') || '<p>No accepted shifts.</p>';
+    }
 
-           // 通用邮箱格式验证（支持所有合法邮箱，无Outlook限制）
-if (!email) {
-    alert('Error: Email cannot be empty');
-    return;
-}
-// 仅验证邮箱格式是否合法（包含@+后缀），不限制任何服务商
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i;
-if (!emailRegex.test(email)) {
-    alert('Error: Please enter a valid email (e.g. xxx@qq.com, xxx@163.com, xxx@gmail.com)');
-    return;
-}
+    async function cancelTask(id, type) {
+        if(!confirm("Are you sure?")) return;
+        await fetch('/api/task/cancel', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ task_id: id, type: type })
+        });
+        loadProfile();
+    }
 
-            // 禁用按钮，防止重复点击
-            btn.disabled = true;
-            btn.textContent = 'Sending...';
+    async function updateStatus(id, s) {
+        await fetch('/api/task/workflow', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ task_id: id, status: s })
+        });
+        loadProfile();
+    }
 
-            try {
-                // 调用后端发送验证码接口
-                const response = await fetch(`${API_BASE_URL}/api/send-verification-code`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email: email })
-                });
-
-                const result = await response.json();
-                alert(result.message);
-
-                // 如果发送成功，开始倒计时
-                if (result.success) {
-                    let countdown = 60;
-                    const timer = setInterval(() => {
-                        countdown--;
-                        btn.textContent = `${countdown}s Resend`;
-                        if (countdown <= 0) {
-                            clearInterval(timer);
-                            btn.disabled = false;
-                            btn.textContent = 'Get Code';
-                        }
-                    }, 1000);
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = 'Get Code';
-                }
-            } catch (error) {
-                console.error('Error sending verification code:', error);
-                alert('Failed to send verification code. Please try again later.');
-                btn.disabled = false;
-                btn.textContent = 'Get Code';
-            }
-        }
-
-        // ===================== 用户注册 =====================
-        async function register() {
-            // 获取表单数据
-            const givenName = document.getElementById('reg-given-name').value.trim();
-            const firstName = document.getElementById('reg-first-name').value.trim();
-            const studentId = document.getElementById('reg-student-id').value.trim();
-            const gender = document.getElementById('reg-gender').value;
-            const email = document.getElementById('reg-email').value.trim();
-            const verifyCode = document.getElementById('reg-verification-code').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-            const anonymousName = document.getElementById('reg-anon-name').value.trim();
-            const password = document.getElementById('reg-password').value;
-            const confirmPassword = document.getElementById('reg-confirm-password').value;
-
-            // 表单验证
-            if (!givenName || !firstName || !studentId || !gender || !email || !verifyCode || !phone || !anonymousName || !password || !confirmPassword) {
-                alert('All fields are required. Please fill in all information.');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                alert('Passwords do not match. Please re-enter.');
-                return;
-            }
-
-            if (password.length < 6) {
-                alert('Password must be at least 6 characters long.');
-                return;
-            }
-
-            try {
-                // 调用后端注册接口
-                const response = await fetch(`${API_BASE_URL}/api/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        givenName: givenName,
-                        firstName: firstName,
-                        studentId: studentId,
-                        gender: gender,
-                        email: email,
-                        verifyCode: verifyCode,
-                        phone: phone,
-                        anonymousName: anonymousName,
-                        password: password,
-                        confirmPassword: confirmPassword
-                    })
-                });
-
-                const result = await response.json();
-                alert(result.message);
-
-                // 注册成功，切换到登录表单
-                if (result.success) {
-                    toggleAuthForm();
-                    // 清空注册表单
-                    document.getElementById('register-form').reset();
-                }
-            } catch (error) {
-                console.error('Error during registration:', error);
-                alert('Registration failed. Please try again later.');
-            }
-        }
-
-        // ===================== 用户登录 =====================
-        async function login() {
-            const studentId = document.getElementById('login-student-id').value.trim();
-            const password = document.getElementById('login-password').value;
-
-            if (!studentId || !password) {
-                alert('Student ID and password are required.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        studentId: studentId,
-                        password: password
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    // 登录成功，保存用户信息
-                    currentUser = result.data;
-                    alert('Login successful!');
-                    
-                    // 更新导航栏按钮文字
-                    document.getElementById('auth-btn').textContent = 'Profile';
-                    
-                    // 跳转到首页
-                    switchPage('home');
-                    
-                    // 清空登录表单
-                    document.getElementById('login-form').reset();
-                } else {
-                    alert(result.message);
-                }
-            } catch (error) {
-                console.error('Error during login:', error);
-                alert('Login failed. Please try again later.');
-            }
-        }
-
-        // ===================== 用户登出 =====================
-        function logout() {
-            currentUser = null;
-            document.getElementById('auth-btn').textContent = 'Login/Register';
-            alert('Logout successful!');
-            switchPage('home');
-            
-            // 清空个人信息
-            document.getElementById('profile-student-id').textContent = 'Not logged in';
-            document.getElementById('profile-anon-name').textContent = 'Not logged in';
-            document.getElementById('profile-email').textContent = 'Not logged in';
-            document.getElementById('profile-phone').textContent = 'Not logged in';
-            document.getElementById('profile-gender').textContent = 'Not logged in';
-            
-            // 清空任务列表
-            document.getElementById('my-posted-tasks').innerHTML = '';
-            document.getElementById('my-accepted-tasks').innerHTML = '';
-        }
-
-        // ===================== 加载个人信息 =====================
-        async function loadProfile() {
-            if (!currentUser) return;
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/get-profile`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        studentId: currentUser.studentId
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success && result.user) {
-                    // 更新个人信息显示
-                    document.getElementById('profile-student-id').textContent = result.user.student_id;
-                    document.getElementById('profile-anon-name').textContent = result.user.anonymous_name;
-                    document.getElementById('profile-email').textContent = result.user.email;
-                    document.getElementById('profile-phone').textContent = result.user.phone;
-                    document.getElementById('profile-gender').textContent = result.user.gender;
-                }
-            } catch (error) {
-                console.error('Error loading profile:', error);
-                alert('Failed to load profile information.');
-            }
-        }
-
-        // ===================== 发布搬家请求 =====================
-        async function submitMovingRequest() {
-            if (!currentUser) {
-                alert('Please login first.');
-                switchPage('auth');
-                return;
-            }
-
-            // 获取表单数据
-            const moveDate = document.getElementById('move-date').value;
-            const fromAddress = document.getElementById('from-address').value.trim();
-            const toAddress = document.getElementById('to-address').value.trim();
-            const helpersNeeded = document.getElementById('helpers-needed').value;
-            const itemsToMove = document.getElementById('items-to-move').value.trim();
-            const compensation = document.getElementById('compensation').value.trim();
-
-            // 表单验证
-            if (!moveDate || !fromAddress || !toAddress || !helpersNeeded || !itemsToMove || !compensation) {
-                alert('All fields are required. Please fill in all information.');
-                return;
-            }
-
-            // 拼接完整地址
-            const location = `${fromAddress} → ${toAddress}`;
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/post-request`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        studentId: currentUser.studentId,
-                        moveDate: moveDate,
-                        location: location,
-                        helpersNeeded: helpersNeeded,
-                        items: itemsToMove,
-                        compensation: compensation
-                    })
-                });
-
-                const result = await response.json();
-                alert(result.message);
-
-                // 发布成功，清空表单
-                if (result.success) {
-                    document.getElementById('post-request-form').reset();
-                }
-            } catch (error) {
-                console.error('Error posting moving request:', error);
-                alert('Failed to post moving request. Please try again later.');
-            }
-        }
-
-        // ===================== 刷新任务列表 =====================
-        async function refreshTasks() {
-            const taskContainer = document.getElementById('task-list-container');
-            taskContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Loading tasks... Please wait.</div>';
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/get-tasks`);
-                const result = await response.json();
-
-                if (result.success) {
-                    if (result.tasks.length === 0) {
-                        taskContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">No available tasks at the moment.</div>';
-                        return;
-                    }
-
-                    // 渲染任务列表
-                    let taskHtml = '';
-                    result.tasks.forEach(task => {
-                        taskHtml += `
-                            <div class="task-card">
-                                <h3 class="task-title">${task.location}</h3>
-                                <div class="task-info"><span class="task-info-label">Date:</span> ${new Date(task.move_date).toLocaleString()}</div>
-                                <div class="task-info"><span class="task-info-label">Helpers Needed:</span> ${task.helpers_needed}</div>
-                                <div class="task-info"><span class="task-info-label">Items:</span> ${task.items}</div>
-                                <div class="task-info"><span class="task-info-label">Compensation:</span> ${task.compensation}</div>
-                                <div class="task-actions">
-                                    ${currentUser ? 
-                                        `<button class="btn btn-primary btn-sm" onclick="acceptTask(${task.id})">Accept Task</button>` :
-                                        `<button class="btn btn-primary btn-sm" onclick="switchPage('auth')">Login to Accept</button>`
-                                    }
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    taskContainer.innerHTML = taskHtml;
-                } else {
-                    taskContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Failed to load tasks. Please try again.</div>';
-                }
-            } catch (error) {
-                console.error('Error loading tasks:', error);
-                taskContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Error loading tasks. Please try again later.</div>';
-            }
-        }
-
-        // ===================== 接受任务 =====================
-        async function acceptTask(taskId) {
-            if (!currentUser) {
-                alert('Please login first.');
-                switchPage('auth');
-                return;
-            }
-
-            if (!confirm('Are you sure you want to accept this task?')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/accept-task`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        taskId: taskId,
-                        helperId: currentUser.studentId
-                    })
-                });
-
-                const result = await response.json();
-                alert(result.message);
-
-                // 刷新任务列表
-                if (result.success) {
-                    refreshTasks();
-                    loadMyAcceptedTasks();
-                }
-            } catch (error) {
-                console.error('Error accepting task:', error);
-                alert('Failed to accept task. Please try again later.');
-            }
-        }
-
-        // ===================== 加载我发布的任务 =====================
-        async function loadMyPostedTasks() {
-            if (!currentUser) return;
-
-            const container = document.getElementById('my-posted-tasks');
-            container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Loading your posted tasks...</div>';
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/my-posted-tasks`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        studentId: currentUser.studentId
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    if (result.tasks.length === 0) {
-                        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">You have not posted any tasks yet.</div>';
-                        return;
-                    }
-
-                    // 渲染我的发布任务
-                    let taskHtml = '';
-                    result.tasks.forEach(task => {
-                        taskHtml += `
-                            <div class="task-card">
-                                <h3 class="task-title">${task.location}</h3>
-                                <div class="task-info"><span class="task-info-label">Date:</span> ${new Date(task.move_date).toLocaleString()}</div>
-                                <div class="task-info"><span class="task-info-label">Helpers Needed:</span> ${task.helpers_needed}</div>
-                                <div class="task-info"><span class="task-info-label">Items:</span> ${task.items}</div>
-                                <div class="task-info"><span class="task-info-label">Compensation:</span> ${task.compensation}</div>
-                                <div class="task-info"><span class="task-info-label">Status:</span> ${task.helper_assigned ? 'Assigned' : 'Pending'}</div>
-                                ${task.helper_assigned ? 
-                                    `<div class="task-info"><span class="task-info-label">Helper ID:</span> ${task.helper_assigned}</div>
-                                    <div class="task-actions">
-                                        <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete Task</button>
-                                    </div>` :
-                                    `<div class="task-actions">
-                                        <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete Task</button>
-                                    </div>`
-                                }
-                            </div>
-                        `;
-                    });
-
-                    container.innerHTML = taskHtml;
-                } else {
-                    container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Failed to load your tasks.</div>';
-                }
-            } catch (error) {
-                console.error('Error loading my posted tasks:', error);
-                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Error loading your tasks.</div>';
-            }
-        }
-
-        // ===================== 加载我接受的任务 =====================
-        async function loadMyAcceptedTasks() {
-            if (!currentUser) return;
-
-            const container = document.getElementById('my-accepted-tasks');
-            container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Loading your accepted tasks...</div>';
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/my-accepted-tasks`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        helperId: currentUser.studentId
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    if (result.tasks.length === 0) {
-                        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">You have not accepted any tasks yet.</div>';
-                        return;
-                    }
-
-                    // 渲染我接受的任务
-                    let taskHtml = '';
-                    result.tasks.forEach(task => {
-                        taskHtml += `
-                            <div class="task-card">
-                                <h3 class="task-title">${task.location}</h3>
-                                <div class="task-info"><span class="task-info-label">Date:</span> ${new Date(task.move_date).toLocaleString()}</div>
-                                <div class="task-info"><span class="task-info-label">Helpers Needed:</span> ${task.helpers_needed}</div>
-                                <div class="task-info"><span class="task-info-label">Items:</span> ${task.items}</div>
-                                <div class="task-info"><span class="task-info-label">Compensation:</span> ${task.compensation}</div>
-                                <div class="task-actions">
-                                    <button class="btn btn-danger btn-sm" onclick="cancelTask(${task.id})">Cancel Task</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    container.innerHTML = taskHtml;
-                } else {
-                    container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Failed to load accepted tasks.</div>';
-                }
-            } catch (error) {
-                console.error('Error loading my accepted tasks:', error);
-                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">Error loading accepted tasks.</div>';
-            }
-        }
-
-        // ===================== 删除我发布的任务 =====================
-        async function deleteTask(taskId) {
-            if (!currentUser) return;
-
-            if (!confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/delete-task`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        taskId: taskId,
-                        studentId: currentUser.studentId
-                    })
-                });
-
-                const result = await response.json();
-                alert(result.message);
-
-                // 刷新任务列表
-                if (result.success) {
-                    loadMyPostedTasks();
-                    refreshTasks();
-                }
-            } catch (error) {
-                console.error('Error deleting task:', error);
-                alert('Failed to delete task. Please try again later.');
-            }
-        }
-
-        // ===================== 取消我接受的任务 =====================
-        async function cancelTask(taskId) {
-            if (!currentUser) return;
-
-            if (!confirm('Are you sure you want to cancel this task?')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/cancel-task`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        taskId: taskId,
-                        helperId: currentUser.studentId
-                    })
-                });
-
-                const result = await response.json();
-                alert(result.message);
-
-                // 刷新任务列表
-                if (result.success) {
-                    loadMyAcceptedTasks();
-                    refreshTasks();
-                }
-            } catch (error) {
-                console.error('Error canceling task:', error);
-                alert('Failed to cancel task. Please try again later.');
-            }
-        }
-
-        // 页面加载完成后初始化
-        window.onload = function() {
-            // 初始化任务列表
-            if (document.getElementById('find-tasks').classList.contains('active')) {
-                refreshTasks();
-            }
+    // 表单提交处理
+    document.getElementById('regForm').onsubmit = async e => {
+        e.preventDefault();
+        if(document.getElementById('r_code').value !== sentCode) return alert("Code mismatch");
+        if(document.getElementById('r_pwd').value !== document.getElementById('r_pwd2').value) return alert("Passwords mismatch");
+        
+        const b = {
+            full_name: document.getElementById('r_full').value,
+            anonymous_name: document.getElementById('r_anon').value,
+            school_name: document.getElementById('r_school').value,
+            gender: document.getElementById('r_gender').value,
+            email: document.getElementById('r_email').value,
+            phone: document.getElementById('r_phone').value,
+            password: document.getElementById('r_pwd').value
         };
-    </script>
+        const res = await fetch('/api/auth/register', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(b)
+        });
+        if(res.ok) { alert("Registration successful!"); navigate('login'); }
+    };
+
+    document.getElementById('loginForm').onsubmit = async e => {
+        e.preventDefault();
+        const res = await fetch('/api/auth/login', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                email: document.getElementById('l_email').value,
+                password: document.getElementById('l_pwd').value
+            })
+        });
+        const d = await res.json();
+        if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); }
+        else alert("Invalid credentials");
+    };
+
+    document.getElementById('taskForm').onsubmit = async e => {
+        e.preventDefault();
+        const btn = document.getElementById('btnPost');
+        btn.disabled = true; btn.innerText = "Uploading Photos...";
+
+        const f = new FormData();
+        f.append('publisher_id', user.email);
+        f.append('from_addr', document.getElementById('p_from').value);
+        f.append('to_addr', document.getElementById('p_to').value);
+        f.append('move_date', document.getElementById('p_date').value);
+        f.append('reward', document.getElementById('p_reward').value);
+        f.append('people_needed', document.getElementById('p_people').value);
+        f.append('elevator', document.getElementById('p_lift').value);
+        f.append('items_desc', document.getElementById('p_desc').value);
+
+        const files = document.getElementById('p_file').files;
+        for(let i=0; i<files.length; i++) f.append('task_images', files[i]);
+
+        const res = await fetch('/api/task/create', { method: 'POST', body: f });
+        if(res.ok) { alert("Task published!"); navigate('hall'); }
+        btn.disabled = false; btn.innerText = "Publish Task";
+    };
+
+    // 初始化页面
+    updateMenu(); navigate('home');
+</script>
 </body>
 </html>
