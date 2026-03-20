@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V10.1 Workflow & Kanban Edition
+           DESIGN SYSTEM: V10.0 Ultimate Engineering Edition (8pt Grid)
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -30,18 +30,18 @@
             --surface: #ffffff;
             --radius-lg: 1.25rem;
             --radius-md: 0.75rem;
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
         }
 
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
         
+        /* SPA Transition Animation */
         .page { display: none !important; opacity: 0; }
         .page.active { display: block !important; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Navigation */
+        /* Navigation: Glassmorphism */
         nav { 
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); 
             padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; 
@@ -53,58 +53,81 @@
         .nav-links { display: flex; align-items: center; gap: 2rem; }
         .nav-links a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
         .nav-links a:hover { color: var(--primary); }
-        .user-tag { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 18px; border-radius: 24px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(79, 70, 229, 0.2); }
+        .user-tag { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 18px; border-radius: 24px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(79, 70, 229, 0.2); cursor: pointer; transition: 0.2s; }
+        .user-tag:hover { background: var(--primary); color: white; }
 
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
         /* =============================================================
-           MISSION HUB (Market)
+           MISSION HUB: Long-Strip Timeline Layout
         ============================================================= */
         .hub-container { display: flex; flex-direction: column; gap: 1rem; }
         .hub-row { 
-            display: grid; grid-template-columns: 100px 1fr 120px; align-items: center; 
-            background: white; border-radius: 16px; padding: 1.25rem 2rem; border: 1px solid #eef2f6;
-            transition: 0.3s; cursor: pointer;
+            display: grid; 
+            grid-template-columns: 100px 1fr 120px; 
+            align-items: center; 
+            background: white; 
+            border-radius: 16px; 
+            padding: 1.25rem 2rem; 
+            border: 1px solid #eef2f6;
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
         }
         .hub-row:hover { transform: translateX(8px); border-color: var(--primary); box-shadow: var(--shadow-premium); }
+        
         .posted-col { font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; border-right: 2px solid #f1f5f9; line-height: 1.3; }
         .posted-col span { display: block; font-size: 1.05rem; color: var(--dark); margin-top: 2px; }
+        
         .details-strip { padding: 0 2.5rem; display: flex; flex-direction: column; gap: 8px; }
         .strip-header { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.05rem; color: var(--dark); }
+        .strip-header i { color: var(--primary); font-size: 0.9rem; }
         .strip-route { font-size: 0.9rem; color: var(--muted); display: flex; align-items: center; gap: 12px; font-weight: 500; }
+        .strip-route i { font-size: 0.75rem; opacity: 0.6; color: var(--primary); }
         .strip-inventory { font-size: 0.85rem; color: var(--text); background: #f8fafc; padding: 6px 14px; border-radius: 8px; display: inline-block; width: fit-content; border: 1px solid #f1f5f9; }
+
         .reward-col { text-align: right; font-size: 1.6rem; font-weight: 900; color: var(--success); letter-spacing: -0.5px; }
 
         /* =============================================================
-           KANBAN WORKFLOW DASHBOARD (Restored & Upgraded)
+           KANBAN WORKFLOW (Integrated into Profile)
         ============================================================= */
-        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-        .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 65vh; border: 1px dashed #e2e8f0; }
+        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 400px; border: 1px dashed #e2e8f0; }
         .kanban-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 1.5rem; }
-        .kanban-badge { background: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; box-shadow: var(--shadow-sm); color: var(--primary); border: 1px solid #eef2f6; }
+        .kanban-badge { background: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: var(--primary); border: 1px solid #eef2f6; }
         
-        .kanban-card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: var(--shadow-sm); border: 1px solid transparent; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .kanban-card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1px solid transparent; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
         .kanban-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--shadow-premium); }
         .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
         .kb-pub { background: #f1f5f9; color: var(--muted); }
         .kb-help { background: var(--primary-gradient); color: white; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
 
         /* =============================================================
-           MAP & ROUTING
+           POST TASK: Premium Map & Routing Strip
         ============================================================= */
         #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
-        .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; border-bottom: 4px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .route-info-strip { 
+            background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; 
+            display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; 
+            border-bottom: 4px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .route-info-strip span { display: flex; align-items: center; gap: 12px; font-size: 0.95rem; letter-spacing: 0.5px; }
+        .route-info-strip i { color: var(--primary); font-size: 1.1rem; }
+        
+        /* Hide default routing text panel from Leaflet Routing Machine */
         .leaflet-routing-container { display: none !important; }
+        
+        /* Custom Map Pin Styles */
         .custom-pin { background: transparent; border: none; }
         .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
-        /* General Inputs & Buttons */
+        /* Forms & Interactive Components */
         .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; justify-content: center; transition: 0.3s; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4); }
         .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
         .btn-outline:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .btn-danger { background: #fee2e2; color: var(--danger); border: 1.5px solid #fecaca; }
+        .btn-danger:hover { background: var(--danger); color: white; }
         
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
         input, select, textarea { width: 100%; padding: 1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: 0.2s; }
@@ -112,18 +135,21 @@
         input:read-only { background: #f1f5f9; cursor: not-allowed; color: var(--muted); font-weight: 500; }
         label { font-size: 0.8rem; font-weight: 800; color: var(--muted); margin-bottom: 0.6rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Modal & Threads */
+        /* Modal & Infinite Threads */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; backdrop-filter: blur(12px); align-items: center; justify-content: center; }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
         .interaction-box { background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6; }
-        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: var(--shadow-sm); }
+        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .comment-reply { margin-left: 3.5rem; margin-top: 1rem; border-left: 4px solid var(--primary); padding-left: 1.5rem; background: #fafafa; border-radius: 0 1.2rem 1.2rem 0; }
         .reply-btn { font-size: 0.75rem; color: var(--primary); font-weight: 800; cursor: pointer; text-transform: uppercase; margin-left: 15px; }
+        .reply-btn:hover { text-decoration: underline; }
         .reply-hint { display: none; background: #eef2ff; padding: 12px 20px; border-radius: 12px; margin-bottom: 15px; font-size: 0.88rem; border-left: 6px solid var(--primary); }
 
         .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
         .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; border: 2px solid #f1f5f9; cursor: pointer; flex-shrink: 0; transition: 0.3s; }
-        .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
+        .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        .status-badge { font-size: 0.8rem; padding: 6px 16px; border-radius: 20px; font-weight: 800; text-transform: uppercase; background: var(--primary); color: white; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -145,6 +171,12 @@
                 <button class="btn" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('post-task')">Broadcast Task</button>
                 <button class="btn btn-outline" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('hall')">Mission Hub</button>
             </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2.5rem; margin-top: 6rem;">
+                <div class="card" style="margin:0; padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top: 4px solid var(--primary);"><i class="fas fa-hand-holding-dollar" style="font-size:2rem; color:var(--primary); margin-bottom:1rem;"></i><h3 style="margin:0;">Peer Pricing</h3><p style="font-size:0.9rem; color:var(--muted);">Zero platform fees.</p></div>
+                <div class="card" style="margin:0; padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top: 4px solid var(--success);"><i class="fas fa-shield-halved" style="font-size:2rem; color:var(--success); margin-bottom:1rem;"></i><h3 style="margin:0;">Verified Safety</h3><p style="font-size:0.9rem; color:var(--muted);">UoA SID required.</p></div>
+                <div class="card" style="margin:0; padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top: 4px solid var(--warning);"><i class="fas fa-map-location-dot" style="font-size:2rem; color:var(--warning); margin-bottom:1rem;"></i><h3 style="margin:0;">Smart Routing</h3><p style="font-size:0.9rem; color:var(--muted);">Real driving distance.</p></div>
+            </div>
         </section>
     </div>
 
@@ -153,38 +185,8 @@
             <h2 style="font-size:2.5rem; margin:0; letter-spacing:-1.5px;">Live Mission Hub</h2>
             <button class="btn btn-outline btn-sm" style="border-radius:50px; padding: 0.8rem 1.8rem;" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh Feed</button>
         </div>
-        <div id="hall_list" class="hub-container"></div>
-    </div>
-
-    <div id="dashboard" class="page">
-        <h2 style="font-size:2.5rem; margin:0 0 2rem 0; letter-spacing:-1.5px;">My Workflow</h2>
-        <div class="kanban-board">
-            
-            <div class="kanban-col">
-                <div class="kanban-header">
-                    <span><i class="fas fa-hourglass-half" style="color:var(--warning); margin-right:5px;"></i> Pending</span>
-                    <span class="kanban-badge" id="cnt_pending">0</span>
-                </div>
-                <div id="col_pending"></div>
+        <div id="hall_list" class="hub-container">
             </div>
-
-            <div class="kanban-col">
-                <div class="kanban-header">
-                    <span><i class="fas fa-truck-ramp-box" style="color:var(--primary); margin-right:5px;"></i> In Progress</span>
-                    <span class="kanban-badge" id="cnt_progress">0</span>
-                </div>
-                <div id="col_progress"></div>
-            </div>
-
-            <div class="kanban-col">
-                <div class="kanban-header">
-                    <span><i class="fas fa-check-circle" style="color:var(--success); margin-right:5px;"></i> History</span>
-                    <span class="kanban-badge" id="cnt_history">0</span>
-                </div>
-                <div id="col_history"></div>
-            </div>
-            
-        </div>
     </div>
 
     <div id="post-task" class="page">
@@ -193,55 +195,130 @@
                 <h2 style="margin:0; font-size:2.2rem; letter-spacing:-1px;">Broadcast New Mission</h2>
                 <p style="color:var(--muted); font-size:0.95rem;">Mark buildings on the map to auto-fetch campus addresses and calculate driving route.</p>
             </div>
+            
             <div id="map"></div>
+            
             <div class="route-info-strip">
                 <span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal" style="font-size:1.2rem;">0.00</b> km</span>
                 <span><i class="fas fa-hourglass-half"></i> EST. DRIVING: <b id="timeVal" style="font-size:1.2rem;">0</b> min</span>
             </div>
+
             <form id="taskForm" style="padding: 0 3rem 3rem;">
                 <div class="form-grid">
-                    <div><label>Pickup Building (Auto-fetched)</label><input type="text" id="p_from" readonly required placeholder="Waiting for map pin..."></div>
-                    <div><label>Destination Building (Auto-fetched)</label><input type="text" id="p_to" readonly required placeholder="Waiting for map pin..."></div>
+                    <div>
+                        <label>Pickup Building (Auto-fetched)</label>
+                        <input type="text" id="p_from" readonly required placeholder="Waiting for map pin (Start)...">
+                    </div>
+                    <div>
+                        <label>Destination Building (Auto-fetched)</label>
+                        <input type="text" id="p_to" readonly required placeholder="Waiting for map pin (End)...">
+                    </div>
                 </div>
                 <div class="form-grid">
-                    <div><label>Moving Date & Precision Time</label><input type="datetime-local" id="p_date" required></div>
-                    <div><label>Offer Reward (NZD)</label><input type="text" id="p_reward" placeholder="e.g. $45" required></div>
+                    <div>
+                        <label>Moving Date & Precision Time</label>
+                        <input type="datetime-local" id="p_date" required>
+                    </div>
+                    <div>
+                        <label>Offer Reward (NZD)</label>
+                        <input type="text" id="p_reward" placeholder="e.g. $45" required>
+                    </div>
                 </div>
+                
                 <label>Mission Inventory & Logistics Notes</label>
-                <textarea id="p_desc" rows="4" placeholder="List items, stairs, elevators, or specific parking instructions." required></textarea>
+                <textarea id="p_desc" rows="4" placeholder="List items (e.g. 3 boxes, 1 desk). Describe any stairs, elevators, or specific parking instructions." required></textarea>
+                
+                <div class="form-grid" style="margin-top:1.5rem; margin-bottom:2rem;">
+                    <div><label>Logistics Complexity</label><select id="p_weight"><option value="Light">Light (Boxes/Suitcases)</option><option value="Heavy">Heavy (Large Furniture)</option></select></div>
+                    <div style="display:flex; align-items:center; padding-top:1.5rem;"><input type="checkbox" id="p_elevator" style="width:auto; margin-right:12px; transform:scale(1.2);"><label style="margin:0; text-transform:none; font-size:0.95rem;">Elevator Available at location</label></div>
+                </div>
+
                 <label>Evidence Photos (Max 5)</label>
                 <input type="file" id="p_file" multiple accept="image/*" onchange="handlePreview(event)">
                 <div id="p_preview" class="thumb-strip"></div>
+                
                 <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">Post to Hub <i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
     </div>
 
     <div id="profile" class="page">
-        <div class="card">
-            <h2 style="margin-top:0; font-size:2.2rem; letter-spacing:-1px;">UoA Verified Profile</h2>
-            <div id="profileDetails" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:2rem;"></div>
-            <div style="margin-top:3rem; border-top: 1px solid #f1f5f9; padding-top:2.5rem; display:flex; gap:1rem;">
-                <button class="btn btn-outline" style="width:auto;" onclick="logout()">Sign Out of Hub</button>
+        <div style="display:grid; grid-template-columns: 1fr 350px; gap:2rem; margin-bottom:2rem;">
+            <div class="card" style="margin:0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                    <h2 style="margin:0; font-size:2rem; letter-spacing:-1px;">UoA Verified Identity</h2>
+                    <button class="btn btn-outline btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                </div>
+                <div id="profileDetails" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.5rem; margin:0;"></div>
+            </div>
+            
+            <div class="card" style="margin:0; border-left: 8px solid var(--warning); background: linear-gradient(to right, #fffbeb, #ffffff); display:flex; flex-direction:column; justify-content:center;">
+                <h3 style="margin:0; font-size:1.4rem;">Reputation Node</h3>
+                <div style="font-size:3.8rem; font-weight:900; color:var(--dark); line-height:1.2;">★ <span id="p_rating">5.0</span></div>
+                <p style="color:var(--muted); font-weight:600; font-size:1rem; margin-top:0.5rem;">Based on <b id="p_task_count" style="color:var(--primary);">0</b> fulfillments.</p>
             </div>
         </div>
-        <div class="card" style="border-left: 8px solid var(--warning); background: linear-gradient(to right, #fffbeb, #ffffff);">
-            <h3 style="margin-top:0; font-size:1.8rem;">Reputation Node</h3>
-            <div style="font-size:4rem; font-weight:900; color:var(--dark); line-height:1;">★ <span id="p_rating">5.0</span></div>
-            <p style="color:var(--muted); font-weight:600; font-size:1.1rem; margin-top:1rem;">System verified student credit based on <b id="p_task_count" style="color:var(--primary);">0</b> fulfillments.</p>
+
+        <div class="card" style="background:transparent; border:none; box-shadow:none; padding:0;">
+            <h2 style="font-size:2.2rem; margin:0 0 1.5rem 0; letter-spacing:-1px;"><i class="fas fa-layer-group" style="color:var(--primary); margin-right:10px;"></i> My Workflow</h2>
+            <div class="kanban-board">
+                <div class="kanban-col">
+                    <div class="kanban-header">
+                        <span><i class="fas fa-hourglass-half" style="color:var(--warning); margin-right:5px;"></i> Pending</span>
+                        <span class="kanban-badge" id="cnt_pending">0</span>
+                    </div>
+                    <div id="col_pending"></div>
+                </div>
+
+                <div class="kanban-col">
+                    <div class="kanban-header">
+                        <span><i class="fas fa-truck-ramp-box" style="color:var(--primary); margin-right:5px;"></i> In Progress</span>
+                        <span class="kanban-badge" id="cnt_progress">0</span>
+                    </div>
+                    <div id="col_progress"></div>
+                </div>
+
+                <div class="kanban-col">
+                    <div class="kanban-header">
+                        <span><i class="fas fa-check-circle" style="color:var(--success); margin-right:5px;"></i> History</span>
+                        <span class="kanban-badge" id="cnt_history">0</span>
+                    </div>
+                    <div id="col_history"></div>
+                </div>
+            </div>
         </div>
-        <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:5rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
+
+        <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:3rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
     </div>
 
     <div id="register" class="page">
         <div class="card" style="max-width:650px; margin:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);">
             <h2 style="text-align:center; font-size:2.5rem; letter-spacing:-1.5px;">Join the Hub</h2>
             <form id="regForm">
-                <div class="form-grid"><div><label>UoA Student ID</label><input type="text" id="r_sid" required></div><div><label>Display Nickname</label><input type="text" id="r_anon" required></div></div>
-                <div class="form-grid"><div><label>First Name</label><input type="text" id="r_fn" required></div><div><label>Last Name</label><input type="text" id="r_ln" required></div></div>
+                <div class="form-grid">
+                    <div><label>UoA Student ID</label><input type="text" id="r_sid" placeholder="8-digit SID" required></div>
+                    <div><label>Display Nickname</label><input type="text" id="r_anon" placeholder="Public alias" required></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>First Name</label><input type="text" id="r_fn" required></div>
+                    <div><label>Last Name</label><input type="text" id="r_ln" required></div>
+                </div>
+                
                 <label>University Email</label>
-                <div style="display:flex; gap:12px; margin-bottom:1.5rem;"><input type="email" id="r_email" required style="margin:0"><button type="button" class="btn btn-outline btn-sm" style="width:150px; font-weight:800;" onclick="sendCode()" id="btnSendCode">Get Code</button></div>
-                <div class="form-grid"><div><label>Verification Code</label><input type="text" id="r_code" required></div><div><label>Create Password</label><input type="password" id="r_pwd" required></div></div>
+                <div style="display:flex; gap:12px; margin-bottom:1.5rem;">
+                    <input type="email" id="r_email" placeholder="example@aucklanduni.ac.nz" required style="margin:0">
+                    <button type="button" class="btn btn-outline btn-sm" style="width:150px; font-weight:800;" onclick="sendCode()" id="btnSendCode">Get Code</button>
+                </div>
+                
+                <div class="form-grid">
+                    <div><label>Verification Code</label><input type="text" id="r_code" placeholder="Sent to email" required></div>
+                    <div><label>Phone Number</label><input type="text" id="r_phone" placeholder="Mobile" required></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>Gender</label><select id="r_gender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                    <div><label>Create Password</label><input type="password" id="r_pwd" required></div>
+                </div>
+                
                 <button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Authorize & Join</button>
             </form>
             <p style="text-align:center; margin-top:2rem; font-size:0.95rem;">Already registered? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('login')">Sign In</b></p>
@@ -251,7 +328,13 @@
     <div id="login" class="page">
         <div class="card" style="max-width:440px; margin:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);">
             <h2 style="text-align:center; font-size:2.5rem; letter-spacing:-1.5px;">Portal Login</h2>
-            <form id="loginForm"><label>Email Address or SID</label><input type="text" id="l_user" required><label>Password</label><input type="password" id="l_pwd" required><button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Access Hub</button></form>
+            <form id="loginForm">
+                <label>Email Address or SID</label>
+                <input type="text" id="l_user" required>
+                <label>Password</label>
+                <input type="password" id="l_pwd" required>
+                <button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Access Hub</button>
+            </form>
             <p style="text-align:center; margin-top:2.5rem; font-size:0.95rem;">New to DormLift? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('register')">Register Now</b></p>
         </div>
     </div>
@@ -260,15 +343,26 @@
 <div id="taskModal" class="modal" onclick="if(event.target.id==='taskModal') this.style.display='none'">
     <div class="modal-content">
         <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:52px; height:52px; border-radius:50%; font-size:1.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;" onclick="document.getElementById('taskModal').style.display='none'">&times;</button>
+        
         <div id="m_header" style="margin-bottom:2rem;"></div>
         <div class="thumb-strip" id="m_thumbs"></div>
         <div id="m_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
+        
         <div id="m_interaction" class="interaction-box">
             <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="margin-right:10px; color:var(--primary);"></i> Discussion Thread</h4>
             <div id="c_list" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; scrollbar-width:thin; padding-right:10px;"></div>
-            <div id="reply_hint" class="reply-hint"><i class="fas fa-reply fa-flip-horizontal" style="margin-right:5px;"></i> Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span></div>
-            <div style="display:flex; gap:12px;"><input type="text" id="c_in" placeholder="Ask publisher or reply to discussion..." style="margin:0; height:54px;"><button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postComment()">Send</button></div>
+            
+            <div id="reply_hint" class="reply-hint">
+                <i class="fas fa-reply fa-flip-horizontal" style="margin-right:5px;"></i> Replying to <b id="reply_name"></b> 
+                <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span>
+            </div>
+            
+            <div style="display:flex; gap:12px;">
+                <input type="text" id="c_in" placeholder="Ask publisher or reply to discussion..." style="margin:0; height:54px;">
+                <button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postComment()">Send</button>
+            </div>
         </div>
+        
         <div id="m_footer" style="margin-top:3rem; display:flex; justify-content:flex-end; gap:15px;"></div>
     </div>
 </div>
@@ -279,13 +373,12 @@
     let map, markers = [], routingControl, globalTaskPool = [], activeTaskId = null, activeReplyId = null;
 
     function navigate(p) {
-        if (!user && ['post-task', 'dashboard', 'profile'].includes(p)) p = 'login';
+        if (!user && ['post-task', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
         document.getElementById(p).classList.add('active');
         renderMenu(); window.scrollTo(0,0);
         
         if(p === 'hall') loadHall();
-        if(p === 'dashboard') loadKanbanDashboard();
         if(p === 'post-task') initMap();
         if(p === 'profile') loadProfileData();
     }
@@ -295,13 +388,11 @@
         if(!user) {
             menu.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Hub</a><a onclick="navigate('login')">Login</a>`;
         } else {
-            // Re-added Workflow (Dashboard) to navigation!
             menu.innerHTML = `
-                <span class="user-tag"><i class="fas fa-user-check" style="margin-right:5px;"></i> ${user.anonymous_name}</span>
+                <div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check" style="margin-right:5px;"></i> ${user.anonymous_name}</div>
                 <a onclick="navigate('hall')">Market</a>
                 <a onclick="navigate('post-task')">Post</a>
-                <a onclick="navigate('dashboard')">Workflow</a>
-                <a onclick="navigate('profile')">Profile</a>
+                <a onclick="navigate('profile')">Profile & Workflow</a>
             `;
         }
     }
@@ -315,7 +406,7 @@
         });
     }
 
-    // ======================= 2. MAP ENGINE (CartoDB + Nominatim Geocoding + OSRM) =======================
+    // ======================= 2. MAP ENGINE (CartoDB + Nominatim + OSRM) =======================
     function initMap() {
         if(map) return;
         setTimeout(() => {
@@ -351,10 +442,11 @@
                 targetInput.value = "Fetching campus address...";
 
                 try {
+                    // Requires User-Agent for Nominatim to prevent 403
                     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, {
                         headers: {
                             'Accept-Language': 'en-US,en;q=0.9',
-                            'User-Agent': 'DormLiftPro/10.1 (Contact: admin@dormlift.com)'
+                            'User-Agent': 'DormLiftPro/10.0 (Contact: admin@dormlift.com)'
                         }
                     });
                     const d = await res.json();
@@ -396,7 +488,7 @@
             <div class="hub-row" onclick="openDetails('${t._id}')">
                 <div class="posted-col">PUB<span>${pubDate}</span></div>
                 <div class="details-strip">
-                    <div class="strip-header"><i class="far fa-clock"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
+                    <div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
                     <div class="strip-route"><i class="fas fa-circle"></i> ${t.from_addr} <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> <i class="fas fa-flag-checkered"></i> ${t.to_addr}</div>
                     <div class="strip-inventory"><b>Items:</b> ${t.items_desc.substring(0, 75)}...</div>
                 </div>
@@ -405,38 +497,10 @@
         }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active missions in Hub.</div>';
     }
 
-    // ======================= 4. KANBAN DASHBOARD (Restored & Upgraded) =======================
-    async function loadKanbanDashboard() {
-        const res = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: user.email})});
-        const d = await res.json(); updatePool(d.list);
-
-        const renderKanbanCol = (targetCol, validStatuses) => {
-            const list = d.list.filter(t => validStatuses.includes(t.status));
-            document.getElementById(`cnt_${targetCol}`).innerText = list.length;
-            
-            document.getElementById(`col_${targetCol}`).innerHTML = list.map(t => {
-                const isPub = t.publisher_id === user.email;
-                return `
-                <div class="kanban-card" onclick="openDetails('${t._id}')">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <span class="kb-role-tag ${isPub?'kb-pub':'kb-help'}">${isPub?'Publisher':'Helper'}</span>
-                        <span style="font-size:0.7rem; color:var(--muted); font-weight:700;"><i class="far fa-calendar-alt"></i> ${new Date(t.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <div style="font-size:1.25rem; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-0.5px;">${t.reward}</div>
-                    <div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${t.from_addr}</div>
-                </div>`;
-            }).join('');
-        };
-
-        renderKanbanCol('pending', ['pending']);
-        renderKanbanCol('progress', ['assigned']);
-        renderKanbanCol('history', ['completed', 'reviewed']);
-    }
-
-    // ======================= 5. THREADED MODAL & WORKFLOW =======================
+    // ======================= 4. THREADED MODAL & WORKFLOW =======================
     async function openDetails(id) {
         activeTaskId = id;
-        // Fetch fresh truth
+        // Truth Sync
         const res = await fetch('/api/task/all'); const d = await res.json(); updatePool(d.list);
         let t = globalTaskPool.find(x => x._id === id);
         if(!t) {
@@ -515,9 +579,7 @@
         if(res.ok) { 
             alert("Success! Workflow updated."); 
             document.getElementById('taskModal').style.display='none'; 
-            
-            // AUTOMATIC REDIRECT TO KANBAN DASHBOARD INSTEAD OF PROFILE
-            navigate('dashboard'); 
+            navigate('profile'); 
         }
     }
 
@@ -527,7 +589,7 @@
         document.getElementById('taskModal').style.display='none'; loadHall();
     }
 
-    // ======================= 6. PROFILE & AUTH =======================
+    // ======================= 5. INTEGRATED PROFILE & KANBAN LOGIC =======================
     async function loadProfileData() {
         const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json();
         const u = d.user;
@@ -546,8 +608,36 @@
             
         document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0";
         document.getElementById('p_task_count').innerText = u.task_count || 0;
+
+        // Load Kanban Dashboard Data
+        const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
+        const dT = await resT.json();
+        updatePool(dT.list);
+
+        const renderKanbanCol = (targetCol, validStatuses) => {
+            const list = dT.list.filter(t => validStatuses.includes(t.status));
+            document.getElementById(`cnt_${targetCol}`).innerText = list.length;
+            
+            document.getElementById(`col_${targetCol}`).innerHTML = list.map(t => {
+                const isPub = t.publisher_id === user.email;
+                return `
+                <div class="kanban-card" onclick="openDetails('${t._id}')">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <span class="kb-role-tag ${isPub?'kb-pub':'kb-help'}">${isPub?'Publisher':'Helper'}</span>
+                        <span style="font-size:0.7rem; color:var(--muted); font-weight:700;"><i class="far fa-calendar-alt"></i> ${t.move_date}</span>
+                    </div>
+                    <div style="font-size:1.25rem; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-0.5px;">${t.reward}</div>
+                    <div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${t.from_addr}</div>
+                </div>`;
+            }).join('');
+        };
+
+        renderKanbanCol('pending', ['pending']);
+        renderKanbanCol('progress', ['assigned']);
+        renderKanbanCol('history', ['completed', 'reviewed']);
     }
 
+    // ======================= 6. AUTH FLOWS =======================
     async function sendCode() {
         const email = document.getElementById('r_email').value; if(!email) return alert("UoA Email required");
         const btn = document.getElementById('btnSendCode'); btn.innerText = "Sending...";
@@ -557,7 +647,13 @@
 
     document.getElementById('regForm').onsubmit = async e => {
         e.preventDefault();
-        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value };
+        const b = { 
+            student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, 
+            first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, 
+            email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, 
+            code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, 
+            gender: document.getElementById('r_gender').value 
+        };
         const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
         if(res.ok) { alert("Registration Verified & Successful!"); navigate('login'); } else alert("Registration Failed. Check code or duplicate email.");
     };
@@ -579,10 +675,14 @@
         f.append('move_time', document.getElementById('p_date').value.split('T')[1] || '');
         f.append('reward', document.getElementById('p_reward').value);
         f.append('items_desc', document.getElementById('p_desc').value);
+        f.append('load_weight', document.getElementById('p_weight').value);
+        f.append('has_elevator', document.getElementById('p_elevator').checked);
         Array.from(document.getElementById('p_file').files).forEach(fi => f.append('task_images', fi));
         
+        const btn = document.querySelector('#taskForm button[type="submit"]'); btn.innerText = "Broadcasting...";
         await fetch('/api/task/create', { method:'POST', body: f });
         navigate('hall');
+        btn.innerHTML = 'Post to Hub <i class="fas fa-paper-plane"></i>';
     };
 
     function handlePreview(e) {
