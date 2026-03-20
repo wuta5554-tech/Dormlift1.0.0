@@ -30,7 +30,6 @@
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
         input, select, textarea { width: 100%; padding: 1rem 1.2rem; background: #f1f5f9; border: 2px solid transparent; border-radius: 0.8rem; font-size: 0.95rem; font-family: 'Inter', sans-serif; color: var(--dark); transition: all 0.3s ease; box-sizing: border-box; }
         input:focus, select:focus, textarea:focus { background: var(--surface); border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15); }
-        input[readonly] { background: #e2e8f0; color: #475569; font-weight: 600; cursor: not-allowed; }
         
         .btn { background: var(--primary); color: white; padding: 1rem 2rem; border: none; border-radius: 0.8rem; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%; font-size: 1rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4); }
@@ -50,13 +49,15 @@
         .tag { background: #eff6ff; color: var(--primary); font-size: 0.75rem; padding: 6px 12px; border-radius: 20px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
         .tag-success { background: #ecfdf5; color: var(--success); }
         
-        /* 任务卡片中的地址专属样式 */
         .address-box { background: #f8fafc; padding: 12px; border-radius: 0.8rem; margin-bottom: 1rem; font-size: 0.85rem; border: 1px solid #e2e8f0; }
         .address-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; color: var(--dark); font-weight: 500; }
         .address-row:last-child { margin-bottom: 0; }
 
         #map { height: 420px; border-radius: 1.2rem; margin-bottom: 1.5rem; border: none; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); }
         .leaflet-routing-container { display: none !important; }
+        
+        /* 地图弹窗样式定制 */
+        .leaflet-popup-content { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px; text-align: center; color: var(--dark); margin: 8px 12px; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: var(--surface); padding: 2rem; border-radius: 1.5rem; width: 90%; max-width: 650px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); }
@@ -97,16 +98,23 @@
     <div id="post-task" class="page">
         <div class="card">
             <h2 style="margin-top:0; color:var(--dark); font-size:1.8rem;"><i class="fas fa-map-marker-alt" style="color:var(--primary); margin-right:8px;"></i> Request Logistics</h2>
-            <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:2rem;">Click on the map to set your <b>Pickup</b> and <b>Destination</b>. We will auto-translate coordinates to real addresses.</p>
+            <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:2rem;">First, click on the map to drop a pin. Then, <b>manually edit the address below</b> to add exact room or building numbers.</p>
             
             <div id="map"></div>
-            <div id="route_info" style="text-align:center; padding:12px; background:#eff6ff; border-radius:0.8rem; color:var(--primary); font-weight:600; margin-bottom:2rem; border:1px solid #dbeafe;">📍 Awaiting location selection...</div>
+            <div id="route_info" style="text-align:center; padding:12px; background:#eff6ff; border-radius:0.8rem; color:var(--primary); font-weight:600; margin-bottom:2rem; border:1px solid #dbeafe;">📍 Awaiting Map Selection...</div>
 
             <form id="taskForm">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="font-size:0.85rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:6px;">📍 Pickup Address (Click map first, edit here for exact details)</label>
+                    <input type="text" id="p_from_display" placeholder="e.g. 34 Princes St, Room 402" required style="border-color:#cbd5e1; background:var(--surface);">
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="font-size:0.85rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:6px;">🏁 Destination Address (Click map first, edit here for exact details)</label>
+                    <input type="text" id="p_to_display" placeholder="e.g. 10 Symonds St, Floor 2" required style="border-color:#cbd5e1; background:var(--surface);">
+                </div>
+                
                 <div class="form-grid">
-                    <input type="text" id="p_from_display" placeholder="Pickup Address (Auto-filled)" readonly required>
-                    <input type="text" id="p_to_display" placeholder="Destination Address (Auto-filled)" readonly required>
-                    
                     <input type="date" id="p_date" required>
                     <input type="text" id="p_reward" placeholder="Reward Offer (e.g. $50)" required>
                     <select id="p_people">
@@ -215,22 +223,19 @@
     function logout() { localStorage.clear(); location.reload(); }
     function closeModal(e) { if(e.target.id === 'mapModal') document.getElementById('mapModal').style.display = 'none'; }
 
-    // 核心：逆向地理编码 (坐标转真实街道地址)
+    // 逆向地理编码 API
     async function fetchAddressName(lat, lng) {
         try {
-            // 使用 OpenStreetMap 的公共免费接口
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18`);
             const data = await res.json();
             if(data && data.address) {
                 const street = data.address.road || data.address.pedestrian || data.address.building || "";
                 const suburb = data.address.suburb || data.address.city || data.address.city_district || "";
                 let readableName = [street, suburb].filter(Boolean).join(", ");
-                return readableName || data.name || "Auckland 选定位置";
+                return readableName || data.name || "Selected Location";
             }
-            return "位置坐标: " + lat.toFixed(3) + "," + lng.toFixed(3);
-        } catch(e) {
-            return "地图指定位置"; // 网络异常时的兜底文字
-        }
+            return "";
+        } catch(e) { return ""; }
     }
 
     function initMap() {
@@ -245,8 +250,6 @@
                 if(markers.length >= 2) { 
                     markers.forEach(m => map.removeLayer(m)); markers = []; 
                     if(routingControl) map.removeControl(routingControl);
-                    document.getElementById('p_from_display').value = "";
-                    document.getElementById('p_to_display').value = "";
                 }
                 
                 let m = L.marker(e.latlng).addTo(map); markers.push(m);
@@ -254,29 +257,38 @@
 
                 if(markers.length === 1) {
                     currentFromCoord = locCoord;
-                    document.getElementById('p_from_display').value = "解析地址中...";
-                    infoBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 解析起点地址...';
                     
-                    // 获取中文/易读地址并显示
+                    // 绑定弹窗明确提示用户这是起点
+                    m.bindPopup("📍 <b>Pickup (起点)</b>").openPopup();
+                    
+                    const fromInput = document.getElementById('p_from_display');
+                    let oldVal = fromInput.value;
+                    fromInput.value = "Fetching address...";
+                    
                     let addr = await fetchAddressName(e.latlng.lat, e.latlng.lng);
-                    document.getElementById('p_from_display').value = addr;
+                    // 仅当输入框为空或者仍为获取中时才覆盖，防止覆盖用户刚输入的内容
+                    fromInput.value = addr;
                     
-                    infoBox.innerHTML = '📍 Please click map to select <b>Destination</b>';
+                    infoBox.innerHTML = '🏁 Please click map to select <b>Destination</b>';
                     infoBox.style.background = '#fef3c7'; infoBox.style.color = '#d97706'; infoBox.style.borderColor = '#fde68a';
                 } else {
                     currentToCoord = locCoord;
-                    document.getElementById('p_to_display').value = "解析地址中...";
-                    infoBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 计算距离与解析终点...';
+                    
+                    // 绑定弹窗明确提示用户这是终点
+                    m.bindPopup("🏁 <b>Destination (终点)</b>").openPopup();
+                    
+                    const toInput = document.getElementById('p_to_display');
+                    toInput.value = "Fetching address...";
                     
                     let addr = await fetchAddressName(e.latlng.lat, e.latlng.lng);
-                    document.getElementById('p_to_display').value = addr;
+                    toInput.value = addr;
                     
                     routingControl = L.Routing.control({
                         waypoints: [markers[0].getLatLng(), markers[1].getLatLng()],
                         createMarker: () => null, show: false 
                     }).on('routesfound', function(e) {
                         const distance = (e.routes[0].summary.totalDistance / 1000).toFixed(2);
-                        infoBox.innerHTML = `✅ Route confirmed. Distance: <b>${distance} km</b>`;
+                        infoBox.innerHTML = `✅ Route set (${distance} km). <b>You may now manually edit the exact room numbers below.</b>`;
                         infoBox.style.background = '#ecfdf5'; infoBox.style.color = '#059669'; infoBox.style.borderColor = '#a7f3d0';
                     }).addTo(map);
                 }
@@ -286,7 +298,11 @@
 
     document.getElementById('taskForm').onsubmit = async e => {
         e.preventDefault(); 
-        if(markers.length < 2) return alert("Please set both Pickup and Destination on the map.");
+        
+        // 防呆验证：确保用户已经在地图上取到了坐标
+        if(markers.length < 2 || !currentFromCoord || !currentToCoord) {
+            return alert("Please click on the map first to pin the locations, then you can edit the exact address text below.");
+        }
         
         const btn = document.getElementById('btnPost');
         btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
@@ -295,7 +311,7 @@
             const f = new FormData();
             f.append('publisher_id', user.email); 
             
-            // 核心修改：向数据库同时存入【底层坐标 @@ 文本地址】
+            // 提交用户最终【手动修改后】的输入框文本，绑定底层的 GPS 坐标
             const fromData = currentFromCoord + "@@" + document.getElementById('p_from_display').value;
             const toData = currentToCoord + "@@" + document.getElementById('p_to_display').value;
             
@@ -322,7 +338,7 @@
                 currentFromCoord = ""; currentToCoord = "";
                 
                 const infoBox = document.getElementById('route_info');
-                infoBox.innerHTML = '📍 Awaiting location selection...';
+                infoBox.innerHTML = '📍 Awaiting Map Selection...';
                 infoBox.style.background = '#eff6ff'; infoBox.style.color = 'var(--primary)'; infoBox.style.borderColor = '#dbeafe';
                 navigate('hall'); 
             } else alert("Failed: " + (data.msg || "Server Error"));
@@ -330,7 +346,6 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Publish to Market'; }
     };
 
-    // 市场列表渲染 (解析地址展示)
     async function loadHall() {
         try {
             const res = await fetch('/api/task/all'); 
@@ -340,16 +355,12 @@
                 let imgs = [];
                 try { imgs = JSON.parse(t.img_url || '[]'); } catch(e) {}
                 
-                // 核心解析逻辑：拆分坐标和人类可读的地址文本
                 let fromFull = t.from_addr || ""; let toFull = t.to_addr || "";
                 let fromCoord = fromFull, fromText = "Location A";
                 let toCoord = toFull, toText = "Location B";
                 
                 if(fromFull.includes('@@')) [fromCoord, fromText] = fromFull.split('@@');
-                else fromText = "📍 旧版本地图坐标"; // 兼容以前的老测试数据
-                
                 if(toFull.includes('@@')) [toCoord, toText] = toFull.split('@@');
-                else toText = "📍 目的地坐标";
 
                 return `
                 <div class="card task-card">
@@ -366,8 +377,8 @@
                     </div>
 
                     <div class="address-box">
-                        <div class="address-row"><i class="fas fa-circle" style="color:var(--primary); font-size:0.6rem; margin-top:4px;"></i> <div><b>起:</b> ${fromText}</div></div>
-                        <div class="address-row"><i class="fas fa-location-arrow" style="color:var(--danger); font-size:0.7rem; margin-top:4px;"></i> <div><b>终:</b> ${toText}</div></div>
+                        <div class="address-row"><i class="fas fa-circle" style="color:var(--primary); font-size:0.6rem; margin-top:4px;"></i> <div><b>Pickup:</b> ${fromText}</div></div>
+                        <div class="address-row"><i class="fas fa-location-arrow" style="color:var(--danger); font-size:0.7rem; margin-top:4px;"></i> <div><b>Dest:</b> ${toText}</div></div>
                     </div>
 
                     <p style="font-size:0.95rem; color:var(--text-muted); flex-grow:1; margin-bottom:1.5rem;">${t.items_desc}</p>
@@ -386,7 +397,6 @@
         }
     }
 
-    // 地图模态框渲染 (接受纯坐标)
     function viewMap(fromCoord, toCoord) {
         document.getElementById('mapModal').style.display = 'flex';
         const fromArr = fromCoord.split(',').map(Number);
@@ -407,7 +417,6 @@
         setTimeout(() => modalMapInstance.invalidateSize(), 300);
     }
 
-    // --- 以下为保持不变的认证和面板逻辑代码简写区 ---
     async function loadProfile() {
         document.getElementById('prof_name').innerText = user.anonymous_name;
         document.getElementById('prof_email').innerText = user.email;
