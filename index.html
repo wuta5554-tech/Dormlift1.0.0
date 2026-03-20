@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V10.0 Ultimate Engineering Edition (8pt Grid)
+           DESIGN SYSTEM: V10.5 Ultimate Engineering Edition (8pt Grid)
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -64,15 +64,9 @@
         ============================================================= */
         .hub-container { display: flex; flex-direction: column; gap: 1rem; }
         .hub-row { 
-            display: grid; 
-            grid-template-columns: 100px 1fr 120px; 
-            align-items: center; 
-            background: white; 
-            border-radius: 16px; 
-            padding: 1.25rem 2rem; 
-            border: 1px solid #eef2f6;
-            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
+            display: grid; grid-template-columns: 100px 1fr 120px; align-items: center; 
+            background: white; border-radius: 16px; padding: 1.25rem 2rem; border: 1px solid #eef2f6;
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer;
         }
         .hub-row:hover { transform: translateX(8px); border-color: var(--primary); box-shadow: var(--shadow-premium); }
         
@@ -85,7 +79,6 @@
         .strip-route { font-size: 0.9rem; color: var(--muted); display: flex; align-items: center; gap: 12px; font-weight: 500; }
         .strip-route i { font-size: 0.75rem; opacity: 0.6; color: var(--primary); }
         .strip-inventory { font-size: 0.85rem; color: var(--text); background: #f8fafc; padding: 6px 14px; border-radius: 8px; display: inline-block; width: fit-content; border: 1px solid #f1f5f9; }
-
         .reward-col { text-align: right; font-size: 1.6rem; font-weight: 900; color: var(--success); letter-spacing: -0.5px; }
 
         /* =============================================================
@@ -103,21 +96,16 @@
         .kb-help { background: var(--primary-gradient); color: white; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
 
         /* =============================================================
-           POST TASK: Premium Map & Routing Strip
+           MAP & ROUTING (Post & Modal)
         ============================================================= */
         #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
-        .route-info-strip { 
-            background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; 
-            display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; 
-            border-bottom: 4px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+        #modal-map { height: 300px; border-radius: 1.5rem; border: 2px solid #eef2f6; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 1.5rem; display: none; }
+        
+        .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; border-bottom: 4px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .route-info-strip span { display: flex; align-items: center; gap: 12px; font-size: 0.95rem; letter-spacing: 0.5px; }
         .route-info-strip i { color: var(--primary); font-size: 1.1rem; }
-        
-        /* Hide default routing text panel from Leaflet Routing Machine */
         .leaflet-routing-container { display: none !important; }
         
-        /* Custom Map Pin Styles */
         .custom-pin { background: transparent; border: none; }
         .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
@@ -135,7 +123,7 @@
         input:read-only { background: #f1f5f9; cursor: not-allowed; color: var(--muted); font-weight: 500; }
         label { font-size: 0.8rem; font-weight: 800; color: var(--muted); margin-bottom: 0.6rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Modal & Infinite Threads */
+        /* Modal & Threads */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; backdrop-filter: blur(12px); align-items: center; justify-content: center; }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
         .interaction-box { background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6; }
@@ -260,7 +248,7 @@
         </div>
 
         <div class="card" style="background:transparent; border:none; box-shadow:none; padding:0;">
-            <h2 style="font-size:2.2rem; margin:0 0 1.5rem 0; letter-spacing:-1px;"><i class="fas fa-layer-group" style="color:var(--primary); margin-right:10px;"></i> My Workflow</h2>
+            <h2 style="font-size:2.2rem; margin:0 0 1rem 0; letter-spacing:-1px;"><i class="fas fa-layer-group" style="color:var(--primary); margin-right:10px;"></i> My Workflow</h2>
             <div class="kanban-board">
                 <div class="kanban-col">
                     <div class="kanban-header">
@@ -345,6 +333,9 @@
         <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:52px; height:52px; border-radius:50%; font-size:1.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;" onclick="document.getElementById('taskModal').style.display='none'">&times;</button>
         
         <div id="m_header" style="margin-bottom:2rem;"></div>
+        
+        <div id="modal-map"></div>
+        
         <div class="thumb-strip" id="m_thumbs"></div>
         <div id="m_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
         
@@ -371,6 +362,11 @@
     // ======================= 1. GLOBAL STATE & ROUTING =======================
     let user = JSON.parse(localStorage.getItem('user'));
     let map, markers = [], routingControl, globalTaskPool = [], activeTaskId = null, activeReplyId = null;
+    let modalMap, modalRoutingControl; // Modal Map instances
+
+    // Data Parsers for Compound Coordinates + Text (@@ Logic)
+    const getAddrText = (str) => str && str.includes('@@') ? str.split('@@')[1] : str;
+    const getAddrCoords = (str) => str && str.includes('@@') ? str.split('@@')[0].split(',').map(Number) : null;
 
     function navigate(p) {
         if (!user && ['post-task', 'profile'].includes(p)) p = 'login';
@@ -406,7 +402,7 @@
         });
     }
 
-    // ======================= 2. MAP ENGINE (CartoDB + Nominatim + OSRM) =======================
+    // ======================= 2. MAIN MAP ENGINE (CartoDB + Nominatim + OSRM) =======================
     function initMap() {
         if(map) return;
         setTimeout(() => {
@@ -442,7 +438,7 @@
                 targetInput.value = "Fetching campus address...";
 
                 try {
-                    // Requires User-Agent for Nominatim to prevent 403
+                    // Strict Header Injection to prevent 403 Forbidden on Nominatim
                     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, {
                         headers: {
                             'Accept-Language': 'en-US,en;q=0.9',
@@ -477,7 +473,7 @@
         }, 300);
     }
 
-    // ======================= 3. MISSION HUB (Timeline Strip) =======================
+    // ======================= 3. MISSION HUB (Timeline Strip & Compound Extract) =======================
     async function loadHall() {
         const res = await fetch('/api/task/all'); const d = await res.json(); updatePool(d.list);
         const listDiv = document.getElementById('hall_list');
@@ -489,7 +485,11 @@
                 <div class="posted-col">PUB<span>${pubDate}</span></div>
                 <div class="details-strip">
                     <div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
-                    <div class="strip-route"><i class="fas fa-circle"></i> ${t.from_addr} <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> <i class="fas fa-flag-checkered"></i> ${t.to_addr}</div>
+                    <div class="strip-route">
+                        <i class="fas fa-circle"></i> ${getAddrText(t.from_addr)} 
+                        <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> 
+                        <i class="fas fa-flag-checkered"></i> ${getAddrText(t.to_addr)}
+                    </div>
                     <div class="strip-inventory"><b>Items:</b> ${t.items_desc.substring(0, 75)}...</div>
                 </div>
                 <div class="reward-col">${t.reward}</div>
@@ -497,7 +497,44 @@
         }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active missions in Hub.</div>';
     }
 
-    // ======================= 4. THREADED MODAL & WORKFLOW =======================
+    // ======================= 4. MODAL ROUTE MAP RENDERER =======================
+    function initModalMap(fromCoords, toCoords) {
+        if(!modalMap) {
+            modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(modalMap);
+        }
+        
+        modalMap.eachLayer(layer => {
+            if(layer instanceof L.Marker) modalMap.removeLayer(layer);
+        });
+        if(modalRoutingControl) {
+            modalMap.removeControl(modalRoutingControl);
+            modalRoutingControl = null;
+        }
+
+        if(fromCoords && toCoords) {
+            let startIcon = L.divIcon({className: 'custom-pin', html: `<div class="pin-wrapper" style="border-color:var(--primary)"><i class="fas fa-street-view" style="color:var(--primary); font-size:14px;"></i></div>`, iconSize: [34, 34], iconAnchor: [17, 34]});
+            let endIcon = L.divIcon({className: 'custom-pin', html: `<div class="pin-wrapper" style="border-color:var(--success)"><i class="fas fa-flag-checkered" style="color:var(--success); font-size:14px;"></i></div>`, iconSize: [34, 34], iconAnchor: [17, 34]});
+            
+            L.marker(fromCoords, {icon: startIcon}).addTo(modalMap);
+            L.marker(toCoords, {icon: endIcon}).addTo(modalMap);
+
+            modalRoutingControl = L.Routing.control({
+                waypoints: [L.latLng(fromCoords[0], fromCoords[1]), L.latLng(toCoords[0], toCoords[1])],
+                lineOptions: { styles: [{ color: '#4f46e5', weight: 5, opacity: 0.8, dashArray: '10, 10' }] },
+                createMarker: () => null,
+                show: false, addWaypoints: false
+            }).addTo(modalMap);
+
+            let group = new L.featureGroup([L.marker(fromCoords), L.marker(toCoords)]);
+            modalMap.fitBounds(group.getBounds(), {padding: [30, 30]});
+        }
+        
+        // Critical fix: Resize map when modal becomes visible
+        setTimeout(() => modalMap.invalidateSize(), 300); 
+    }
+
+    // ======================= 5. THREADED MODAL LOGIC =======================
     async function openDetails(id) {
         activeTaskId = id;
         // Truth Sync
@@ -509,14 +546,27 @@
         }
         if(!t) return alert("Task data unavailable.");
 
-        document.getElementById('m_header').innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem; letter-spacing:-1.5px;">${t.reward} Mission</h2><span style="background:var(--primary); color:white; padding:6px 16px; border-radius:20px; font-size:0.85rem; font-weight:800; text-transform:uppercase; letter-spacing:1px;">${t.status}</span></div>`;
+        document.getElementById('m_header').innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem; letter-spacing:-1.5px;">${t.reward} Mission</h2><span class="status-badge">${t.status}</span></div>`;
+        
+        // Modal Map Trigger
+        let fCoords = getAddrCoords(t.from_addr);
+        let tCoords = getAddrCoords(t.to_addr);
+        const modalMapDiv = document.getElementById('modal-map');
+        if(fCoords && tCoords) {
+            modalMapDiv.style.display = 'block';
+            initModalMap(fCoords, tCoords);
+        } else {
+            modalMapDiv.style.display = 'none'; // Backwards compatibility
+        }
+
         const imgs = JSON.parse(t.img_url || '[]');
-        document.getElementById('m_thumbs').innerHTML = imgs.map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('') || '<small style="color:var(--muted); font-weight:600;">No evidence photos attached.</small>';
+        document.getElementById('m_thumbs').innerHTML = imgs.map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('') || '<small style="color:var(--muted); font-weight:600;">No evidence photos provided.</small>';
         
         document.getElementById('m_body').innerHTML = `
             <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
-                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup Location</b> <br><span style="font-weight:700; color:var(--dark);">${t.from_addr}</span></div>
-                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">🏁 Destination Location</b> <br><span style="font-weight:700; color:var(--dark);">${t.to_addr}</span></div>
+                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(t.from_addr)}</span></div>
+                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">🏁 Destination Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(t.to_addr)}</span></div>
+                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Logistics Complexity</b> <br><span style="font-weight:700; color:var(--dark);">${t.load_weight || 'N/A'} Load / ${t.has_elevator?'Elevator Available':'Stairs Only'}</span></div>
                 <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Complete Inventory</b> <br><span style="color:var(--text);">${t.items_desc}</span></div>
                 <div style="margin-top:1rem; font-size:0.85rem; color:var(--muted); font-weight:700;">Publisher ID: ${t.publisher_id}</div>
             </div>`;
@@ -570,6 +620,7 @@
         document.getElementById('c_in').value = ""; cancelReply(); openDetails(activeTaskId);
     }
 
+    // ======================= 6. WORKFLOW & DASHBOARD LOGIC =======================
     async function workflow(id, status) {
         if(!confirm("Please confirm this workflow transition. This action is recorded in the network.")) return;
         const body = { task_id: id, status };
@@ -589,7 +640,6 @@
         document.getElementById('taskModal').style.display='none'; loadHall();
     }
 
-    // ======================= 5. INTEGRATED PROFILE & KANBAN LOGIC =======================
     async function loadProfileData() {
         const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json();
         const u = d.user;
@@ -609,10 +659,8 @@
         document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0";
         document.getElementById('p_task_count').innerText = u.task_count || 0;
 
-        // Load Kanban Dashboard Data
         const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
-        const dT = await resT.json();
-        updatePool(dT.list);
+        const dT = await resT.json(); updatePool(dT.list);
 
         const renderKanbanCol = (targetCol, validStatuses) => {
             const list = dT.list.filter(t => validStatuses.includes(t.status));
@@ -627,7 +675,7 @@
                         <span style="font-size:0.7rem; color:var(--muted); font-weight:700;"><i class="far fa-calendar-alt"></i> ${t.move_date}</span>
                     </div>
                     <div style="font-size:1.25rem; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-0.5px;">${t.reward}</div>
-                    <div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${t.from_addr}</div>
+                    <div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${getAddrText(t.from_addr)}</div>
                 </div>`;
             }).join('');
         };
@@ -637,7 +685,7 @@
         renderKanbanCol('history', ['completed', 'reviewed']);
     }
 
-    // ======================= 6. AUTH FLOWS =======================
+    // ======================= 7. AUTH FLOWS & FORM SUBMISSIONS =======================
     async function sendCode() {
         const email = document.getElementById('r_email').value; if(!email) return alert("UoA Email required");
         const btn = document.getElementById('btnSendCode'); btn.innerText = "Sending...";
@@ -668,9 +716,14 @@
         e.preventDefault();
         if(markers.length < 2) return alert("Please select both Pickup and Destination buildings on the map.");
         const f = new FormData();
+        
+        // The @@ Compound Storage Logic (Req-10.1 Mapping Sync)
+        let from_str = markers[0].getLatLng().lat + ',' + markers[0].getLatLng().lng + '@@' + document.getElementById('p_from').value;
+        let to_str = markers[1].getLatLng().lat + ',' + markers[1].getLatLng().lng + '@@' + document.getElementById('p_to').value;
+
         f.append('publisher_id', user.email);
-        f.append('from_addr', document.getElementById('p_from').value);
-        f.append('to_addr', document.getElementById('p_to').value);
+        f.append('from_addr', from_str);
+        f.append('to_addr', to_str);
         f.append('move_date', document.getElementById('p_date').value.split('T')[0]);
         f.append('move_time', document.getElementById('p_date').value.split('T')[1] || '');
         f.append('reward', document.getElementById('p_reward').value);
