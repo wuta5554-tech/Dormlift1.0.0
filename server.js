@@ -1,6 +1,6 @@
 /**
- * DormLift Pro - Backend Master Server (Full Synchronization Version)
- * 包含：用户/任务管理、Cloudinary 存储、评论系统、开发者初始化工具
+ * DormLift Pro - Backend Master Server
+ * 功能：用户体系、任务流转、图片存储(Cloudinary)、互评系统、资料修改验证
  */
 
 const express = require('express');
@@ -14,22 +14,21 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// --- 1. 环境配置 ---
+// --- 1. 环境配置与数据库连接 ---
 const MONGO_URI = process.env.MONGO_URI;
-const GAS_URL = process.env.GAS_URL;
+const GAS_URL = process.env.GAS_URL; // Google Apps Script 邮件接口
 
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ Master DB Connected (Auckland Node)'))
-    .catch(err => console.error('❌ DB Connection Error:', err));
+    .then(() => console.log('✅ MongoDB Connected (Peer Network Node)'))
+    .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // --- 2. 数据模型 (Models) ---
 
 const User = mongoose.model('User', new mongoose.Schema({
     full_name: { type: String, required: true },
     anonymous_name: { type: String, required: true },
-    school_name: { type: String, default: 'University of Auckland' },
     email: { type: String, unique: true, required: true },
-    phone: String,
+    phone: { type: String, default: "" },
     password: { type: String, required: true },
     created_at: { type: Date, default: Date.now }
 }));
@@ -43,15 +42,18 @@ const Task = mongoose.model('Task', new mongoose.Schema({
     items_desc: String,
     reward: String,
     img_url: { type: String, default: "[]" }, 
-    people_needed: { type: String, default: "1" },
-    elevator: { type: String, enum: ['Yes', 'No'], default: 'No' },
     status: { type: String, enum: ['pending', 'assigned', 'finished'], default: 'pending' },
-    // 新增：评论存储数组
-    comments: { type: Array, default: [] },
+    
+    // 互动系统：留言与评价
+    comments: { type: Array, default: [] }, // [{user: String, text: String, time: Date}]
+    reviews: {
+        publisher_review: { rating: Number, text: String, time: Date },
+        helper_review: { rating: Number, text: String, time: Date }
+    },
     created_at: { type: Date, default: Date.now }
 }));
 
-// --- 3. Cloudinary 配置 ---
+// --- 3. Cloudinary & Multer 图片处理配置 ---
 cloudinary.config({ 
     cloud_name: process.env.CLOUDINARY_NAME, 
     api_key: process.env.CLOUDINARY_KEY, 
@@ -60,41 +62,40 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({ 
     cloudinary, 
-    params: { folder: 'dormlift_v15', allowed_formats: ['jpg', 'png', 'jpeg'] } 
+    params: { folder: 'dormlift_pro', allowed_formats: ['jpg', 'png', 'jpeg'] } 
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 // --- 4. 中间件 ---
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); 
+app.use(express.static(__dirname));
 
-// --- 5. 核心 API ---
+// --- 5. API 接口 ---
 
-// [Auth] GAS 验证码对接
+// [Auth] 发送验证码 (支持注册与资料修改)
 app.post('/api/auth/send-code', async (req, res) => {
     const { email } = req.body;
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     try {
-        const response = await fetch(GAS_URL, {
+        await fetch(GAS_URL, {
             method: 'POST',
-            body: JSON.stringify({ to: email, subject: "DormLift Verification", html: `Your code is: <b>${code}</b>` })
+            body: JSON.stringify({ to: email, subject: "DormLift Security Code", html: `Your verification code is: <b>${code}</b>` })
         });
-        const result = await response.json();
-        if (result.success) res.json({ success: true, code });
-        else res.status(500).json({ success: false });
+        res.json({ success: true, code });
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// [Auth] 注册与登录
+// [Auth] 注册
 app.post('/api/auth/register', async (req, res) => {
     try {
         const hashed = await bcrypt.hash(req.body.password, 10);
         await new User({ ...req.body, password: hashed }).save();
         res.status(201).json({ success: true });
-    } catch (e) { res.status(400).json({ success: false }); }
+    } catch (e) { res.status(400).json({ success: false, msg: "Email already exists" }); }
 });
 
+// [Auth] 登录
 app.post('/api/auth/login', async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (user && await bcrypt.compare(req.body.password, user.password)) {
@@ -102,79 +103,83 @@ app.post('/api/auth/login', async (req, res) => {
     } else res.status(401).json({ success: false });
 });
 
-// [Task] 创建任务 (带错误捕捉)
-app.post('/api/task/create', (req, res) => {
-    upload.array('task_images', 5)(req, res, async function (err) {
-        if (err) return res.status(500).json({ success: false, msg: err.message });
-        try {
-            const urls = req.files ? req.files.map(f => f.path) : [];
-            const newTask = new Task({ ...req.body, img_url: JSON.stringify(urls), status: 'pending' });
-            await newTask.save();
-            res.json({ success: true });
-        } catch (dbErr) { res.status(500).json({ success: false, msg: dbErr.message }); }
-    });
+// [User] 获取完整资料
+app.get('/api/user/detail/:email', async (req, res) => {
+    const user = await User.findOne({ email: req.params.email }, { password: 0 });
+    res.json({ success: true, user });
 });
 
-// [Task] 获取所有市场任务
-app.get('/api/task/all', async (req, res) => {
+// [User] 更新资料 (验证码逻辑)
+app.post('/api/user/update', async (req, res) => {
+    const { current_email, new_data, code, target_code } = req.body;
+    if (code !== target_code) return res.status(400).json({ success: false, msg: "Invalid Code" });
     try {
-        const list = await Task.find({ status: 'pending' }).sort({ created_at: -1 });
-        res.json({ success: true, list });
-    } catch (e) { res.status(500).json({ success: false }); }
-});
-
-// [Task] 提交评论 (同步详情页功能)
-app.post('/api/task/comment', async (req, res) => {
-    try {
-        const { task_id, comment } = req.body;
-        // 使用 MongoDB $push 操作符向数组追加评论
-        await Task.findByIdAndUpdate(task_id, { $push: { comments: comment } });
+        await User.findOneAndUpdate({ email: current_email }, { $set: new_data });
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// [User] 数据看板
-app.post('/api/user/dashboard', async (req, res) => {
+// [Task] 创建任务
+app.post('/api/task/create', upload.array('task_images', 5), async (req, res) => {
     try {
-        const list = await Task.find({ $or: [{ publisher_id: req.body.email }, { helper_id: req.body.email }] }).sort({ created_at: -1 });
-        res.json({ success: true, list });
-    } catch (e) { res.status(500).json({ success: false }); }
+        const urls = req.files ? req.files.map(f => f.path) : [];
+        const newTask = new Task({ ...req.body, img_url: JSON.stringify(urls) });
+        await newTask.save();
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ success: false, msg: e.message }); }
 });
 
-// [Task] 工作流控制
+// [Task] 获取市场列表
+app.get('/api/task/all', async (req, res) => {
+    const list = await Task.find({ status: 'pending' }).sort({ created_at: -1 });
+    res.json({ success: true, list });
+});
+
+// [Task] 提交留言
+app.post('/api/task/comment', async (req, res) => {
+    const { task_id, comment } = req.body;
+    await Task.findByIdAndUpdate(task_id, { $push: { comments: comment } });
+    res.json({ success: true });
+});
+
+// [Task] 提交互评
+app.post('/api/task/review', async (req, res) => {
+    const { task_id, role, rating, text } = req.body;
+    const field = role === 'publisher' ? 'reviews.publisher_review' : 'reviews.helper_review';
+    await Task.findByIdAndUpdate(task_id, { $set: { [field]: { rating, text, time: new Date() } } });
+    res.json({ success: true });
+});
+
+// [User] 个人看板 (发布的+接受的)
+app.post('/api/user/dashboard', async (req, res) => {
+    const list = await Task.find({ 
+        $or: [{ publisher_id: req.body.email }, { helper_id: req.body.email }] 
+    }).sort({ created_at: -1 });
+    res.json({ success: true, list });
+});
+
+// [Task] 工作流切换
 app.post('/api/task/workflow', async (req, res) => {
     const { task_id, status, helper_id } = req.body;
-    try {
-        const update = { status };
-        if (helper_id) update.helper_id = helper_id;
-        await Task.findByIdAndUpdate(task_id, update);
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ success: false }); }
+    const update = { status };
+    if (helper_id) update.helper_id = helper_id;
+    await Task.findByIdAndUpdate(task_id, update);
+    res.json({ success: true });
 });
 
-// [Task] 取消或删除
+// [Task] 取消/删除
 app.post('/api/task/cancel', async (req, res) => {
     const { task_id, type } = req.body;
-    try {
-        if(type === 'delete') await Task.findByIdAndDelete(task_id);
-        else await Task.findByIdAndUpdate(task_id, { status: 'pending', helper_id: null });
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ success: false }); }
+    if(type === 'delete') await Task.findByIdAndDelete(task_id);
+    else await Task.findByIdAndUpdate(task_id, { status: 'pending', helper_id: null });
+    res.json({ success: true });
 });
 
-// ==========================================
-// [Dev Tools] 开发者专用：初始化数据库 (Nuke)
-// ==========================================
+// [Dev] 初始化数据库
 app.post('/api/dev/nuke', async (req, res) => {
-    try {
-        // 清空两个核心集合
-        const taskResult = await Task.deleteMany({});
-        const userResult = await User.deleteMany({});
-        console.log(`☢️ [DEV] Database Nuked! Removed ${taskResult.deletedCount} tasks and ${userResult.deletedCount} users.`);
-        res.json({ success: true });
-    } catch (e) {
-        res.status(500).json({ success: false, msg: e.message });
-    }
+    await Task.deleteMany({});
+    await User.deleteMany({});
+    res.json({ success: true });
 });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Master Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Master Server active on port ${PORT}`));
