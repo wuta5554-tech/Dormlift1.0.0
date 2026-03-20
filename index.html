@@ -9,12 +9,12 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         :root { --primary: #3498db; --success: #27ae60; --danger: #e74c3c; --dark: #2c3e50; --gray: #94a3b8; --light: #f8fafc; --border: #e2e8f0; }
-        body { margin: 0; font-family: 'Inter', -apple-system, sans-serif; background: var(--light); color: #1e293b; line-height: 1.5; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--light); color: #1e293b; line-height: 1.5; }
         
-        /* SPA 页面隔离 */
+        /* 页面切换逻辑 */
         .page { display: none !important; }
         .page.active { display: block !important; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
 
         /* 导航栏 */
         nav { background: var(--dark); padding: 14px 6%; display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -22,33 +22,43 @@
         .nav-links a { color: #cbd5e1; margin-left: 25px; text-decoration: none; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s; }
         .nav-links a:hover, .nav-links a.active { color: white; }
 
-        .container { max-width: 1150px; margin: 40px auto; padding: 0 25px; }
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 25px; }
         .card { background: white; border-radius: 24px; padding: 40px; box-shadow: 0 4px 25px rgba(0,0,0,0.03); border: 1px solid var(--border); margin-bottom: 30px; }
 
-        /* 主页介绍区 (截图样式复刻) */
+        /* 主页介绍区 */
         .hero { text-align: center; padding: 70px 20px; }
         .hero h1 { font-size: 3rem; margin: 0; letter-spacing: -2px; color: #0f172a; }
         .hero p { color: var(--gray); font-size: 1.15rem; max-width: 650px; margin: 25px auto 40px auto; }
         
         .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .feature-card { text-align: center; padding: 40px 30px; }
-        .feature-card i { font-size: 30px; margin-bottom: 20px; display: block; }
+        .feature-card { text-align: center; padding: 40px 30px; transition: 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .feature-card i { font-size: 35px; margin-bottom: 20px; display: block; }
 
-        /* 统一输入框与按钮 */
+        /* 输入框与按钮 */
         input, select, textarea { width: 100%; padding: 14px; border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: 15px; font-size: 15px; transition: 0.2s; box-sizing: border-box; }
         input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(52,152,219,0.1); }
-        .btn { background: var(--primary); color: white; padding: 15px 25px; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 15px; transition: 0.2s; }
+        .btn { background: var(--primary); color: white; padding: 15px 25px; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 15px; transition: 0.2s; width: 100%; }
         .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .btn-outline { background: #f1f5f9; color: #475569; border: 1px solid var(--border); }
+        .btn-outline { background: #f1f5f9; color: #475569; border: 1px solid var(--border); width: auto; }
+
+        /* 注册页特有 */
+        .verify-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-verify { width: 150px; font-size: 12px; white-space: nowrap; }
 
         /* 个人资料看板 */
-        .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .info-box { background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid #f1f5f9; }
-        .info-box label { font-size: 11px; color: var(--gray); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px; }
-        .info-box div { font-weight: 700; color: #1e293b; }
+        .profile-header { display: flex; gap: 25px; align-items: center; margin-bottom: 35px; }
+        .avatar { width: 90px; height: 90px; background: var(--primary); border-radius: 24px; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; font-weight: 800; box-shadow: 0 8px 20px rgba(52,152,219,0.2); }
+        .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .info-item { background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid #f1f5f9; }
+        .info-item label { font-size: 10px; color: var(--gray); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .info-item div { font-weight: 700; color: #1e293b; font-size: 14px; }
 
-        #map { height: 380px; border-radius: 20px; margin-bottom: 20px; border: 1.5px solid var(--border); }
-        .task-list-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 12px; }
+        /* 地图 */
+        #map { height: 400px; border-radius: 20px; margin-bottom: 25px; border: 1.5px solid var(--border); }
+        
+        /* 任务行 */
+        .task-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 15px; background: white; }
     </style>
 </head>
 <body>
@@ -90,7 +100,7 @@
 
     <div id="post-task" class="page">
         <div class="card">
-            <h2><i class="fas fa-map-marked-alt"></i> Task Details</h2>
+            <h2><i class="fas fa-map-marker-alt"></i> New Task Request</h2>
             <div id="map"></div>
             <form id="taskForm">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
@@ -106,49 +116,49 @@
                     </select>
                 </div>
                 <textarea id="p_desc" placeholder="Special Instructions: e.g. 'Meet at Gate 3', 'Heavy Sofa', '2nd Floor'" rows="3"></textarea>
-                <label style="font-size:12px; font-weight:800; color:var(--primary); display:block; margin-bottom:8px;">Item Photos:</label>
+                <label style="font-size:12px; font-weight:800; color:var(--primary); display:block; margin-bottom:8px;">Upload Item Photos:</label>
                 <input type="file" id="p_file" multiple accept="image/*">
-                <button type="submit" class="btn" style="width:100%; margin-top:10px;">Post to Market Hall</button>
+                <button type="submit" class="btn" style="margin-top:10px;">Broadcast to Market Hall</button>
             </form>
         </div>
     </div>
 
     <div id="hall" class="page">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
             <h2>Market Hall</h2>
-            <button class="btn btn-outline" style="padding:8px 15px; font-size:12px;" onclick="loadHall()"><i class="fas fa-sync"></i> Refresh</button>
+            <button class="btn btn-outline" style="padding:10px 20px; font-size:13px;" onclick="loadHall()"><i class="fas fa-sync"></i> Refresh</button>
         </div>
         <div id="hall_list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:25px;"></div>
     </div>
 
     <div id="profile" class="page">
         <div class="card">
-            <div style="display:flex; gap:25px; align-items:center; margin-bottom:30px;">
-                <div id="p_avatar" style="width:90px; height:90px; background:var(--primary); border-radius:24px; display:flex; align-items:center; justify-content:center; color:white; font-size:40px; font-weight:800; box-shadow: 0 8px 20px rgba(52,152,219,0.2);">?</div>
+            <div class="profile-header">
+                <div id="p_avatar" class="avatar">?</div>
                 <div>
                     <h1 id="p_nickname" style="margin:0;">-</h1>
                     <p style="margin:5px 0 0 0; color:var(--primary); font-weight:700;"><i class="fas fa-check-circle"></i> Verified Student Member</p>
                 </div>
             </div>
-            <div class="profile-grid">
-                <div class="info-box"><label>Full Name</label><div id="d-name">-</div></div>
-                <div class="info-box"><label>School</label><div id="d-school">University of Auckland</div></div>
-                <div class="info-box"><label>Email</label><div id="d-email">-</div></div>
-                <div class="info-box"><label>Phone</label><div id="d-phone">-</div></div>
-                <div class="info-box"><label>Major</label><div id="d-major">Engineering</div></div>
-                <div class="info-box"><label>Success Rate</label><div style="color:var(--success)">100% ★</div></div>
+            <div class="info-grid">
+                <div class="info-item"><label>Full Name</label><div id="d-name">-</div></div>
+                <div class="info-item"><label>Anonymous</label><div id="d-anon">-</div></div>
+                <div class="info-item"><label>School</label><div id="d-school">-</div></div>
+                <div class="info-item"><label>Gender</label><div id="d-gender">-</div></div>
+                <div class="info-item"><label>Email</label><div id="d-email">-</div></div>
+                <div class="info-item"><label>Phone</label><div id="d-phone">-</div></div>
             </div>
         </div>
 
-        <h3 style="margin:30px 0 15px 0; border-left:4px solid var(--primary); padding-left:12px;">MY POSTED REQUESTS</h3>
+        <h3 style="margin:40px 0 20px 0; border-left: 5px solid var(--primary); padding-left:15px;">MY POSTED REQUESTS</h3>
         <div id="my_posts"></div>
 
-        <h3 style="margin:30px 0 15px 0; border-left:4px solid var(--success); padding-left:12px;">MY ACCEPTED SHIFTS</h3>
+        <h3 style="margin:40px 0 20px 0; border-left: 5px solid var(--success); padding-left:15px;">MY ACCEPTED SHIFTS</h3>
         <div id="my_shifts"></div>
     </div>
 
     <div id="register" class="page">
-        <div class="card" style="max-width:600px; margin:auto;">
+        <div class="card" style="max-width:650px; margin:auto;">
             <h2 style="text-align:center;">Join the Community</h2>
             <form id="regForm">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
@@ -157,13 +167,13 @@
                     <input type="text" id="r_school" value="University of Auckland" required>
                     <select id="r_gender"><option>Male</option><option>Female</option><option>Other</option></select>
                 </div>
-                <div style="display:flex; gap:10px;">
+                <div class="verify-row">
                     <input type="email" id="r_email" placeholder="Email Address" required>
-                    <button type="button" class="btn btn-outline" style="height:52px;" onclick="sendCode()">GET CODE</button>
+                    <button type="button" class="btn btn-outline btn-verify" id="btnCode" onclick="sendCode()">GET CODE</button>
                 </div>
                 <input type="text" id="r_code" placeholder="Verification Code" required>
                 <input type="text" id="r_phone" placeholder="Phone Number" required>
-                <input type="password" id="r_pwd" placeholder="Password" required>
+                <input type="password" id="r_pwd" placeholder="Create Password" required>
                 <input type="password" id="r_pwd2" placeholder="Confirm Password" required>
                 <button type="submit" class="btn">Establish Profile</button>
             </form>
@@ -178,7 +188,7 @@
                 <input type="password" id="l_pwd" placeholder="Password" required>
                 <button type="submit" class="btn">Login</button>
             </form>
-            <p style="font-size:14px; margin-top:20px; color:var(--gray);">New here? <a href="#" onclick="navigate('register')">Register</a></p>
+            <p style="margin-top:20px; font-size:14px; color:var(--gray);">New here? <a href="#" onclick="navigate('register')">Register</a></p>
         </div>
     </div>
 </div>
@@ -187,6 +197,7 @@
     let user = JSON.parse(localStorage.getItem('user'));
     let map, markers = [], sentCode = "";
 
+    // 路由逻辑
     function navigate(p) {
         if(!user && ['post-task', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
@@ -209,20 +220,33 @@
 
     function logout() { localStorage.clear(); location.reload(); }
 
-    // [Auth] 对接 GAS 发送邮件
+    // [Auth] 调用 GAS 接口发送邮件
     async function sendCode() {
         const email = document.getElementById('r_email').value;
         if(!email) return alert("Please enter email");
-        const res = await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
+        const btn = document.getElementById('btnCode');
+        btn.innerText = "Sending..."; btn.disabled = true;
+
+        const res = await fetch('/api/auth/send-code', { 
+            method:'POST', 
+            headers:{'Content-Type':'application/json'}, 
+            body:JSON.stringify({email})
+        });
         const d = await res.json();
-        if(d.success) { sentCode = d.code; alert("Verification code sent!"); }
+        if(d.success) {
+            sentCode = d.code; 
+            alert("Verification code sent!");
+        } else {
+            alert("Failed to send: " + d.msg);
+        }
+        btn.innerText = "GET CODE"; btn.disabled = false;
     }
 
-    // [Map] 初始化 Leaflet
+    // [Map] 初始化地图
     function initMap() {
         if(map) return;
         setTimeout(() => {
-            map = L.map('map').setView([-36.8509, 174.7645], 13); // 奥克兰市中心
+            map = L.map('map').setView([-36.8509, 174.7645], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
             map.on('click', e => {
                 if(markers.length >= 2) { markers.forEach(m => map.removeLayer(m)); markers = []; }
@@ -234,22 +258,32 @@
         }, 300);
     }
 
-    // [Task] 加载市场列表
+    // [Task] 任务逻辑
     async function loadHall() {
         const res = await fetch('/api/task/all'); const d = await res.json();
         document.getElementById('hall_list').innerHTML = d.list.map(t => {
             const imgs = JSON.parse(t.img_url || '[]');
             return `<div class="card" style="padding:20px;">
-                <img src="${imgs[0] || 'https://via.placeholder.com/300x160?text=No+Photo'}" style="width:100%; height:160px; object-fit:cover; border-radius:15px; margin-bottom:15px;">
+                <img src="${imgs[0] || 'https://via.placeholder.com/350x180?text=No+Item+Photo'}" style="width:100%; height:180px; object-fit:cover; border-radius:15px; margin-bottom:15px;">
                 <h3 style="color:var(--success); margin:0 0 10px 0;">${t.reward}</h3>
-                <p style="font-size:12px; color:var(--gray); margin:0;">📅 ${t.move_date} | 👥 ${t.people_needed}p | 🛗 Lift: ${t.elevator}</p>
+                <p style="font-size:13px; color:var(--gray); margin:0;">📅 ${t.move_date} | 👥 ${t.people_needed}p | 🛗 Lift: ${t.elevator}</p>
                 <p style="font-size:14px; margin:15px 0; height:42px; overflow:hidden;">${t.items_desc}</p>
-                ${user && t.publisher_id !== user.email ? `<button class="btn" style="width:100%" onclick="acceptTask('${t._id}')">Accept Task</button>` : ''}
+                ${user && t.publisher_id !== user.email ? `<button class="btn" style="padding:10px;" onclick="acceptTask('${t._id}')">Accept Task</button>` : ''}
             </div>`;
-        }).join('') || '<p style="text-align:center; grid-column:1/-1;">No active tasks available.</p>';
+        }).join('') || '<p style="text-align:center; grid-column:1/-1;">No tasks available right now.</p>';
     }
 
-    // [Profile] 加载个人看板
+    async function acceptTask(id) {
+        if(!confirm("Accept this task?")) return;
+        await fetch('/api/task/workflow', { 
+            method:'POST', 
+            headers:{'Content-Type':'application/json'}, 
+            body:JSON.stringify({task_id:id, status:'assigned', helper_id:user.email})
+        });
+        navigate('profile');
+    }
+
+    // [Profile] 个人看板逻辑
     async function loadProfile() {
         const resProf = await fetch('/api/user/profile', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
         const dProf = await resProf.json();
@@ -258,38 +292,30 @@
             document.getElementById('p_nickname').innerText = u.anonymous_name;
             document.getElementById('p_avatar').innerText = u.anonymous_name[0].toUpperCase();
             document.getElementById('d-name').innerText = u.full_name;
+            document.getElementById('d-anon').innerText = u.anonymous_name;
+            document.getElementById('d-school').innerText = u.school_name;
             document.getElementById('d-email').innerText = u.email;
             document.getElementById('d-phone').innerText = u.phone;
+            document.getElementById('d-gender').innerText = u.gender;
         }
 
         const resDash = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
         const dDash = await resDash.json();
         
         document.getElementById('my_posts').innerHTML = dDash.list.filter(t => t.publisher_id === user.email).map(t => `
-            <div class="task-list-item">
+            <div class="task-row">
                 <div><b>${t.reward}</b><br><small style="color:var(--primary)">${t.status.toUpperCase()}</small></div>
-                <button class="btn" style="background:var(--danger); padding:8px 15px; font-size:12px;" onclick="cancelTask('${t._id}', 'delete')">Delete</button>
+                <button class="btn" style="background:var(--danger); width:auto; padding:8px 15px; font-size:12px;" onclick="cancelTask('${t._id}', 'delete')">Delete</button>
             </div>`).join('') || '<p>No posted requests.</p>';
 
         document.getElementById('my_shifts').innerHTML = dDash.list.filter(t => t.helper_id === user.email).map(t => `
-            <div class="task-list-item">
-                <div><b>${t.reward}</b><br><small>Accept Date: ${t.move_date}</small></div>
+            <div class="task-row">
+                <div><b>${t.reward}</b><br><small>Assigned to you</small></div>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn" style="background:var(--success); padding:8px 15px; font-size:12px;" onclick="updateStatus('${t._id}', 'finished')">Finish</button>
-                    <button class="btn" style="background:var(--gray); padding:8px 15px; font-size:12px;" onclick="cancelTask('${t._id}', 'unassign')">Quit</button>
+                    <button class="btn" style="background:var(--success); width:auto; padding:8px 15px; font-size:12px;" onclick="updateStatus('${t._id}', 'finished')">Finish</button>
+                    <button class="btn" style="background:var(--gray); width:auto; padding:8px 15px; font-size:12px;" onclick="cancelTask('${t._id}', 'unassign')">Quit</button>
                 </div>
             </div>`).join('') || '<p>No accepted shifts.</p>';
-    }
-
-    async function acceptTask(id) {
-        if(!confirm("Accept this mission?")) return;
-        await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, status:'assigned', helper_id:user.email})});
-        navigate('profile');
-    }
-
-    async function updateStatus(id, s) {
-        await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, status:s})});
-        loadProfile();
     }
 
     async function cancelTask(id, type) {
@@ -298,13 +324,19 @@
         loadProfile();
     }
 
-    // [Form Handlers]
+    async function updateStatus(id, s) {
+        await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, status:s})});
+        loadProfile();
+    }
+
+    // [Form] 表单提交
     document.getElementById('regForm').onsubmit = async e => {
         e.preventDefault();
-        if(document.getElementById('r_code').value !== sentCode) return alert("Code error");
+        if(document.getElementById('r_code').value !== sentCode) return alert("Code mismatch");
+        if(document.getElementById('r_pwd').value !== document.getElementById('r_pwd2').value) return alert("Passwords mismatch");
         const b = { full_name: document.getElementById('r_full').value, anonymous_name: document.getElementById('r_anon').value, school_name: document.getElementById('r_school').value, gender: document.getElementById('r_gender').value, email: document.getElementById('r_email').value, phone: document.getElementById('r_phone').value, password: document.getElementById('r_pwd').value };
-        await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        navigate('login');
+        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
+        if(res.ok) { alert("Success! Please Login."); navigate('login'); }
     };
 
     document.getElementById('loginForm').onsubmit = async e => {
@@ -312,6 +344,7 @@
         const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_email').value, password: document.getElementById('l_pwd').value})});
         const d = await res.json();
         if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); }
+        else alert("Invalid Login");
     };
 
     document.getElementById('taskForm').onsubmit = async e => {
