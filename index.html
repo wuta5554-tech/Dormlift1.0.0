@@ -2,301 +2,363 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | Peer Logistics Network</title>
+    <title>DormLift Pro | UoA Peer Logistics</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     
     <style>
-        :root { --primary: #4f46e5; --success: #059669; --warning: #f59e0b; --danger: #dc2626; --text: #334155; --bg: #f8fafc; --surface: #ffffff; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+        :root { --primary: #4f46e5; --success: #059669; --warning: #f59e0b; --danger: #dc2626; --dark: #0f172a; --text: #334155; --bg: #f8fafc; --surface: #ffffff; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
         
-        .page { display: none !important; }
-        .page.active { display: block !important; animation: fadeIn 0.4s ease; }
+        /* 页面切换动画 */
+        .page { display: none !important; opacity: 0; }
+        .page.active { display: block !important; animation: fadeIn 0.4s forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        nav { background: white; padding: 1rem 8%; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 1.5rem; font-weight: 800; color: #0f172a; cursor: pointer; }
-        
-        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
-        .card { background: var(--surface); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+        /* 导航栏：毛玻璃效果 */
+        nav { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--dark); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .nav-links a { color: var(--text); margin-left: 1.5rem; text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .nav-links a:hover { color: var(--primary); }
 
-        /* 市场列表：无图高密度样式 */
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
+        .card { background: var(--surface); border-radius: 1.2rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 2rem; }
+
+        /* 按钮与输入框 */
+        .btn { background: var(--primary); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 0.6rem; cursor: pointer; font-weight: 700; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-outline { background: white; color: var(--text); border: 1.5px solid #cbd5e1; }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; width: auto; }
+        input, select, textarea { width: 100%; padding: 0.8rem 1rem; background: #f1f5f9; border: 2px solid transparent; border-radius: 0.6rem; margin-bottom: 1rem; box-sizing: border-box; font-family: inherit; }
+        input:focus { border-color: var(--primary); outline: none; background: white; }
+
+        /* 首页优势卡片 */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+        .feature-item { text-align: center; padding: 2.5rem 1.5rem; border-radius: 1.5rem; background: white; border: 1px solid #f1f5f9; transition: 0.3s; }
+        .feature-item:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08); }
+        .feature-item i { font-size: 2.5rem; color: var(--primary); margin-bottom: 1.2rem; display: block; }
+
+        /* 市场列表：高密度文字版 */
         .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
-        .task-card { cursor: pointer; transition: 0.3s; border: 1px solid #e2e8f0; background: white; border-radius: 1rem; padding: 1.2rem; display: flex; flex-direction: column; gap: 8px; }
-        .task-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        
-        .reward-badge { font-size: 1.25rem; font-weight: 800; color: var(--success); }
-        .info-row { display: flex; align-items: flex-start; gap: 8px; font-size: 0.9rem; }
+        .task-card { cursor: pointer; transition: 0.3s; padding: 1.5rem; background: white; border-radius: 1rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 8px; }
+        .task-card:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .info-row { display: flex; align-items: flex-start; gap: 10px; font-size: 0.9rem; }
         .info-row i { color: var(--primary); width: 16px; margin-top: 4px; }
-        .meta-text { font-size: 0.8rem; color: #64748b; }
+        .reward-badge { font-size: 1.3rem; font-weight: 800; color: var(--success); }
 
         /* 详情弹窗与缩略图 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(4px); align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 95%; max-width: 650px; max-height: 90vh; overflow-y: auto; border-radius: 1.5rem; padding: 2rem; position: relative; }
-        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); z-index: 2000; backdrop-filter: blur(8px); align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 95%; max-width: 750px; max-height: 90vh; overflow-y: auto; border-radius: 1.5rem; padding: 2rem; position: relative; }
         .thumb-strip { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 1rem; }
         .thumb-img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; }
+        
+        #map { height: 350px; border-radius: 1rem; margin-bottom: 1rem; border: 1px solid #e2e8f0; }
+        .leaflet-routing-container { display: none !important; }
 
-        /* 互动区：留言与评价 */
-        .interaction-section { background: #f8fafc; border-radius: 1rem; padding: 1.5rem; margin-top: 1.5rem; border: 1px solid #e2e8f0; }
-        .comment-item { background: white; padding: 0.8rem; border-radius: 0.8rem; margin-bottom: 0.8rem; font-size: 0.9rem; border: 1px solid #f1f5f9; }
+        /* 互动评价区 */
+        .interaction-box { background: #f8fafc; border-radius: 1rem; padding: 1.5rem; margin-top: 1.5rem; border: 1px solid #e2e8f0; }
+        .comment-item { background: white; padding: 0.8rem; border-radius: 0.8rem; margin-bottom: 0.8rem; border: 1px solid #f1f5f9; font-size: 0.9rem; }
         .star-rating { color: var(--warning); display: flex; gap: 5px; margin: 10px 0; font-size: 1.2rem; }
-        .star-rating i { cursor: pointer; }
-
-        .btn { background: var(--primary); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 0.6rem; cursor: pointer; font-weight: 700; width: 100%; }
-        input, textarea { width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; margin-bottom: 1rem; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo" onclick="navigate('home')">DormLift Pro</div>
+    <div class="logo" onclick="navigate('home')"><i class="fas fa-box-open"></i> DormLift Pro</div>
     <div class="nav-links" id="menu"></div>
 </nav>
 
 <div class="container">
     <div id="home" class="page active">
-        <section class="card" style="text-align:center; padding: 4rem 1rem;">
-            <h1>Moving, Made Effortless.</h1>
-            <p>Connect with verified UoA peers for safe campus logistics.</p>
-            <div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-                <button class="btn" style="width:auto" onclick="navigate('post-task')">Post Task</button>
-                <button class="btn" style="width:auto; background:#f1f5f9; color:#334155" onclick="navigate('hall')">Market</button>
+        <section class="card" style="text-align:center; padding: 5rem 1rem;">
+            <h1 style="font-size:3.5rem; margin:0;">Moving, <span style="color:var(--primary)">Simplified.</span></h1>
+            <p style="color:var(--text-muted); font-size:1.1rem; margin: 1.5rem 0;">Connect with verified UoA peers for safe campus logistics.</p>
+            <div style="display:flex; justify-content:center; gap:1.2rem;">
+                <button class="btn" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('post-task')">Post Task</button>
+                <button class="btn btn-outline" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('hall')">Market</button>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-piggy-bank"></i>
+                    <h3>Low Cost</h3>
+                    <p>Transparent pricing. Save significantly compared to commercial movers.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Flexible</h3>
+                    <p>On-demand scheduling that works around your academic timetable.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Trusted</h3>
+                    <p>Closed student network with real peer-to-peer reviews.</p>
+                </div>
             </div>
         </section>
     </div>
 
     <div id="hall" class="page">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
             <h2 style="margin:0;">Task Market</h2>
-            <button class="btn" style="width:auto" onclick="loadHall()"><i class="fas fa-sync"></i></button>
+            <button class="btn btn-outline" style="width:auto; border-radius:2rem;" onclick="loadHall()"><i class="fas fa-sync-alt"></i></button>
         </div>
         <div id="hall_list" class="task-grid"></div>
     </div>
 
     <div id="post-task" class="page">
         <div class="card">
-            <h2>Post Logistics Request</h2>
+            <h2 style="margin-top:0;">Request Logistics</h2>
+            <div id="map"></div>
+            <div id="route_info" style="text-align:center; padding:10px; background:#eff6ff; border-radius:0.8rem; color:var(--primary); font-weight:700; margin-bottom:1.5rem;">📍 Click map to set Pickup & Destination</div>
+            
             <form id="taskForm">
                 <input type="text" id="p_from" placeholder="Pickup (Auto-fills on map click)" required>
                 <input type="text" id="p_to" placeholder="Destination (Auto-fills on map click)" required>
-                <input type="datetime-local" id="p_date" required>
-                <input type="text" id="p_reward" placeholder="Reward Offer (e.g. $50)" required>
-                <textarea id="p_desc" placeholder="Items & Instructions..." rows="3" required></textarea>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <input type="datetime-local" id="p_date" required title="Select Move Time">
+                    <input type="text" id="p_reward" placeholder="Reward Offer (e.g. $50)" required>
+                </div>
+                <textarea id="p_desc" placeholder="Details (Items to move, special instructions...)" rows="3" required></textarea>
                 <input type="file" id="p_file" multiple accept="image/*" required>
-                <button type="submit" class="btn">Publish to Market</button>
+                <button type="submit" class="btn" id="btnPost">Publish Task</button>
             </form>
         </div>
     </div>
 
     <div id="profile" class="page">
-        <div class="card"><h2 id="u_name">Profile</h2><div id="my_posts"></div><button class="btn" style="background:var(--danger); margin-top:2rem" onclick="nukeDatabase()">Nuke Data (DEV)</button></div>
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 style="margin:0;">My Account</h2>
+                <button id="editBtn" class="btn btn-outline btn-sm" onclick="toggleEdit()"><i class="fas fa-edit"></i> Edit Profile</button>
+            </div>
+            
+            <div id="profileForm">
+                <div style="display:grid; grid-template-columns:120px 1fr; gap:10px; align-items:center; margin-bottom:10px;">
+                    <b style="color:var(--text-muted)">Nickname:</b>
+                    <input type="text" id="edit_anon" disabled style="margin:0">
+                </div>
+                <div style="display:grid; grid-template-columns:120px 1fr; gap:10px; align-items:center; margin-bottom:10px;">
+                    <b style="color:var(--text-muted)">Email:</b>
+                    <input type="email" id="edit_email" disabled style="margin:0">
+                </div>
+                <div style="display:grid; grid-template-columns:120px 1fr; gap:10px; align-items:center; margin-bottom:10px;">
+                    <b style="color:var(--text-muted)">Phone:</b>
+                    <input type="text" id="edit_phone" disabled style="margin:0">
+                </div>
+
+                <div id="verifyArea" style="display:none; background:#eff6ff; padding:1.5rem; border-radius:1rem; margin-top:1.5rem; border:1px solid #bfdbfe;">
+                    <p style="margin-top:0; font-weight:700;">Security Code Required</p>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="v_code" placeholder="Check your email" style="margin:0">
+                        <button class="btn btn-sm" onclick="sendUpdateCode()" id="btnSendCode">Get Code</button>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn btn-sm" style="flex:1" onclick="submitUpdate()">Save Changes</button>
+                        <button class="btn btn-outline btn-sm" style="flex:1" onclick="toggleEdit()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>My Assignments</h3>
+            <div id="my_tasks_list">Loading...</div>
+            <button class="btn btn-outline" style="margin-top:2rem; border-color:var(--danger); color:var(--danger);" onclick="nukeDatabase()">Wipe All Data (DEV)</button>
+        </div>
     </div>
 
-    <div id="login" class="page"><div class="card" style="max-width:400px; margin:auto;"><h2>Login</h2><form id="loginForm"><input type="email" id="l_email" placeholder="Email"><input type="password" id="l_pwd" placeholder="Password"><button class="btn">Login</button></form></div></div>
-    <div id="register" class="page"><div class="card" style="max-width:400px; margin:auto;"><h2>Register</h2><form id="regForm"><input type="text" id="r_full" placeholder="Full Name"><input type="text" id="r_anon" placeholder="Nickname"><input type="email" id="r_email" placeholder="Email"><input type="text" id="r_phone" placeholder="Phone"><input type="password" id="r_pwd" placeholder="Password"><button class="btn">Register</button></form></div></div>
+    <div id="register" class="page">
+        <div class="card" style="max-width:500px; margin:auto;">
+            <h2 style="text-align:center;">Join DormLift</h2>
+            <form id="regForm">
+                <input type="text" id="r_full" placeholder="Full Name" required>
+                <input type="text" id="r_anon" placeholder="Nickname" required>
+                <input type="email" id="r_email" placeholder="Email" required>
+                <input type="text" id="r_phone" placeholder="Phone Number" required>
+                <input type="password" id="r_pwd" placeholder="Password" required>
+                <input type="text" id="r_code" placeholder="Code (8888)" required>
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="login" class="page">
+        <div class="card" style="max-width:400px; margin:auto;">
+            <h2 style="text-align:center;">Login</h2>
+            <form id="loginForm">
+                <input type="email" id="l_email" placeholder="Email" required>
+                <input type="password" id="l_pwd" placeholder="Password" required>
+                <button type="submit" class="btn">Sign In</button>
+            </form>
+            <p onclick="navigate('register')" style="text-align:center; cursor:pointer;">New here? Create Account</p>
+        </div>
+    </div>
 </div>
 
 <div id="taskModal" class="modal" onclick="if(event.target.id==='taskModal') this.style.display='none'">
     <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <h3 id="m_reward" class="reward-badge"></h3>
-            <button onclick="document.getElementById('taskModal').style.display='none'" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
-        </div>
-
+        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:none; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('taskModal').style.display='none'">&times;</button>
+        <div id="m_header" style="margin-bottom:1rem;"></div>
         <div id="m_thumbs" class="thumb-strip"></div>
-
-        <div id="m_details" style="display:flex; flex-direction:column; gap:10px; margin: 1rem 0;">
+        <div id="m_details" style="margin-bottom:1.5rem;"></div>
+        
+        <div id="m_interaction" class="interaction-box">
             </div>
 
-        <div id="m_interaction" class="interaction-section"></div>
-
-        <div style="margin-top:1.5rem;">
-            <button class="btn" id="m_action_btn">Accept Task</button>
-        </div>
+        <div id="m_footer" style="margin-top:1.5rem;"></div>
     </div>
 </div>
 
 <script>
     let user = JSON.parse(localStorage.getItem('user'));
-    let marketTasks = [];
-    let selectedRating = 5;
+    let map, markers = [], routingControl, sentCode = "8888", marketTasks = [], serverSentCode = "";
 
     function navigate(p) {
         if(!user && ['post-task', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
         document.getElementById(p).classList.add('active');
+        window.scrollTo(0,0); updateMenu();
+        if(p==='post-task') initMap();
         if(p==='hall') loadHall();
-        if(p==='profile') loadProfile();
-        updateMenu();
+        if(p==='profile') loadFullProfile();
     }
 
     function updateMenu() {
         const m = document.getElementById('menu');
-        m.innerHTML = user ? `<a onclick="navigate('hall')">Market</a> <a onclick="navigate('post-task')">Post</a> <a onclick="navigate('profile')">Profile</a>` : `<a onclick="navigate('login')">Login</a>`;
+        if(!user) m.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('login')">Login</a>`;
+        else m.innerHTML = `<a onclick="navigate('hall')">Market</a><a onclick="navigate('post-task')">Post</a><a onclick="navigate('profile')">Profile</a><a onclick="logout()" style="color:var(--danger)">Logout</a>`;
     }
+    function logout() { localStorage.clear(); location.reload(); }
 
-    // 核心：加载高密度市场列表
+    // --- 市场逻辑 ---
     async function loadHall() {
         const res = await fetch('/api/task/all');
         const data = await res.json();
         marketTasks = data.list;
-
-        document.getElementById('hall_list').innerHTML = data.list.map(t => {
-            const fromStr = t.from_addr.includes('@@') ? t.from_addr.split('@@')[1] : t.from_addr;
-            const toStr = t.to_addr.includes('@@') ? t.to_addr.split('@@')[1] : t.to_addr;
-            const postDate = new Date(t.created_at).toLocaleDateString();
-
-            return `
+        document.getElementById('hall_list').innerHTML = data.list.map(t => `
             <div class="task-card" onclick="showTaskDetail('${t._id}')">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; justify-content:space-between; align-items:center">
                     <span class="reward-badge">${t.reward}</span>
-                    <span class="meta-text">Posted: ${postDate}</span>
+                    <small style="color:grey">Posted: ${new Date(t.created_at).toLocaleDateString()}</small>
                 </div>
-                <div class="info-row"><i class="fas fa-circle"></i> <b>From:</b> ${fromStr}</div>
-                <div class="info-row"><i class="fas fa-location-arrow"></i> <b>To:</b> ${toStr}</div>
+                <div class="info-row"><i class="fas fa-circle"></i> <b>Pickup:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</div>
+                <div class="info-row"><i class="fas fa-location-arrow"></i> <b>Dest:</b> ${t.to_addr.split('@@')[1] || t.to_addr}</div>
                 <div class="info-row"><i class="fas fa-box"></i> <b>Items:</b> ${t.items_desc.substring(0, 50)}...</div>
                 <div class="info-row"><i class="fas fa-user-circle"></i> <b>By:</b> ${t.publisher_id.split('@')[0]} (Student)</div>
-                <div class="info-row"><i class="far fa-clock"></i> <b>Move:</b> ${t.move_date.replace('T', ' ')}</div>
-            </div>`;
-        }).join('') || '<p>Market is currently empty.</p>';
+                <div class="info-row" style="color:var(--success); font-weight:700;"><i class="far fa-clock"></i> <b>Time:</b> ${t.move_date.replace('T', ' ')}</div>
+            </div>`).join('') || '<p>Market is empty.</p>';
     }
 
-    // 核心：显示互动详情
+    // --- 详情与互动逻辑 ---
     function showTaskDetail(id) {
         const t = marketTasks.find(x => x._id === id);
-        const modal = document.getElementById('taskModal');
-        const isOwner = user && user.email === t.publisher_id;
-
-        document.getElementById('m_reward').innerText = t.reward;
+        activeTaskId = id;
         
-        // 缩略图预览
+        document.getElementById('m_header').innerHTML = `<h2 style="margin:0; color:var(--success)">${t.reward}</h2>`;
+        
         let imgs = JSON.parse(t.img_url || '[]');
-        document.getElementById('m_thumbs').innerHTML = imgs.map(url => `
-            <img src="${url}" class="thumb-img" onclick="window.open('${url}')">
-        `).join('') || '<small>No photos</small>';
-
+        document.getElementById('m_thumbs').innerHTML = imgs.map(url => `<img src="${url}" class="thumb-img" onclick="window.open('${url}')">`).join('');
+        
         document.getElementById('m_details').innerHTML = `
             <p><b>Pickup:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</p>
             <p><b>Dest:</b> ${t.to_addr.split('@@')[1] || t.to_addr}</p>
             <p><b>Items:</b> ${t.items_desc}</p>
         `;
 
-        // 动态加载互动区
-        const interArea = document.getElementById('m_interaction');
+        const actionBtn = document.getElementById('m_footer');
+        actionBtn.innerHTML = (t.status === 'pending' && user.email !== t.publisher_id) ? `<button class="btn" onclick="acceptTask('${t._id}')">Accept Task</button>` : '';
+
+        // 留言与评价逻辑
+        const area = document.getElementById('m_interaction');
         if (t.status !== 'finished') {
-            // 留言模式 (Q&A)
-            interArea.innerHTML = `
-                <h4>Questions & Comments</h4>
-                <div id="comment_list" style="margin-bottom:1rem;">
-                    ${(t.comments || []).map(c => `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`).join('') || '<p style="font-size:0.8rem">No questions yet.</p>'}
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="comment_input" placeholder="Ask publisher..." style="margin:0">
-                    <button class="btn" style="width:80px" onclick="postComment('${t._id}')">Send</button>
-                </div>
+            area.innerHTML = `
+                <h4>Q&A</h4>
+                <div id="c_list" style="margin-bottom:1rem;">${(t.comments || []).map(c => `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`).join('')}</div>
+                <div style="display:flex; gap:5px;"><input type="text" id="c_in" placeholder="Ask something..." style="margin:0"><button class="btn btn-sm" onclick="addComment()">Send</button></div>
             `;
         } else {
-            // 评价模式 (Reviews)
-            interArea.innerHTML = `
-                <h4>Task Reviews</h4>
-                <div id="review_list">
-                    ${t.reviews?.publisher_review ? `<div class="review-item"><b>Owner:</b> ${'⭐'.repeat(t.reviews.publisher_review.rating)}<br>${t.reviews.publisher_review.text}</div>` : ''}
-                    ${t.reviews?.helper_review ? `<div class="review-item"><b>Helper:</b> ${'⭐'.repeat(t.reviews.helper_review.rating)}<br>${t.reviews.helper_review.text}</div>` : ''}
-                </div>
-                ${renderReviewForm(t)}
-            `;
+            area.innerHTML = `<h4>Reviews</h4><div id="r_list">Publisher Review: ⭐${t.reviews?.publisher_review?.rating || '?'}<br>Helper Review: ⭐${t.reviews?.helper_review?.rating || '?'}</div>`;
         }
 
-        const actionBtn = document.getElementById('m_action_btn');
-        if (t.status === 'pending' && !isOwner) {
-            actionBtn.style.display = 'block';
-            actionBtn.innerText = "Accept Task";
-            actionBtn.onclick = () => acceptTask(id);
-        } else {
-            actionBtn.style.display = 'none';
-        }
-
-        modal.style.display = 'flex';
+        document.getElementById('taskModal').style.display = 'flex';
     }
 
-    // 渲染评价表单逻辑
-    function renderReviewForm(task) {
-        const isOwner = user.email === task.publisher_id;
-        const isHelper = user.email === task.helper_id;
-        const hasOwnerReviewed = task.reviews?.publisher_review;
-        const hasHelperReviewed = task.reviews?.helper_review;
-
-        if ((isOwner && !hasOwnerReviewed) || (isHelper && !hasHelperReviewed)) {
-            return `
-                <div style="margin-top:1.5rem; border-top:1px dashed #ccc; padding-top:1rem;">
-                    <b>Rate your partner:</b>
-                    <div class="star-rating" id="star_box">
-                        ${[1,2,3,4,5].map(i => `<i class="fas fa-star" onclick="setStar(${i})"></i>`).join('')}
-                    </div>
-                    <textarea id="rev_text" placeholder="Share your experience..."></textarea>
-                    <button class="btn" onclick="submitReview('${task._id}', '${isOwner?'publisher':'helper'}')">Submit Review</button>
-                </div>
-            `;
-        }
-        return '';
-    }
-
-    function setStar(n) {
-        selectedRating = n;
-        const stars = document.querySelectorAll('#star_box i');
-        stars.forEach((s, i) => s.style.color = (i < n) ? 'var(--warning)' : '#ccc');
-    }
-
-    async function submitReview(taskId, role) {
-        const text = document.getElementById('rev_text').value;
-        await fetch('/api/task/review', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ task_id: taskId, role, rating: selectedRating, text })
-        });
-        alert("Review submitted!");
-        location.reload();
-    }
-
-    async function postComment(taskId) {
-        const text = document.getElementById('comment_input').value;
-        if(!text) return;
-        await fetch('/api/task/comment', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ task_id: taskId, comment: { user: user.anonymous_name, text, time: new Date() } })
-        });
-        location.reload();
-    }
-
-    // --- 其他工具函数 ---
-    async function acceptTask(id) {
-        await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, status:'assigned', helper_id:user.email})});
-        navigate('profile');
-    }
-    async function nukeDatabase() { if(prompt("Type YES to wipe")==="YES") { await fetch('/api/dev/nuke', {method:'POST'}); localStorage.clear(); location.reload(); }}
-    async function loadProfile() {
-        document.getElementById('u_name').innerText = user.anonymous_name;
-        const res = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
+    // --- 个人资料修改逻辑 ---
+    async function loadFullProfile() {
+        const res = await fetch(`/api/user/detail/${user.email}`);
         const d = await res.json();
-        document.getElementById('my_posts').innerHTML = d.list.map(t => `<div class="card"><b>${t.reward}</b> - ${t.status} <button class="btn btn-outline" style="width:auto; padding:5px" onclick="showTaskDetail('${t._id}')">View/Review</button></div>`).join('');
+        if(d.success) {
+            document.getElementById('edit_anon').value = d.user.anonymous_name;
+            document.getElementById('edit_email').value = d.user.email;
+            document.getElementById('edit_phone').value = d.user.phone || "";
+        }
+        // 加载任务列表略... (调用现有 dashboard 接口)
     }
+
+    function toggleEdit() {
+        const ids = ['edit_anon', 'edit_email', 'edit_phone'];
+        const isEditing = document.getElementById('edit_anon').disabled;
+        ids.forEach(id => document.getElementById(id).disabled = !isEditing);
+        document.getElementById('verifyArea').style.display = isEditing ? 'block' : 'none';
+    }
+
+    async function sendUpdateCode() {
+        const res = await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: user.email})});
+        const d = await res.json();
+        if(d.success) { serverSentCode = d.code; alert("Code sent!"); }
+    }
+
+    async function submitUpdate() {
+        if(document.getElementById('v_code').value !== serverSentCode) return alert("Wrong code");
+        const newData = { anonymous_name: document.getElementById('edit_anon').value, email: document.getElementById('edit_email').value, phone: document.getElementById('edit_phone').value };
+        await fetch('/api/user/update', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ current_email: user.email, new_data: newData, code: serverSentCode, target_code: serverSentCode }) });
+        location.reload();
+    }
+
+    // --- 其他基础逻辑 ---
+    function initMap() {
+        if(map) return;
+        setTimeout(() => {
+            map = L.map('map').setView([-36.8509, 174.7645], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            map.on('click', async e => {
+                if(markers.length >= 2) { markers.forEach(m => map.removeLayer(m)); markers = []; if(routingControl) map.removeControl(routingControl); }
+                let m = L.marker(e.latlng).addTo(map); markers.push(m);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
+                const data = await res.json();
+                if(markers.length === 1) document.getElementById('p_from').value = data.display_name;
+                else {
+                    document.getElementById('p_to').value = data.display_name;
+                    routingControl = L.Routing.control({ waypoints: [markers[0].getLatLng(), markers[1].getLatLng()], show: false }).on('routesfound', function(ev) {
+                        const r = ev.routes[0];
+                        document.getElementById('route_info').innerText = `✅ ${(r.summary.totalDistance/1000).toFixed(2)} km | Est. ${Math.round(r.summary.totalTime/60)} mins`;
+                    }).addTo(map);
+                }
+            });
+        }, 300);
+    }
+
     document.getElementById('regForm').onsubmit = async e => {
         e.preventDefault();
         const b = { full_name: document.getElementById('r_full').value, anonymous_name: document.getElementById('r_anon').value, email: document.getElementById('r_email').value, phone: document.getElementById('r_phone').value, password: document.getElementById('r_pwd').value };
-        await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        navigate('login');
+        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
+        if(res.ok) navigate('login');
     };
+
     document.getElementById('loginForm').onsubmit = async e => {
         e.preventDefault();
         const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_email').value, password: document.getElementById('l_pwd').value})});
         const d = await res.json();
         if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); }
     };
+
+    async function nukeDatabase() { if(prompt("Type YES")==="YES") { await fetch('/api/dev/nuke', {method:'POST'}); localStorage.clear(); location.reload(); }}
 
     updateMenu(); navigate('home');
 </script>
