@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | Professional Peer Logistics</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DormLift Pro | University of Auckland Peer Logistics</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -12,15 +13,18 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     
     <style>
+        /* -------------------------------------------------------------
+           工程级 UI 变量与全局样式
+        ------------------------------------------------------------- */
         :root { --primary: #4f46e5; --primary-hover: #4338ca; --success: #059669; --warning: #f59e0b; --danger: #dc2626; --dark: #0f172a; --text: #334155; --muted: #64748b; --bg: #f8fafc; --surface: #ffffff; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
         
-        /* SPA 切换动画 */
+        /* SPA 页面平滑切换动画 */
         .page { display: none !important; opacity: 0; }
         .page.active { display: block !important; animation: fadeIn 0.4s forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 导航栏 */
+        /* 导航栏样式 */
         nav { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
         .logo { font-size: 1.5rem; font-weight: 800; color: var(--dark); cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; }
         .nav-links { display: flex; align-items: center; gap: 1.5rem; }
@@ -28,11 +32,11 @@
         .nav-links a:hover { color: var(--primary); }
         .user-tag { background: #eff6ff; color: var(--primary); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid #dbeafe; }
 
-        /* 布局与卡片 */
+        /* 布局容器与卡片 */
         .container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: 1.2rem; padding: 2.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 2rem; }
 
-        /* 交互组件 */
+        /* 交互组件：按钮与输入框 */
         .btn { background: var(--primary); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 0.6rem; cursor: pointer; font-weight: 700; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-decoration: none; }
         .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .btn-outline { background: white; color: var(--text); border: 1.5px solid #cbd5e1; }
@@ -43,7 +47,7 @@
         input:focus { border-color: var(--primary); outline: none; background: white; }
         input:disabled { background: #e2e8f0; cursor: not-allowed; }
 
-        /* 市场列表样式 */
+        /* 市场列表高密度样式 */
         .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
         .task-card { cursor: pointer; transition: 0.3s; padding: 1.5rem; background: white; border-radius: 1rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 8px; }
         .task-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1); }
@@ -51,15 +55,14 @@
         .info-row { display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; }
         .info-row i { color: var(--primary); width: 16px; margin-top: 4px; }
 
-        /* 详情弹窗与相册 */
+        /* 模态框交互区与缩略图 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); z-index: 2000; backdrop-filter: blur(8px); align-items: center; justify-content: center; }
         .modal-content { background: white; width: 95%; max-width: 750px; max-height: 90vh; overflow-y: auto; border-radius: 1.5rem; padding: 2.5rem; position: relative; }
-        .thumb-strip { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; margin-bottom: 1.5rem; border-bottom: 1px solid #eee; }
+        .thumb-strip { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 1.5rem; border-bottom: 1px solid #eee; }
         .thumb-img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; flex-shrink: 0; }
         
         .interaction-box { background: #f8fafc; border-radius: 1rem; padding: 1.5rem; margin-top: 1.5rem; border: 1px solid #e2e8f0; }
         .comment-item { background: white; padding: 0.8rem; border-radius: 0.8rem; margin-bottom: 0.8rem; border: 1px solid #f1f5f9; font-size: 0.9rem; }
-        .star-rating { color: var(--warning); display: flex; gap: 5px; margin: 10px 0; font-size: 1.2rem; }
         
         #map { height: 350px; border-radius: 1rem; margin-bottom: 1rem; border: 1px solid #e2e8f0; }
         .leaflet-routing-container { display: none !important; }
@@ -76,23 +79,23 @@
     <div id="home" class="page active">
         <section class="card" style="text-align:center; padding: 5rem 1rem;">
             <h1>Moving, <span style="color:var(--primary)">Simplified.</span></h1>
-            <p style="color:var(--muted); font-size:1.1rem; margin-bottom: 2rem;">The trusted peer logistics network for UoA students.</p>
+            <p style="color:var(--muted); font-size:1.1rem; margin-bottom: 2rem;">A secure peer logistics network for University of Auckland students.</p>
             <div style="display:flex; justify-content:center; gap:1.2rem;">
                 <button class="btn" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('post-task')">Post Request</button>
-                <button class="btn btn-outline" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('hall')">Explore Market</button>
+                <button class="btn btn-outline" style="width:auto; padding: 1rem 2.5rem;" onclick="navigate('hall')">Market</button>
             </div>
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 4rem;">
-                <div class="card" style="margin:0; padding:1.5rem;"><i class="fas fa-piggy-bank" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i><h3>Low Cost</h3><p style="font-size:0.8rem">Direct student pricing</p></div>
-                <div class="card" style="margin:0; padding:1.5rem;"><i class="fas fa-bolt" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i><h3>Flexible</h3><p style="font-size:0.8rem">Fits your lecture schedule</p></div>
-                <div class="card" style="margin:0; padding:1.5rem;"><i class="fas fa-shield-alt" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i><h3>Trusted</h3><p style="font-size:0.8rem">Verified UoA IDs & Reviews</p></div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 4rem;">
+                <div class="card" style="margin:0; padding:1.5rem;"><i class="fas fa-hand-holding-usd" style="font-size:2rem; color:var(--primary)"></i><h3>Low Cost</h3><p style="font-size:0.8rem">Direct student pricing</p></div>
+                <div class="card" style="margin:0; padding:1.5rem;"><i class="fas fa-calendar-check" style="font-size:2rem; color:var(--primary)"></i><h3>Flexible</h3><p style="font-size:0.8rem">Work around lectures</p></div>
+                <div class="card" style="margin:0; padding:1.5rem;"><i class="fas fa-shield-alt" style="font-size:2rem; color:var(--primary)"></i><h3>Trusted</h3><p style="font-size:0.8rem">Verified UoA IDs</p></div>
             </div>
         </section>
     </div>
 
     <div id="hall" class="page">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-            <h2 style="margin:0;">Available Missions</h2>
-            <button class="btn btn-outline" style="width:auto; border-radius:2rem;" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            <h2 style="margin:0;">Task Market</h2>
+            <button class="btn btn-outline" style="width:auto; border-radius:2rem;" onclick="loadHall()"><i class="fas fa-sync-alt"></i></button>
         </div>
         <div id="hall_list" class="task-grid"></div>
     </div>
@@ -103,17 +106,16 @@
             <div id="map"></div>
             <div id="route_info" style="text-align:center; padding:10px; background:#eff6ff; border-radius:0.8rem; color:var(--primary); font-weight:700; margin-bottom:1rem;">📍 Click map to set Pickup & Destination</div>
             <form id="taskForm">
-                <input type="text" id="p_from" placeholder="Pickup Address (Click Map)" required>
-                <input type="text" id="p_to" placeholder="Destination Address (Click Map)" required>
+                <input type="text" id="p_from" placeholder="Pickup Address (Click map to auto-fill)" required>
+                <input type="text" id="p_to" placeholder="Destination Address (Click map to auto-fill)" required>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                     <input type="datetime-local" id="p_date" required>
                     <input type="text" id="p_reward" placeholder="Reward Offer (e.g. $50)" required>
                 </div>
-                <textarea id="p_desc" placeholder="Details (Items to move, stairs, special care...)" rows="3" required></textarea>
-                <label style="font-size:0.85rem; font-weight:700; margin-bottom:5px; display:block;">Upload Photos:</label>
+                <textarea id="p_desc" placeholder="Details (Items, stairs, room #...)" rows="3" required></textarea>
                 <input type="file" id="p_file" multiple accept="image/*" required onchange="handlePreview(event)">
                 <div id="p_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" id="btnPost">Publish to Market</button>
+                <button type="submit" class="btn" id="btnPost">Publish Task</button>
             </form>
         </div>
     </div>
@@ -121,22 +123,23 @@
     <div id="profile" class="page">
         <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                <h2 style="margin:0;">Profile & Security</h2>
-                <button id="editBtn" class="btn btn-outline btn-sm" onclick="toggleEdit()"><i class="fas fa-edit"></i> Edit</button>
+                <h2 style="margin:0;">Profile Settings</h2>
+                <button id="editBtn" class="btn btn-outline btn-sm" onclick="toggleEdit()"><i class="fas fa-edit"></i> Edit Details</button>
             </div>
             <div style="display:grid; grid-template-columns: 110px 1fr; gap:10px; align-items:center;">
+                <b>Student ID:</b> <input type="text" id="edit_sid" disabled>
                 <b>Nickname:</b> <input type="text" id="edit_anon" disabled>
                 <b>Email:</b> <input type="email" id="edit_email" disabled>
                 <b>Phone:</b> <input type="text" id="edit_phone" disabled>
             </div>
             <div id="verifyArea" style="display:none; background:#eff6ff; padding:1.5rem; border-radius:1rem; margin-top:1rem; border:1px solid #bfdbfe;">
                 <p style="margin-top:0; font-weight:700;">Security Code Required</p>
-                <div style="display:flex; gap:10px;"><input type="text" id="v_code" placeholder="Email Code"><button class="btn btn-sm" onclick="sendUpdateCode()" id="btnUpdateCode">Get Code</button></div>
+                <div style="display:flex; gap:10px;"><input type="text" id="v_code" placeholder="Enter Code"><button class="btn btn-sm" onclick="sendUpdateCode()" id="btnUpdateCode">Get Code</button></div>
                 <div style="display:flex; gap:10px; margin-top:1rem;"><button class="btn btn-sm" onclick="submitUpdate()">Save Changes</button><button class="btn btn-outline btn-sm" onclick="toggleEdit()">Cancel</button></div>
             </div>
         </div>
         <div class="card">
-            <h3>My Missions</h3>
+            <h3>Mission History</h3>
             <div id="my_tasks_list">Loading history...</div>
             <button class="btn btn-danger" style="margin-top:3rem" onclick="nukeDatabase()">Wipe All Data (DEV)</button>
         </div>
@@ -147,11 +150,11 @@
             <h2 style="text-align:center;">Join the Network</h2>
             <form id="regForm">
                 <input type="text" id="r_full" placeholder="Full Name (Real Name)" required>
-                <input type="text" id="r_sid" placeholder="Student ID (8 Digits)" required>
-                <input type="text" id="r_anon" placeholder="Nickname (Display Name)" required>
+                <input type="text" id="r_sid" placeholder="UoA Student ID (8 Digits)" required>
+                <input type="text" id="r_anon" placeholder="Nickname (Public Display)" required>
                 <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
-                    <input type="email" id="r_email" placeholder="Student Email" required style="margin-bottom:0">
-                    <button type="button" class="btn btn-outline btn-sm" style="width:120px;" onclick="sendRegCode()" id="btnRegCode">Get Code</button>
+                    <input type="email" id="r_email" placeholder="Student Email" required style="margin:0">
+                    <button type="button" class="btn btn-outline btn-sm" style="width:140px;" onclick="sendRegCode()" id="btnRegCode">Get Code</button>
                 </div>
                 <input type="text" id="r_code" placeholder="Verification Code" required>
                 <input type="text" id="r_phone" placeholder="Phone Number" required>
@@ -159,17 +162,17 @@
                     <input type="password" id="r_pwd" placeholder="Password" required>
                     <input type="password" id="r_pwd2" placeholder="Confirm Password" required>
                 </div>
-                <button type="submit" class="btn">Create Account</button>
+                <button type="submit" class="btn">Register Account</button>
             </form>
-            <p onclick="navigate('login')" style="text-align:center; cursor:pointer; margin-top:1.5rem;">Already a member? Login</p>
+            <p onclick="navigate('login')" style="text-align:center; cursor:pointer; margin-top:1rem; font-size:0.9rem;">Back to Login</p>
         </div>
     </div>
 
     <div id="login" class="page">
         <div class="card" style="max-width:400px; margin:auto;">
-            <h2>Login</h2>
+            <h2>Portal Login</h2>
             <form id="loginForm"><input type="email" id="l_email" placeholder="Email" required><input type="password" id="l_pwd" placeholder="Password" required><button type="submit" class="btn">Sign In</button></form>
-            <p onclick="navigate('register')" style="text-align:center; cursor:pointer; margin-top:1.5rem;">New here? Create Account</p>
+            <p onclick="navigate('register')" style="text-align:center; cursor:pointer; margin-top:1.5rem;">New? Create Account</p>
         </div>
     </div>
 </div>
@@ -191,7 +194,7 @@
     let user = JSON.parse(localStorage.getItem('user'));
     let map, markers = [], routingControl, globalTaskPool = [], activeTaskId = null, currentSCode = "8888", serverSentUpdateCode = "";
 
-    // 1. SPA 路由与导航
+    // 1. SPA 导航与路由
     function navigate(p) {
         if(!user && ['post-task', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
@@ -204,112 +207,123 @@
 
     function updateMenu() {
         const m = document.getElementById('menu');
-        if(!user) { m.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('login')">Login</a>`; }
-        else { m.innerHTML = `<span class="user-tag">Hi, ${user.anonymous_name}</span><a onclick="navigate('hall')">Market</a><a onclick="navigate('post-task')">Post</a><a onclick="navigate('profile')">Profile</a><a onclick="logout()" style="color:var(--danger)">Logout</a>`; }
+        if(!user) m.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('login')">Login</a>`;
+        else m.innerHTML = `<span class="user-tag">Hi, ${user.anonymous_name}</span><a onclick="navigate('hall')">Market</a><a onclick="navigate('post-task')">Post</a><a onclick="navigate('profile')">Profile</a><a onclick="logout()" style="color:var(--danger)">Logout</a>`;
     }
     function logout() { localStorage.clear(); location.reload(); }
 
-    // 2. 数据加载与实时同步详情
+    // 2. 数据加载与同步核心
     async function loadHall() {
         const res = await fetch('/api/task/all');
         const d = await res.json();
-        // 增量同步全局池
         d.list.forEach(item => { if(!globalTaskPool.find(x => x._id === item._id)) globalTaskPool.push(item); });
         
         document.getElementById('hall_list').innerHTML = d.list.map(t => `
             <div class="task-card" onclick="showTaskDetail('${t._id}')">
                 <div style="display:flex; justify-content:space-between; align-items:center;"><span class="reward-tag">${t.reward}</span><small style="color:grey">${new Date(t.created_at).toLocaleDateString()}</small></div>
-                <div class="info-row"><i class="fas fa-circle"></i> <b>Pickup:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</div>
+                <div class="info-row"><i class="fas fa-circle"></i> <b>From:</b> ${t.from_addr.split('@@')[1] || t.from_addr}</div>
                 <div class="info-row"><i class="fas fa-location-arrow"></i> <b>To:</b> ${t.to_addr.split('@@')[1] || t.to_addr}</div>
                 <div class="info-row"><i class="fas fa-box"></i> <b>Items:</b> ${t.items_desc.substring(0, 40)}...</div>
                 <div class="info-row" style="color:var(--success); font-weight:700;"><i class="far fa-clock"></i> ${t.move_date.replace('T', ' ')}</div>
-            </div>`).join('') || '<p style="text-align:center; grid-column: 1/-1;">Market is empty.</p>';
+            </div>`).join('') || '<p>Market is currently empty.</p>';
     }
 
-    // --- 核心修复：每次打开详情从服务器拉取“真理”状态 ---
+    // --- 核心修复：任务详情实时同步与全互动逻辑 ---
     async function showTaskDetail(id) {
         activeTaskId = id;
         try {
-            // 实时同步单条数据（此处简化，实际应请求 /api/task/detail/:id）
-            const res = await fetch('/api/task/all');
+            // 实时从服务器获取该任务详情
+            const res = await fetch('/api/task/all'); // 实际中可扩展为单条详情 API
             const d = await res.json();
             const t = d.list.find(x => x._id === id); 
-            if(!t) return alert("Task not found.");
             
-            // 更新本地池
-            const idx = globalTaskPool.findIndex(x => x._id === id);
-            if(idx !== -1) globalTaskPool[idx] = t; else globalTaskPool.push(t);
+            if(!t) {
+                // 如果在 pending 列表中没找到，说明已接单，从 dashboard 找
+                const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
+                const d2 = await resT.json();
+                const t2 = d2.list.find(x => x._id === id);
+                if(!t2) return alert("Task status not synced. Please refresh.");
+                updatePoolTask(t2);
+            } else {
+                updatePoolTask(t);
+            }
 
-            document.getElementById('m_header').innerHTML = `<h2 style="margin:0; color:var(--success)">${t.reward}</h2>`;
-            let imgs = JSON.parse(t.img_url || '[]');
-            document.getElementById('m_thumbs').innerHTML = imgs.map(url => `<img src="${url}" class="thumb-img" onclick="window.open('${url}')">`).join('');
-            document.getElementById('m_details').innerHTML = `<p><b>Items:</b> ${t.items_desc}</p><p><b>Pickup:</b> ${t.from_addr.split('@@')[1]}</p><p><b>Dest:</b> ${t.to_addr.split('@@')[1]}</p>`;
+            const currentTask = globalTaskPool.find(x => x._id === id);
+            document.getElementById('m_header').innerHTML = `<h2 style="margin:0; color:var(--success)">${currentTask.reward}</h2>`;
+            let imgs = JSON.parse(currentTask.img_url || '[]');
+            document.getElementById('m_thumbs').innerHTML = imgs.map(url => `<img src="${url}" class="thumb-img" onclick="window.open('${url}')">`).join('') || '<small>No photos</small>';
+            document.getElementById('m_details').innerHTML = `<p><b>Items:</b> ${currentTask.items_desc}</p><p><b>Pickup:</b> ${currentTask.from_addr.split('@@')[1]}</p><p><b>Dest:</b> ${currentTask.to_addr.split('@@')[1]}</p>`;
 
-            renderInteraction(t);
-
+            renderInteraction(currentTask);
             const footer = document.getElementById('m_footer');
-            footer.innerHTML = (t.status === 'pending' && user.email !== t.publisher_id) ? `<button class="btn" onclick="acceptTask('${id}')">Accept Task & Contact</button>` : '';
+            footer.innerHTML = (currentTask.status === 'pending' && user.email !== currentTask.publisher_id) ? `<button class="btn" onclick="acceptTask('${id}')">Accept Task</button>` : '';
             document.getElementById('taskModal').style.display = 'flex';
-        } catch(e) { alert("Failed to sync data."); }
+        } catch(e) { console.error(e); }
     }
 
-    // 渲染留言与取消流
+    function updatePoolTask(task) {
+        const idx = globalTaskPool.findIndex(x => x._id === task._id);
+        if(idx !== -1) globalTaskPool[idx] = task; else globalTaskPool.push(task);
+    }
+
     function renderInteraction(t) {
         const area = document.getElementById('m_interaction');
         let html = `<h4><i class="far fa-comments"></i> Questions & Review</h4>
-            <div id="c_list" style="max-height:150px; overflow-y:auto;">${(t.comments || []).map(c => `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`).join('') || '<p style="color:grey">No messages.</p>'}</div>
+            <div id="c_list" style="max-height:120px; overflow-y:auto;">${(t.comments || []).map(c => `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`).join('') || '<p style="color:grey">No messages yet.</p>'}</div>
             <div style="display:flex; gap:5px; margin-top:10px;"><input type="text" id="c_in" placeholder="Ask publisher..." style="margin:0"><button class="btn btn-sm" style="width:80px" onclick="addComment()">Send</button></div>`;
         
-        // 取消申请逻辑
         if(t.status === 'assigned') {
             const isHelper = user.email === t.helper_id;
             const isPublisher = user.email === t.publisher_id;
             if(isHelper) {
-                html += `<div style="margin-top:1.5rem; padding:10px; background:#fff1f2; border-radius:0.5rem; border:1px solid #fecaca;"><p style="font-size:0.85rem; margin:0 0 8px 0;">Need to cancel? Request publisher's approval.</p><button class="btn btn-danger btn-sm" onclick="requestCancel('${t._id}')">Request Cancellation</button></div>`;
+                html += `<div style="margin-top:1.5rem; padding:10px; background:#fff1f2; border-radius:0.5rem; border:1px solid #fecaca;"><p style="font-size:0.85rem; margin:0 0 8px 0;">Need to cancel? Helper must request publisher's approval.</p><button class="btn btn-danger btn-sm" onclick="requestCancel('${t._id}')">Request Cancellation</button></div>`;
             }
             if(isPublisher && t.cancel_requested) {
-                html += `<div style="margin-top:1.5rem; padding:10px; background:#fffbeb; border-radius:0.5rem; border:1px solid #fef3c7;"><p style="font-size:0.85rem; margin:0 0 8px 0;"><b>Helper requested cancellation.</b> Agree to return this task to market?</p><button class="btn btn-sm" style="background:var(--warning)" onclick="approveCancel('${t._id}')">Approve & Reset Task</button></div>`;
+                html += `<div style="margin-top:1.5rem; padding:10px; background:#fffbeb; border-radius:0.5rem; border:1px solid #fef3c7;"><p style="font-size:0.85rem; margin:0 0 8px 0;"><b>Helper requested cancellation.</b> Do you agree to return this mission to the Market?</p><button class="btn btn-sm" style="background:var(--warning)" onclick="approveCancel('${t._id}')">Approve & Reset Task</button></div>`;
             }
         }
         area.innerHTML = html;
     }
 
-    // 3. 互动接口逻辑 (留言 + 取消流)
+    // 3. 互动逻辑 (即时渲染留言 + 取消审批)
     async function addComment() {
         const text = document.getElementById('c_in').value; if(!text) return;
         const commentObj = { user: user.anonymous_name, text, time: new Date() };
         const res = await fetch('/api/task/comment', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ task_id: activeTaskId, comment: commentObj })});
         if(res.ok) {
             const t = globalTaskPool.find(x => x._id === activeTaskId);
-            if(!t.comments) t.comments = []; t.comments.push(commentObj);
-            renderInteraction(t); // 即时渲染，不关弹窗
+            if(t) { if(!t.comments) t.comments = []; t.comments.push(commentObj); }
+            renderInteraction(t);
             document.getElementById('c_in').value = "";
+            alert("Sent!");
         }
     }
 
     async function acceptTask(id) {
-        if(!confirm("Accept mission?")) return;
+        if(!confirm("Are you sure you want to help with this?")) return;
         const res = await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, status:'assigned', helper_id:user.email})});
-        if(res.ok) { alert("🎉 Success! Mission Accepted."); document.getElementById('taskModal').style.display='none'; navigate('profile'); }
+        const d = await res.json();
+        if(d.success) { alert("🎉 Success! Mission Accepted."); document.getElementById('taskModal').style.display='none'; navigate('profile'); }
     }
 
     async function requestCancel(id) {
-        if(!confirm("Submit cancellation request?")) return;
+        if(!confirm("Send cancellation request?")) return;
         await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, cancel_requested: true})});
-        alert("Request Sent!"); document.getElementById('taskModal').style.display='none';
+        alert("Request Sent! Waiting for publisher."); document.getElementById('taskModal').style.display='none';
     }
 
     async function approveCancel(id) {
-        if(!confirm("Approve? Task will be back to Market.")) return;
+        if(!confirm("Approve cancellation? Mission will return to Market.")) return;
         await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, status:'pending', helper_id:null, cancel_requested: false})});
-        alert("Mission reset."); document.getElementById('taskModal').style.display='none'; navigate('hall');
+        alert("Approved. Task is back to Market."); document.getElementById('taskModal').style.display='none'; navigate('hall');
     }
 
-    // 4. 个人资料与鉴权
+    // 4. 账户管理逻辑
     async function loadFullProfile() {
         try {
             const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json();
             if(d.success) {
+                document.getElementById('edit_sid').value = d.user.student_id;
                 document.getElementById('edit_anon').value = d.user.anonymous_name;
                 document.getElementById('edit_email').value = d.user.email;
                 document.getElementById('edit_phone').value = d.user.phone || "";
@@ -317,13 +331,14 @@
             }
             const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
             const d2 = await resT.json();
-            d2.list.forEach(item => { if(!globalTaskPool.find(x => x._id === item._id)) globalTaskPool.push(item); });
-            document.getElementById('my_tasks_list').innerHTML = d2.list.map(t => `<div style="padding:15px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><div><b>${t.reward}</b><br><small>${t.status.toUpperCase()}</small></div><button class="btn btn-outline btn-sm" onclick="showTaskDetail('${t._id}')">View Details</button></div>`).join('') || 'No records.';
+            d2.list.forEach(item => updatePoolTask(item));
+            document.getElementById('my_tasks_list').innerHTML = d2.list.map(t => `<div style="padding:15px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><div><b>${t.reward}</b><br><small style="color:${t.status==='pending'?'#666':'#4f46e5'}">${t.status.toUpperCase()}</small></div><button class="btn btn-outline btn-sm" onclick="showTaskDetail('${t._id}')">View/Manage</button></div>`).join('') || 'No missions found.';
         } catch(e) {}
     }
 
+    // 5. 鉴权与工具逻辑 (不删减)
     async function sendRegCode() {
-        const email = document.getElementById('r_email').value; if(!email) return alert("Enter email first");
+        const email = document.getElementById('r_email').value; if(!email) return alert("Enter email");
         const btn = document.getElementById('btnRegCode'); btn.innerText = "...";
         const res = await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
         const d = await res.json(); if(d.success) { currentSCode = d.code; alert("Code sent!"); btn.innerText = "Resend"; }
@@ -331,11 +346,11 @@
 
     document.getElementById('regForm').onsubmit = async e => {
         e.preventDefault();
-        if(document.getElementById('r_pwd').value !== document.getElementById('r_pwd2').value) return alert("Passwords mismatch");
+        if(document.getElementById('r_pwd').value !== document.getElementById('r_pwd2').value) return alert("Passwords do not match");
         if(document.getElementById('r_code').value !== currentSCode && document.getElementById('r_code').value !== "8888") return alert("Wrong code");
         const b = { full_name: document.getElementById('r_full').value, student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, email: document.getElementById('r_email').value, phone: document.getElementById('r_phone').value, password: document.getElementById('r_pwd').value };
         const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        if(res.ok) navigate('login');
+        if(res.ok) { alert("Registration successful!"); navigate('login'); }
     };
 
     document.getElementById('loginForm').onsubmit = async e => {
@@ -344,7 +359,6 @@
         const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); }
     };
 
-    // 5. 基础地图与预览工具
     function initMap() {
         if(map) return;
         setTimeout(() => {
@@ -363,18 +377,17 @@
         }, 300);
     }
 
-    function handlePreview(event) {
+    function handlePreview(e) {
         const area = document.getElementById('p_preview'); area.innerHTML = "";
-        Array.from(event.target.files).forEach(f => {
+        Array.from(e.target.files).forEach(f => {
             const r = new FileReader(); r.onload = ev => { const img = document.createElement('img'); img.src = ev.target.result; img.className = 'thumb-img'; area.appendChild(img); }; r.readAsDataURL(f);
         });
     }
 
     document.getElementById('taskForm').onsubmit = async e => {
-        e.preventDefault(); const btn = document.getElementById('btnPost'); btn.innerText = "Uploading...";
-        const f = new FormData(); f.append('publisher_id', user.email); f.append('from_addr', "0,0@@"+document.getElementById('p_from').value); f.append('to_addr', "0,0@@"+document.getElementById('p_to').value); f.append('move_date', document.getElementById('p_date').value); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value);
+        e.preventDefault(); const f = new FormData(); f.append('publisher_id', user.email); f.append('from_addr', "0,0@@"+document.getElementById('p_from').value); f.append('to_addr', "0,0@@"+document.getElementById('p_to').value); f.append('move_date', document.getElementById('p_date').value); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value);
         Array.from(document.getElementById('p_file').files).forEach(fi => f.append('task_images', fi));
-        await fetch('/api/task/create', { method:'POST', body:f }); btn.innerText = "Publish to Market"; navigate('hall');
+        await fetch('/api/task/create', { method:'POST', body:f }); navigate('hall');
     };
 
     function toggleEdit() { const d = document.getElementById('edit_anon').disabled; ['edit_anon', 'edit_email', 'edit_phone'].forEach(id => document.getElementById(id).disabled = !d); document.getElementById('verifyArea').style.display = d ? 'block' : 'none'; }
