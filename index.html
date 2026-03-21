@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V11.4 Premium Modular Super App
+           DESIGN SYSTEM: V12.1 Financial Engine Escrow App
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -92,20 +92,23 @@
         .m-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .m-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); margin: 0 0 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .m-price { color: var(--success); font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; }
+        .m-meta { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 
         .forum-feed { max-width: 750px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
         .forum-card { background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #eef2f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .f-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
         .f-author { font-weight: 800; color: var(--dark); background: #f1f5f9; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; }
+        .f-time { font-size: 0.8rem; color: var(--muted); }
         .f-content { font-size: 1.1rem; color: var(--text); line-height: 1.6; margin-bottom: 1.5rem; }
         .f-images { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 1.5rem; padding-bottom: 5px; }
         .f-images img { height: 180px; border-radius: 10px; border: 1px solid #eef2f6; object-fit: cover; cursor: pointer; }
+        .f-actions { display: flex; gap: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
 
         /* =============================================================
            KANBAN WORKFLOW DASHBOARDS
         ============================================================= */
         .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
-        .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 400px; border: 1px dashed #e2e8f0; }
+        .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 350px; border: 1px dashed #e2e8f0; }
         .kanban-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 1.5rem; }
         .kanban-badge { background: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: var(--primary); border: 1px solid #eef2f6; }
         .kanban-card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1.5px solid transparent; cursor: pointer; transition: 0.3s; position: relative; }
@@ -128,6 +131,7 @@
         ============================================================= */
         .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
         .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
         .btn-outline:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .btn-danger { background: #fee2e2; color: var(--danger); border: 1.5px solid #fecaca; }
@@ -141,7 +145,7 @@
         /* =============================================================
            MODALS & INTERACTIONS
         ============================================================= */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; backdrop-filter: blur(12px); align-items: center; justify-content: center; }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
         .interaction-box { background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6; }
         .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -153,6 +157,17 @@
         .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; cursor: pointer; border: 2px solid #f1f5f9; transition: 0.3s; }
         .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
         .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* =============================================================
+           V12.1 MOCK PAYMENT GATEWAY STYLING
+        ============================================================= */
+        .payment-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.3); }
+        .payment-card::after { content: ''; position: absolute; right: -20px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+        .cc-input-group { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+        .cc-input-group i { color: #cbd5e1; font-size: 1.2rem; }
+        .cc-input-group input { background: transparent; border: none; color: white; padding: 5px; font-size: 1.2rem; box-shadow: none; width: 100%; font-family: monospace; letter-spacing: 2px;}
+        .cc-input-group input:focus { outline: none; border: none; box-shadow: none; background: transparent; }
+        .cc-input-group input::placeholder { color: rgba(255,255,255,0.3); }
     </style>
 </head>
 <body>
@@ -169,7 +184,7 @@
     <div id="home" class="page active">
         <section class="card" style="text-align:center; padding: 7rem 2rem; border:none; background: radial-gradient(circle at top right, #ffffff 0%, #f1f5f9 100%);">
             <h1 style="font-size:4.5rem; margin:0; line-height:1; letter-spacing:-2.5px;">The Campus<br><span style="color:var(--primary)">Super App.</span></h1>
-            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">Logistics, Flea Market, and Community Buzz. A verified ecosystem exclusively for University of Auckland students.</p>
+            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">Verified logistics, flea market escrow, and campus forum exclusively for UoA students.</p>
             <div style="display:flex; justify-content:center; gap:1.5rem;">
                 <button class="btn" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('post')">Publish to Network</button>
                 <button class="btn btn-outline" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('hall')">Explore Discoveries</button>
@@ -182,9 +197,9 @@
                     <p style="color:var(--muted); margin:0;">By students, for students. Zero platform commission fees on logistics or items.</p>
                 </div>
                 <div class="value-card" style="border-color:var(--success);">
-                    <i class="fas fa-bolt" style="color:var(--success);"></i>
-                    <h3 style="font-size:1.5rem; margin:0 0 10px 0; color:var(--dark);">Instant Flexibility</h3>
-                    <p style="color:var(--muted); margin:0;">Post a task and get matched with available student helpers in minutes across campus.</p>
+                    <i class="fas fa-shield-alt" style="color:var(--success);"></i>
+                    <h3 style="font-size:1.5rem; margin:0 0 10px 0; color:var(--dark);">Escrow Security</h3>
+                    <p style="color:var(--muted); margin:0;">Flea market funds are safely held in the platform wallet until buyer confirms receipt.</p>
                 </div>
                 <div class="value-card" style="border-color:var(--warning);">
                     <i class="fas fa-shield-check" style="color:var(--warning);"></i>
@@ -265,15 +280,15 @@
                 <div id="profileDetails" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin:0;"></div>
             </div>
             
-            <div class="card" style="margin:0; border-left: 8px solid #3b82f6; display:flex; flex-direction:column; justify-content:center;">
-                <h3 style="margin:0; font-size:1.3rem;">Credit Score</h3>
-                <div style="font-size:3.5rem; font-weight:900; color:var(--dark); line-height:1.2;">★ <span id="p_rating">5.0</span></div>
-                <p style="color:var(--muted); font-size:0.9rem; margin-top:0.5rem;">Based on <b id="p_task_count">0</b> total tasks.</p>
+            <div class="card" style="margin:0; border-left: 8px solid var(--success); display:flex; flex-direction:column; justify-content:center; background:#f0fdf4;">
+                <h3 style="margin:0; color:var(--success);">Virtual Wallet</h3>
+                <div style="font-size:3.5rem; font-weight:900; color:var(--success);">💰 <span id="p_wallet">0</span></div>
+                <p style="color:var(--success); font-size:0.85rem; font-weight:800; margin-top:0.5rem;">Used for Flea Market Escrow</p>
             </div>
 
             <div class="card" style="margin:0; border-left: 8px solid var(--warning); background: linear-gradient(to right, #fffbeb, #ffffff); display:flex; flex-direction:column; justify-content:center;">
-                <h3 style="margin:0; font-size:1.3rem;">Medal Points</h3>
-                <div style="font-size:3.5rem; font-weight:900; color:var(--medal); line-height:1.2;">🏅 <span id="p_medals">0</span></div>
+                <h3 style="margin:0; color:var(--medal);">Medal Points</h3>
+                <div style="font-size:3.5rem; font-weight:900; color:var(--medal);">🏅 <span id="p_medals">0</span></div>
                 <button class="btn btn-outline btn-sm" style="margin-top:1rem; border-color:#fcd34d; color:var(--medal);" onclick="document.getElementById('pointsModal').style.display='flex'">View Point History</button>
             </div>
         </div>
@@ -342,9 +357,63 @@
             <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="color:var(--primary); margin-right:10px;"></i> Discussion Thread</h4>
             <div id="mod_comments" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; padding-right:10px; scrollbar-width:thin;"></div>
             <div id="reply_hint" class="reply-hint"><i class="fas fa-reply fa-flip-horizontal" style="margin-right:5px;"></i> Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span></div>
-            <div style="display:flex; gap:12px;"><input type="text" id="mod_input" placeholder="Ask details or discuss..." style="margin:0; height:54px;"><button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postMasterComment()">Send</button></div>
+            <div style="display:flex; gap:12px;"><input type="text" id="mod_input" placeholder="Ask a question or reply..." style="margin:0; height:54px;"><button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postMasterComment()">Send</button></div>
         </div>
         <div id="mod_footer" style="margin-top:3rem; display:flex; justify-content:flex-end; gap:15px;"></div>
+    </div>
+</div>
+
+<div id="paymentModal" class="modal" onclick="if(event.target.id==='paymentModal') this.style.display='none'">
+    <div class="modal-content" style="max-width:550px; padding:3rem;">
+        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('paymentModal').style.display='none'">&times;</button>
+        
+        <div style="text-align:center; margin-bottom:2rem;">
+            <i class="fas fa-shield-alt" style="font-size:3rem; color:var(--success); margin-bottom:1rem;"></i>
+            <h2 style="margin:0;">Secure Escrow Checkout</h2>
+            <p style="color:var(--muted); margin-top:5px;">Funds will be held securely in platform escrow until you confirm receipt.</p>
+        </div>
+
+        <div class="payment-card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
+                <i class="fab fa-cc-visa" style="font-size:2rem; color:rgba(255,255,255,0.8);"></i>
+                <i class="fas fa-wifi" style="font-size:1.5rem; color:rgba(255,255,255,0.5);"></i>
+            </div>
+            
+            <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Card Number</label>
+            <div class="cc-input-group">
+                <i class="far fa-credit-card"></i>
+                <input type="text" placeholder="0000  0000  0000  0000" maxlength="19" id="cc_num" value="4242 4242 4242 4242">
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                <div>
+                    <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Expiry Date</label>
+                    <div class="cc-input-group">
+                        <i class="far fa-calendar-alt"></i>
+                        <input type="text" placeholder="MM/YY" maxlength="5" value="12/28">
+                    </div>
+                </div>
+                <div>
+                    <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">CVC</label>
+                    <div class="cc-input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="123" maxlength="3" value="123">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; background:#f8fafc; border-radius:1rem; margin-bottom:2rem; border:1px solid #eef2f6;">
+            <div>
+                <div style="font-weight:700; color:var(--dark); font-size:1.1rem;" id="pay_item_title">Item Name</div>
+                <div style="font-size:0.85rem; color:var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> DormLift Buyer Protection</div>
+            </div>
+            <div style="font-size:1.8rem; font-weight:900; color:var(--dark);" id="pay_item_price">$0.00</div>
+        </div>
+
+        <button id="btn_process_pay" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="processPayment()">
+            Pay Securely <i class="fas fa-arrow-right"></i>
+        </button>
     </div>
 </div>
 
@@ -361,7 +430,7 @@
     // ======================= STATE & NAVIGATION =======================
     let user = JSON.parse(localStorage.getItem('user'));
     let map, routingControl, modalMap, modalRoutingControl, markers = [], modalMarkers = [];
-    let state = { log: [], mar: [], for: [], activeId: null, activeType: null, activeReplyId: null };
+    let state = { log: [], mar: [], for: [], activeId: null, activeType: null, activeReplyId: null, pendingPayId: null };
 
     const getAddrText = (str) => {
         if (!str) return 'Unknown Location';
@@ -390,7 +459,7 @@
             menu.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Discover</a><a onclick="navigate('login')">Login</a>`;
         } else {
             menu.innerHTML = `
-                <div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check" style="margin-right:5px;"></i> ${user.anonymous_name}</div>
+                <div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check" style="margin-right:5px;"></i> ${user.anonymous_name} <span style="margin-left:5px; background:white; color:var(--primary); padding:2px 8px; border-radius:10px; font-weight:900;">$${user.wallet_balance || 1000}</span></div>
                 <a onclick="navigate('hall')">Discover</a>
                 <a onclick="navigate('post')">Publish</a>
                 <a onclick="navigate('profile')">Dashboard</a>
@@ -467,7 +536,7 @@
                 const input = document.getElementById(isStart ? 'p_from' : 'p_to');
                 input.value = "Fetching campus address...";
                 try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/11.4'} });
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/12.1'} });
                     const d = await res.json();
                     input.value = d.display_name ? d.display_name.split(',').slice(0,3).join(',').trim() : `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
                 } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
@@ -568,7 +637,6 @@
             item = sourceArray.find(x => x._id === id);
         }
         if(!item && type === 'for') {
-             // Edge case for forum posts opened from profile that are not in 'all' list
              const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
              const dT = await resT.json();
              item = (dT.posts||[]).find(x => x._id === id);
@@ -602,7 +670,8 @@
         
         } else if (type === 'mar') {
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--success); font-size:2.8rem; letter-spacing:-1.5px;">$${item.price}</h2><span class="status-badge" style="background:var(--success); color:white;">${item.status}</span></div>`;
-            b.innerHTML = `
+            let escrowNote = item.status === 'reserved' ? `<div style="background:#fef3c7; color:#b45309; padding:12px; border-radius:8px; margin-bottom:15px; font-weight:700;"><i class="fas fa-lock"></i> Funds ($${item.price}) secured in Escrow.</div>` : '';
+            b.innerHTML = `${escrowNote}
                 <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
                     <h3 style="margin:0; color:var(--dark); font-size:1.8rem;">${item.title}</h3>
                     <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Condition & Location</b> <br><span style="font-weight:700; color:var(--dark);">${item.condition} • ${item.location}</span></div>
@@ -611,9 +680,20 @@
                 </div>`;
             
             let btns = '';
-            if(item.status === 'available' && item.seller_id !== user.email) btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="execFlow('mar', 'reserved')">Reserve & Secure Funds in Escrow <i class="fas fa-lock"></i></button>`;
-            if(item.status === 'reserved' && item.buyer_id === user.email) btns = `<button class="btn" style="background:var(--primary); padding:1.4rem 3rem;" onclick="execFlow('mar', 'completed')">Confirm Receipt & Release Funds <i class="fas fa-handshake"></i></button>`;
-            if(item.seller_id === user.email && item.status !== 'completed') btns += `<button class="btn btn-danger" onclick="execFlow('mar', 'available')">Cancel & Relist</button>`;
+            // V12.1 MOCK PAYMENT INTERCEPTOR
+            if(item.status === 'available' && item.seller_id !== user.email) {
+                btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="openPaymentModal('${item._id}', ${item.price}, '${item.title.replace(/'/g, "\\'")}')">Pay securely to Escrow <i class="fas fa-credit-card"></i></button>`;
+            }
+            if(item.status === 'reserved' && item.buyer_id === user.email) {
+                btns = `<button class="btn" style="background:var(--primary); padding:1.4rem 3rem;" onclick="execFlow('mar', 'completed')">Confirm Receipt & Release Funds <i class="fas fa-handshake"></i></button>
+                        <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger);" onclick="execFlow('mar', 'available')">Cancel & Refund</button>`;
+            }
+            if(item.status === 'reserved' && item.seller_id === user.email) {
+                btns = `<span style="color:var(--muted); font-weight:700;">Waiting for Buyer to confirm receipt...</span>`;
+            }
+            if(item.seller_id === user.email && item.status === 'available') {
+                btns += `<button class="btn btn-danger" onclick="deleteItem('mar', '${item._id}')">Remove Listing</button>`;
+            }
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
             
         } else if (type === 'for') {
@@ -665,7 +745,51 @@
         loadHall(); 
     }
 
-    // ======================= 5. WORKFLOWS & INTERACTIONS =======================
+    // ======================= 5. V12.1 MOCK PAYMENT & WORKFLOWS =======================
+    function openPaymentModal(id, price, title) {
+        state.pendingPayId = id;
+        document.getElementById('pay_item_title').innerText = title;
+        document.getElementById('pay_item_price').innerText = `$${price.toFixed(2)}`;
+        
+        const btn = document.getElementById('btn_process_pay');
+        btn.innerHTML = `Pay Securely <i class="fas fa-arrow-right"></i>`;
+        btn.disabled = false;
+        
+        document.getElementById('masterModal').style.display = 'none';
+        document.getElementById('paymentModal').style.display = 'flex';
+    }
+
+    function processPayment() {
+        const btn = document.getElementById('btn_process_pay');
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing Secure Payment...`;
+        
+        // Simulate network authorization delay (1.5 seconds)
+        setTimeout(async () => {
+            btn.innerHTML = `<i class="fas fa-check-circle"></i> Payment Authorized`;
+            btn.style.background = 'var(--success)';
+            
+            // Execute the Escrow backend logic after fake card auth
+            const res = await fetch('/api/market/workflow', { 
+                method:'POST', headers:{'Content-Type':'application/json'}, 
+                body:JSON.stringify({item_id: state.pendingPayId, status: 'reserved', buyer_id: user.email}) 
+            });
+            const data = await res.json();
+            
+            setTimeout(() => {
+                document.getElementById('paymentModal').style.display = 'none';
+                btn.style.background = 'var(--primary-gradient)'; // Reset color
+                
+                if(data.msg === 'INSUFFICIENT_FUNDS') {
+                    alert("Virtual Bank declined: Insufficient wallet balance.");
+                } else if (data.success) {
+                    alert("Payment Successful! Funds are now secured in Platform Escrow.");
+                    navigate('profile');
+                }
+            }, 800);
+        }, 1500);
+    }
+
     async function execFlow(type, status) {
         if(!confirm("Confirm this transaction? Action is binding in the ecosystem.")) return;
         const api = type === 'log' ? '/api/task/workflow' : '/api/market/workflow';
@@ -691,6 +815,10 @@
     async function loadProfileData() {
         try {
             const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json(); const u = d.user;
+            
+            // Sync local wallet balance
+            user.wallet_balance = u.wallet_balance; localStorage.setItem('user', JSON.stringify(user)); renderMenu();
+
             const fields = [
                 ['Student ID', u.student_id], ['University', u.school_name], ['Full Name', `${u.first_name} ${u.given_name}`], 
                 ['Nickname', u.anonymous_name], ['Gender', u.gender], ['Email', u.email], ['Phone', u.phone]
@@ -704,6 +832,7 @@
             document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0";
             document.getElementById('p_task_count').innerText = u.task_count || 0;
             document.getElementById('p_medals').innerText = u.medal_points || 0;
+            document.getElementById('p_wallet').innerText = u.wallet_balance || 0;
 
             const phList = document.getElementById('pts_list');
             phList.innerHTML = (u.point_history || []).slice().reverse().map(h => `
