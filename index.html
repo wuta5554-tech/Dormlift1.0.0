@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V11.0 Super App Ecosystem
+           DESIGN SYSTEM: V11.2 Lean Modular Super App
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -55,7 +55,7 @@
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
-        /* Unified Tabs */
+        /* Unified Modular Tabs */
         .tab-container { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 0.5rem; border-radius: 1rem; box-shadow: var(--shadow-sm); border: 1px solid #eef2f6; }
         .tab-btn { flex: 1; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.1rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; }
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
@@ -86,23 +86,20 @@
         .m-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .m-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); margin: 0 0 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .m-price { color: var(--success); font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; }
-        .m-meta { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 
         /* 3. Campus Buzz Forum Feed */
         .forum-feed { max-width: 750px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
         .forum-card { background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #eef2f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .f-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
         .f-author { font-weight: 800; color: var(--dark); background: #f1f5f9; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; }
-        .f-time { font-size: 0.8rem; color: var(--muted); }
         .f-content { font-size: 1.1rem; color: var(--text); line-height: 1.6; margin-bottom: 1.5rem; }
         .f-images { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 1.5rem; padding-bottom: 5px; }
         .f-images img { height: 180px; border-radius: 10px; border: 1px solid #eef2f6; object-fit: cover; cursor: pointer; }
-        .f-actions { display: flex; gap: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
 
         /* =============================================================
            KANBAN WORKFLOW DASHBOARDS
         ============================================================= */
-        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 350px; border: 1px dashed #e2e8f0; }
         .kanban-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 1.5rem; }
         .kanban-badge { background: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: var(--primary); border: 1px solid #eef2f6; }
@@ -119,8 +116,7 @@
         #modal-map { height: 300px; border-radius: 1.5rem; border: 2px solid #eef2f6; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 1.5rem; display: none; }
         .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; border-bottom: 4px solid var(--primary); }
         .leaflet-routing-container { display: none !important; }
-        .custom-pin { background: transparent; border: none; }
-        .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .custom-pin { background: transparent; border: none; } .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
         /* =============================================================
            FORMS & BUTTONS
@@ -148,11 +144,9 @@
         .reply-btn { font-size: 0.75rem; color: var(--primary); font-weight: 800; cursor: pointer; text-transform: uppercase; margin-left: 15px; }
         .reply-btn:hover { text-decoration: underline; }
         .reply-hint { display: none; background: #eef2ff; padding: 12px 20px; border-radius: 12px; margin-bottom: 15px; font-size: 0.88rem; border-left: 6px solid var(--primary); }
-
         .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
-        .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; border: 2px solid #f1f5f9; cursor: pointer; flex-shrink: 0; transition: 0.3s; }
-        .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
-        .status-badge { font-size: 0.8rem; padding: 6px 16px; border-radius: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; cursor: pointer; border: 2px solid #f1f5f9; }
+        .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -195,22 +189,13 @@
             <button class="tab-btn" onclick="switchHall('forum')" id="btn_hall_forum"><i class="fas fa-fire" style="margin-right:8px;"></i> Campus Buzz</button>
         </div>
 
-        <div id="hall_logistics" class="tab-content active">
-            <div id="list_logistics" class="hub-container"></div>
-        </div>
-
-        <div id="hall_market" class="tab-content">
-            <div id="list_market" class="market-grid"></div>
-        </div>
-
-        <div id="hall_forum" class="tab-content">
-            <div id="list_forum" class="forum-feed"></div>
-        </div>
+        <div id="hall_logistics" class="tab-content active"><div id="list_logistics" class="hub-container"></div></div>
+        <div id="hall_market" class="tab-content"><div id="list_market" class="market-grid"></div></div>
+        <div id="hall_forum" class="tab-content"><div id="list_forum" class="forum-feed"></div></div>
     </div>
 
     <div id="post" class="page">
         <h2 style="font-size:2.5rem; margin:0 0 2rem 0; letter-spacing:-1.5px;">Publish to Network</h2>
-        
         <div class="tab-container">
             <button class="tab-btn active" onclick="switchPost('logistics')" id="btn_post_logistics">Logistics Request</button>
             <button class="tab-btn" onclick="switchPost('market')" id="btn_post_market">Sell Used Item</button>
@@ -219,70 +204,34 @@
 
         <div id="post_logistics" class="tab-content active card" style="padding:0; overflow:hidden;">
             <div id="map"></div>
-            <div class="route-info-strip">
-                <span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal" style="font-size:1.2rem;">0.00</b> km</span>
-                <span><i class="fas fa-hourglass-half"></i> EST. DRIVING: <b id="timeVal" style="font-size:1.2rem;">0</b> min</span>
-            </div>
+            <div class="route-info-strip"><span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal">0.00</b> km</span><span><i class="fas fa-hourglass-half"></i> EST. DRIVING: <b id="timeVal">0</b> min</span></div>
             <form id="form_logistics" style="padding: 0 3rem 3rem;" onsubmit="submitLogistics(event)">
-                <div class="form-grid">
-                    <div><label>Pickup Building (Auto-fetched)</label><input type="text" id="p_from" readonly required placeholder="Waiting for map pin (Start)..."></div>
-                    <div><label>Destination Building (Auto-fetched)</label><input type="text" id="p_to" readonly required placeholder="Waiting for map pin (End)..."></div>
-                </div>
-                <div class="form-grid">
-                    <div><label>Moving Date & Precision Time</label><input type="datetime-local" id="p_date" required></div>
-                    <div><label>Offer Reward (NZD)</label><input type="text" id="p_reward" placeholder="e.g. $45" required></div>
-                </div>
-                <label>Mission Inventory & Notes</label>
-                <textarea id="p_desc" rows="4" placeholder="List items, describe stairs or elevators." required></textarea>
-                
+                <div class="form-grid"><div><label>Pickup Building (Auto-fetched)</label><input type="text" id="p_from" readonly required placeholder="Waiting for map pin (Start)..."></div><div><label>Destination Building (Auto-fetched)</label><input type="text" id="p_to" readonly required placeholder="Waiting for map pin (End)..."></div></div>
+                <div class="form-grid"><div><label>Moving Date & Precision Time</label><input type="datetime-local" id="p_date" required></div><div><label>Offer Reward (NZD)</label><input type="text" id="p_reward" placeholder="e.g. 45" required></div></div>
+                <label>Mission Inventory & Notes</label><textarea id="p_desc" rows="4" placeholder="List items, describe stairs or elevators." required></textarea>
                 <div class="form-grid" style="margin-top:1.5rem; margin-bottom:2rem; background:#fffbeb; padding:1.5rem; border-radius:12px; border:1px solid #fde68a;">
-                    <div>
-                        <label style="color:var(--medal);">Task Scale (Awards Helper)</label>
-                        <select id="p_scale" style="border-color:#fcd34d;">
-                            <option value="Small">Small Task (Awards 🏅 1 Medal Point)</option>
-                            <option value="Medium">Medium Task (Awards 🏅 3 Medal Points)</option>
-                            <option value="Large">Large Task (Awards 🏅 5 Medal Points)</option>
-                        </select>
-                    </div>
-                    <div style="display:flex; align-items:center; padding-top:1.5rem;">
-                        <input type="checkbox" id="p_elevator" style="width:auto; margin-right:12px; transform:scale(1.2);">
-                        <label style="margin:0; text-transform:none; font-size:0.95rem; color:var(--dark);">Elevator Available</label>
-                    </div>
+                    <div><label style="color:var(--medal);">Task Scale (Awards Helper)</label><select id="p_scale" style="border-color:#fcd34d;"><option value="Small">Small Task (Awards 🏅 1 Medal Point)</option><option value="Medium">Medium Task (Awards 🏅 3 Medal Points)</option><option value="Large">Large Task (Awards 🏅 5 Medal Points)</option></select></div>
+                    <div style="display:flex; align-items:center; padding-top:1.5rem;"><input type="checkbox" id="p_elevator" style="width:auto; margin-right:12px; transform:scale(1.2);"><label style="margin:0; text-transform:none; font-size:0.95rem; color:var(--dark);">Elevator Available</label></div>
                 </div>
-
-                <label>Evidence Photos (Max 5)</label>
-                <input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')">
-                <div id="p_preview" class="thumb-strip"></div>
+                <label>Evidence Photos (Max 5)</label><input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
                 <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">Broadcast Logistics Task <i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
 
         <div id="post_market" class="tab-content card">
             <form id="form_market" onsubmit="submitMarket(event)">
-                <div class="form-grid">
-                    <div><label>Item Title</label><input type="text" id="m_title" placeholder="e.g. IKEA Study Desk" required></div>
-                    <div><label>Price (NZD)</label><input type="number" id="m_price" placeholder="e.g. 50" required></div>
-                </div>
-                <div class="form-grid">
-                    <div><label>Condition</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option><option>Fair</option></select></div>
-                    <div><label>Pickup Location</label><input type="text" id="m_loc" placeholder="e.g. Grafton Hall" required></div>
-                </div>
-                <label>Item Description & Specs</label>
-                <textarea id="m_desc" rows="4" placeholder="Dimensions, reason for selling, defects..." required></textarea>
-                <label>Photos (Crucial for Sales)</label>
-                <input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')">
-                <div id="m_preview" class="thumb-strip"></div>
+                <div class="form-grid"><div><label>Item Title</label><input type="text" id="m_title" placeholder="e.g. IKEA Desk" required></div><div><label>Price (NZD)</label><input type="number" id="m_price" placeholder="e.g. 50" required></div></div>
+                <div class="form-grid"><div><label>Condition</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option><option>Fair</option></select></div><div><label>Pickup Location</label><input type="text" id="m_loc" placeholder="e.g. Grafton Hall" required></div></div>
+                <label>Item Description & Specs</label><textarea id="m_desc" rows="4" placeholder="Dimensions, reason for selling, defects..." required></textarea>
+                <label>Photos (Crucial for Sales)</label><input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')"><div id="m_preview" class="thumb-strip"></div>
                 <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">List Item in Market <i class="fas fa-store"></i></button>
             </form>
         </div>
 
         <div id="post_forum" class="tab-content card">
             <form id="form_forum" onsubmit="submitForum(event)">
-                <label>What's happening on campus?</label>
-                <textarea id="f_content" rows="6" placeholder="Spill the tea, ask a question, or share an event..." required style="font-size:1.1rem; padding:1.5rem;"></textarea>
-                <label style="margin-top:1.5rem;">Attach Media (Optional)</label>
-                <input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')">
-                <div id="f_preview" class="thumb-strip"></div>
+                <label>What's happening on campus?</label><textarea id="f_content" rows="6" placeholder="Spill the tea, ask a question, or share an event..." required style="font-size:1.1rem; padding:1.5rem;"></textarea>
+                <label style="margin-top:1.5rem;">Attach Media (Optional)</label><input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')"><div id="f_preview" class="thumb-strip"></div>
                 <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">Post to Campus Buzz <i class="fas fa-fire"></i></button>
             </form>
         </div>
@@ -314,9 +263,10 @@
         <div class="card" style="background:transparent; border:none; box-shadow:none; padding:0;">
             <h2 style="font-size:2.2rem; margin:0 0 1.5rem 0; letter-spacing:-1px;"><i class="fas fa-layer-group" style="color:var(--primary); margin-right:10px;"></i> My Dashboard</h2>
             
-            <div class="tab-container" style="background:white; border:1px solid #eef2f6;">
-                <button class="tab-btn active" onclick="switchProf('kb_log')" id="btn_prof_log">Logistics Workflow</button>
-                <button class="tab-btn" onclick="switchProf('kb_mar')" id="btn_prof_mar">Market Listings</button>
+            <div class="tab-container" style="background:#f1f5f9; padding:0.5rem; border-radius:1rem;">
+                <button class="tab-btn active" onclick="switchProf('kb_log')" id="btn_prof_log"><i class="fas fa-truck-fast"></i> Logistics Workflow</button>
+                <button class="tab-btn" onclick="switchProf('kb_mar')" id="btn_prof_mar"><i class="fas fa-store"></i> Market Listings</button>
+                <button class="tab-btn" onclick="switchProf('kb_for')" id="btn_prof_for"><i class="fas fa-fire"></i> My Buzz Posts</button>
             </div>
             
             <div id="kb_log" class="tab-content active kanban-board">
@@ -330,8 +280,11 @@
                 <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-lock" style="color:var(--warning);"></i> Reserved (Escrow)</span><span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog"></div></div>
                 <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-handshake" style="color:var(--primary);"></i> Sold / Released</span><span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist"></div></div>
             </div>
-        </div>
 
+            <div id="kb_for" class="tab-content">
+                <div id="col_for_list" style="display:flex; flex-direction:column; gap:1.2rem; max-width:800px; margin:auto;"></div>
+            </div>
+        </div>
         <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:5rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
     </div>
 
@@ -362,30 +315,17 @@
 
 <div id="masterModal" class="modal" onclick="if(event.target.id==='masterModal') this.style.display='none'">
     <div class="modal-content">
-        <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:52px; height:52px; border-radius:50%; font-size:1.8rem; cursor:pointer;" onclick="document.getElementById('masterModal').style.display='none'">&times;</button>
-        
+        <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:45px; height:45px; border-radius:50%; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('masterModal').style.display='none'">&times;</button>
         <div id="mod_header" style="margin-bottom:1.5rem;"></div>
-        
         <div id="modal-map"></div>
-        
         <div class="thumb-strip" id="mod_thumbs"></div>
         <div id="mod_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
-        
         <div id="mod_interaction" class="interaction-box">
-            <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="margin-right:10px; color:var(--primary);"></i> Discussion Thread</h4>
-            <div id="mod_comments" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; scrollbar-width:thin; padding-right:10px;"></div>
-            
-            <div id="reply_hint" class="reply-hint">
-                <i class="fas fa-reply fa-flip-horizontal" style="margin-right:5px;"></i> Replying to <b id="reply_name"></b> 
-                <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span>
-            </div>
-            
-            <div style="display:flex; gap:12px;">
-                <input type="text" id="mod_input" placeholder="Ask a question or reply..." style="margin:0; height:54px;">
-                <button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postMasterComment()">Send</button>
-            </div>
+            <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="color:var(--primary); margin-right:10px;"></i> Discussion Thread</h4>
+            <div id="mod_comments" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; padding-right:10px; scrollbar-width:thin;"></div>
+            <div id="reply_hint" class="reply-hint"><i class="fas fa-reply fa-flip-horizontal" style="margin-right:5px;"></i> Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span></div>
+            <div style="display:flex; gap:12px;"><input type="text" id="mod_input" placeholder="Ask details or discuss..." style="margin:0; height:54px;"><button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postMasterComment()">Send</button></div>
         </div>
-        
         <div id="mod_footer" style="margin-top:3rem; display:flex; justify-content:flex-end; gap:15px;"></div>
     </div>
 </div>
@@ -394,20 +334,21 @@
     <div class="modal-content" style="max-width:600px;">
         <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('pointsModal').style.display='none'">&times;</button>
         <h2 style="margin-top:0; color:var(--dark);"><i class="fas fa-medal" style="color:var(--medal);"></i> Medal Point History</h2>
-        <p style="color:var(--muted); margin-bottom:2rem;">Ledger of points awarded for assisting peers in logistics.</p>
+        <p style="color:var(--muted); margin-bottom:2rem;">Ledger of points awarded for assisting peers.</p>
         <div id="pts_list" style="max-height: 400px; overflow-y: auto; border: 1px solid #eef2f6; border-radius: 12px;"></div>
     </div>
 </div>
 
 <script>
-    // ======================= 1. GLOBAL STATE & ROUTING =======================
+    // ======================= STATE & NAVIGATION =======================
     let user = JSON.parse(localStorage.getItem('user'));
-    let map, markers = [], routingControl;
-    let modalMap, modalRoutingControl = null, modalMarkers = [];
+    let map, routingControl, modalMap, modalRoutingControl, markers = [], modalMarkers = [];
     let state = { log: [], mar: [], for: [], activeId: null, activeType: null };
 
-    // Address String Parsers
-    const getAddrText = (str) => str && str.includes('@@') ? str.split('@@')[1] : str;
+    const getAddrText = (str) => {
+        if (!str) return 'Unknown Location';
+        return str.includes('@@') ? str.split('@@')[1] : str;
+    };
     const getAddrCoords = (str) => {
         if (!str || !str.includes('@@')) return null;
         let coords = str.split('@@')[0].split(',').map(Number);
@@ -441,7 +382,6 @@
 
     function logout() { localStorage.clear(); location.reload(); }
 
-    // Tab Switchers
     function switchHall(tab) {
         ['logistics', 'market', 'forum'].forEach(t => {
             document.getElementById(`btn_hall_${t}`).classList.toggle('active', t===tab);
@@ -455,11 +395,12 @@
         });
         if(tab==='logistics' && map) setTimeout(()=>map.invalidateSize(), 200);
     }
+    // Decoupled Modular Workflow Switcher
     function switchProf(tab) {
-        document.getElementById('btn_prof_log').classList.toggle('active', tab==='kb_log');
-        document.getElementById('btn_prof_mar').classList.toggle('active', tab==='kb_mar');
-        document.getElementById('kb_log').classList.toggle('active', tab==='kb_log');
-        document.getElementById('kb_mar').classList.toggle('active', tab==='kb_mar');
+        ['kb_log', 'kb_mar', 'kb_for'].forEach(t => {
+            document.getElementById(`btn_prof_${t}`).classList.toggle('active', t===tab);
+            document.getElementById(t).classList.toggle('active', t===tab);
+        });
     }
     function previewFiles(e, id) {
         const s = document.getElementById(id); s.innerHTML = "";
@@ -470,13 +411,13 @@
         });
     }
 
-    // ======================= 2. MAP ENGINE =======================
+    // ======================= MAP ENGINE (CartoDB + OSRM) =======================
     function initMap() {
         if(map) return;
         setTimeout(() => {
             map = L.map('map', {zoomControl: false}).setView([-36.8509, 174.7645], 14);
             L.control.zoom({position: 'topright'}).addTo(map);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {attribution: '&copy; CARTO'}).addTo(map);
 
             routingControl = L.Routing.control({
                 lineOptions: { styles: [{ color: '#4f46e5', weight: 6, opacity: 0.8, dashArray: '10, 10' }] },
@@ -505,7 +446,7 @@
                 const input = document.getElementById(isStart ? 'p_from' : 'p_to');
                 input.value = "Fetching campus address...";
                 try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/11.0'} });
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/11.2'} });
                     const d = await res.json();
                     input.value = d.display_name ? d.display_name.split(',').slice(0,3).join(',').trim() : `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
                 } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
@@ -515,12 +456,11 @@
         }, 300);
     }
 
-    // ======================= 3. UNIFIED DISCOVERY HUB RENDERER =======================
+    // ======================= UNIFIED DISCOVERY HUB =======================
     async function loadHall() {
         const [resL, resM, resF] = await Promise.all([fetch('/api/task/all'), fetch('/api/market/all'), fetch('/api/forum/all')]);
         state.log = (await resL.json()).list; state.mar = (await resM.json()).list; state.for = (await resF.json()).list;
         
-        // Logistics List
         document.getElementById('list_logistics').innerHTML = state.log.map(t => {
             const pubDate = new Date(t.created_at).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
             return `
@@ -533,9 +473,8 @@
                 </div>
                 <div class="reward-col">${t.reward}</div>
             </div>`;
-        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active missions.</div>';
+        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active logistics missions.</div>';
 
-        // Market Grid
         document.getElementById('list_market').innerHTML = state.mar.map(m => {
             const img = JSON.parse(m.img_url)[0] || '';
             return `
@@ -546,15 +485,11 @@
                         <h3 class="m-title">${m.title}</h3>
                         <div class="m-meta" style="margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; color:var(--dark); font-weight:700;">${m.condition}</span></div>
                     </div>
-                    <div>
-                        <div class="m-price">$${m.price}</div>
-                        <div class="m-meta"><i class="fas fa-map-marker-alt"></i> ${m.location}</div>
-                    </div>
+                    <div><div class="m-price">$${m.price}</div><div class="m-meta"><i class="fas fa-map-marker-alt"></i> ${m.location}</div></div>
                 </div>
             </div>`;
         }).join('') || '<div style="padding:5rem; text-align:center; grid-column:1/-1; color:var(--muted); font-weight:600;">Flea market is empty.</div>';
 
-        // Forum Feed
         document.getElementById('list_forum').innerHTML = state.for.map(f => {
             const imgs = JSON.parse(f.img_url).map(u => `<img src="${u}" onclick="window.open('${u}')">`).join('');
             const isLiked = user && f.likes.includes(user.email);
@@ -574,7 +509,7 @@
         }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-weight:600;">No buzz yet on campus.</div>';
     }
 
-    // ======================= 4. UNIVERSAL MASTER MODAL =======================
+    // ======================= UNIVERSAL MASTER MODAL =======================
     function initModalMap(fromC, toC) {
         if(!modalMap) {
             modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14);
@@ -597,12 +532,9 @@
 
     async function openMasterModal(type, id) {
         state.activeType = type; state.activeId = id;
-        
-        // Dynamic fetch based on type
         let endpoint = type === 'log' ? '/api/task/all' : (type === 'mar' ? '/api/market/all' : '/api/forum/all');
         const res = await fetch(endpoint); const d = await res.json();
         
-        // Find item (check pool or dashboard if not in active feed)
         let item = d.list.find(x => x._id === id);
         if(!item && type !== 'for') {
             const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
@@ -615,14 +547,11 @@
         const h = document.getElementById('mod_header'); const b = document.getElementById('mod_body'); const f = document.getElementById('mod_footer');
         const mapDiv = document.getElementById('modal-map'); mapDiv.style.display = 'none';
 
-        // Shared Image Render
         const imgs = JSON.parse(item.img_url || '[]');
         document.getElementById('mod_thumbs').innerHTML = imgs.map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('');
         
         if (type === 'log') {
-            // Logistics Render
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem; letter-spacing:-1.5px;">${item.reward} Mission</h2><span class="status-badge" style="background:var(--primary); color:white;">${item.status}</span></div>`;
-            
             let fC = getAddrCoords(item.from_addr); let tC = getAddrCoords(item.to_addr);
             if(fC && tC) { mapDiv.style.display = 'block'; initModalMap(fC, tC); }
             
@@ -641,7 +570,6 @@
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
         
         } else if (type === 'mar') {
-            // Market Render
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--success); font-size:2.8rem; letter-spacing:-1.5px;">$${item.price}</h2><span class="status-badge" style="background:var(--success); color:white;">${item.status}</span></div>`;
             b.innerHTML = `
                 <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
@@ -658,7 +586,6 @@
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
             
         } else if (type === 'for') {
-            // Forum Render
             h.innerHTML = `<div style="display:flex; align-items:center; gap:15px;"><div class="brand-icon" style="border-radius:50%;"><i class="fas fa-user"></i></div><div><h3 style="margin:0;">${item.author_name}</h3><small style="color:var(--muted);">${new Date(item.created_at).toLocaleString()}</small></div></div>`;
             b.innerHTML = `<div style="font-size:1.2rem; color:var(--dark); line-height:1.6;">${item.content}</div>`;
             f.innerHTML = '';
@@ -698,10 +625,11 @@
         const text = document.getElementById('mod_input').value; if(!text) return;
         const apiPath = state.activeType === 'log' ? '/api/task/comment' : (state.activeType === 'mar' ? '/api/market/comment' : '/api/forum/interact');
         const payload = { id: String(Date.now()), user: user.anonymous_name, text, parentId: activeReplyId, time: new Date() };
-        const body = state.activeType === 'for' ? { post_id: state.activeId, action: 'comment', comment: payload } : (state.activeType === 'log' ? { task_id: state.activeId, comment: payload } : { item_id: state.activeId, comment: payload });
+        const body = state.activeType === 'for' ? { post_id: state.activeId, action: 'comment', email: user.email, comment: payload } : (state.activeType === 'log' ? { task_id: state.activeId, comment: payload } : { item_id: state.activeId, comment: payload });
         
         await fetch(apiPath, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
-        document.getElementById('mod_input').value = ""; cancelReply(); openMasterModal(state.activeType, state.activeId);
+        document.getElementById('mod_input').value = ""; cancelReply(); 
+        openMasterModal(state.activeType, state.activeId); loadHall();
     }
 
     // ======================= 5. WORKFLOWS & INTERACTIONS =======================
@@ -715,15 +643,15 @@
     }
 
     async function deleteItem(type, id) {
-        if(!confirm("Permanently withdraw?")) return;
-        const api = type === 'log' ? '/api/task/delete' : '/api/market/delete'; // Market delete not implemented yet, using task for now
+        if(!confirm("Permanently withdraw from network?")) return;
+        const api = type === 'log' ? '/api/task/delete' : '/api/market/delete'; // Extending for future
         await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, email:user.email}) });
         document.getElementById('masterModal').style.display = 'none'; loadHall();
     }
 
     async function interactForum(id, action) {
         await fetch('/api/forum/interact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({post_id:id, action, email:user.email}) });
-        loadHall(); // Refresh feed quietly
+        loadHall();
     }
 
     // ======================= 6. MULTI-KANBAN PROFILE =======================
@@ -743,7 +671,6 @@
         document.getElementById('p_task_count').innerText = u.task_count || 0;
         document.getElementById('p_medals').innerText = u.medal_points || 0;
 
-        // Point History
         const phList = document.getElementById('pts_list');
         phList.innerHTML = (u.point_history || []).slice().reverse().map(h => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:1.2rem; border-bottom:1px solid #eef2f6;">
@@ -752,7 +679,6 @@
             </div>
         `).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No points earned yet. Complete a logistics task to earn!</div>';
 
-        // Load Double Kanban
         const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
         const dT = await resT.json();
         
@@ -777,34 +703,39 @@
 
         renderKB('log', 'pend', ['pending'], dT.tasks); renderKB('log', 'prog', ['assigned'], dT.tasks); renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks);
         renderKB('mar', 'pend', ['available'], dT.market); renderKB('mar', 'prog', ['reserved'], dT.market); renderKB('mar', 'hist', ['completed'], dT.market);
+
+        // Render Forum Posts in Profile Tab
+        document.getElementById('col_for_list').innerHTML = dT.posts.map(p => `
+            <div class="card" style="padding:1.5rem; margin-bottom:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span class="kb-role-tag kb-pub" style="background:#f1f5f9; color:var(--dark);">My Post</span>
+                    <small style="color:var(--muted);">${new Date(p.created_at).toLocaleString()}</small>
+                </div>
+                <div style="font-size:1.1rem; color:var(--dark); margin-bottom:10px;">${p.content}</div>
+                <div style="font-size:0.85rem; color:var(--muted);"><i class="fas fa-heart" style="color:var(--danger);"></i> ${p.likes.length} Likes • <i class="fas fa-comment"></i> ${p.comments.length} Comments</div>
+            </div>
+        `).join('') || '<div style="padding:3rem; text-align:center; color:var(--muted);">You haven\'t posted anything in Campus Buzz yet.</div>';
     }
 
-    // ======================= 7. SUBMIT FORMS & AUTH =======================
+    // ======================= 7. POSTING ENGINES =======================
     async function submitLogistics(e) {
-        e.preventDefault();
-        if(markers.length < 2) return alert("Please map locations.");
+        e.preventDefault(); if(markers.length < 2) return alert("Please map locations.");
         const f = new FormData();
-        f.append('publisher_id', user.email);
-        f.append('from_addr', markers[0].getLatLng().lat + ',' + markers[0].getLatLng().lng + '@@' + document.getElementById('p_from').value);
-        f.append('to_addr', markers[1].getLatLng().lat + ',' + markers[1].getLatLng().lng + '@@' + document.getElementById('p_to').value);
-        f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1] || '');
-        f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value);
-        f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
-        Array.from(document.getElementById('p_file').files).forEach(fi => f.append('images', fi));
+        f.append('publisher_id', user.email); f.append('from_addr', markers[0].getLatLng().lat+','+markers[0].getLatLng().lng+'@@'+document.getElementById('p_from').value); f.append('to_addr', markers[1].getLatLng().lat+','+markers[1].getLatLng().lng+'@@'+document.getElementById('p_to').value);
+        f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1] || ''); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
+        Array.from(document.getElementById('p_file').files).forEach(x=>f.append('images', x));
         document.querySelector('#form_logistics button[type="submit"]').innerText = "Broadcasting...";
-        await fetch('/api/task/create', { method:'POST', body: f });
+        await fetch('/api/task/create', {method:'POST', body:f}); 
         document.querySelector('#form_logistics button[type="submit"]').innerHTML = 'Broadcast Logistics Task <i class="fas fa-paper-plane"></i>';
         switchHall('logistics'); navigate('hall');
     }
 
     async function submitMarket(e) {
         e.preventDefault(); const f = new FormData();
-        f.append('seller_id', user.email); f.append('title', document.getElementById('m_title').value);
-        f.append('price', document.getElementById('m_price').value); f.append('condition', document.getElementById('m_cond').value);
-        f.append('location', document.getElementById('m_loc').value); f.append('description', document.getElementById('m_desc').value);
-        Array.from(document.getElementById('m_file').files).forEach(fi => f.append('images', fi));
+        f.append('seller_id', user.email); f.append('title', document.getElementById('m_title').value); f.append('price', document.getElementById('m_price').value); f.append('condition', document.getElementById('m_cond').value); f.append('location', document.getElementById('m_loc').value); f.append('description', document.getElementById('m_desc').value);
+        Array.from(document.getElementById('m_file').files).forEach(x=>f.append('images', x));
         document.querySelector('#form_market button[type="submit"]').innerText = "Listing...";
-        await fetch('/api/market/create', { method:'POST', body: f });
+        await fetch('/api/market/create', {method:'POST', body:f}); 
         document.querySelector('#form_market button[type="submit"]').innerHTML = 'List Item in Market <i class="fas fa-store"></i>';
         switchHall('market'); navigate('hall');
     }
@@ -812,14 +743,14 @@
     async function submitForum(e) {
         e.preventDefault(); const f = new FormData();
         f.append('author_id', user.email); f.append('author_name', user.anonymous_name); f.append('content', document.getElementById('f_content').value);
-        Array.from(document.getElementById('f_file').files).forEach(fi => f.append('images', fi));
+        Array.from(document.getElementById('f_file').files).forEach(x=>f.append('images', x));
         document.querySelector('#form_forum button[type="submit"]').innerText = "Posting...";
-        await fetch('/api/forum/create', { method:'POST', body: f });
+        await fetch('/api/forum/create', {method:'POST', body:f}); 
         document.querySelector('#form_forum button[type="submit"]').innerHTML = 'Post to Campus Buzz <i class="fas fa-fire"></i>';
-        document.getElementById('f_content').value = ""; // clear text
-        switchHall('forum'); navigate('hall');
+        document.getElementById('f_content').value = ""; switchHall('forum'); navigate('hall');
     }
 
+    // ======================= 8. AUTHENTICATION =======================
     async function sendCode() {
         const email = document.getElementById('r_email').value; if(!email) return alert("Email required");
         const btn = document.getElementById('btnSendCode'); btn.innerText = "Sending...";
