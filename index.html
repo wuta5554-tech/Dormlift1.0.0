@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V12.4 Stable Grid & Cache-Busting Edition
+           DESIGN SYSTEM: V12.5 Bulletproof Render Edition
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -55,18 +55,14 @@
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
-        /* =============================================================
-           CRITICAL FIX: Tab Content & Kanban Grid Harmony
-        ============================================================= */
+        /* Unified Modular Tabs */
         .tab-container { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 0.5rem; border-radius: 1rem; box-shadow: var(--shadow-sm); border: 1px solid #eef2f6; }
         .tab-btn { flex: 1; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.1rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; }
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
         
-        .tab-content { display: none !important; }
-        .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
-        /* Guarantee the Kanban board remains a grid when active */
-        .kanban-board.tab-content.active { display: grid !important; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* Value Props Styling (Home) */
@@ -220,77 +216,41 @@
         <h2 style="font-size:2.5rem; margin:0 0 2rem 0; letter-spacing:-1.5px;">Publish to Network</h2>
         <div class="tab-container">
             <button class="tab-btn active" onclick="switchPost('logistics')" id="btn_post_logistics">Logistics Request</button>
-            <button class="tab-btn" onclick="switchPost('market')" id="btn_post_market">Sell Used Item</button>
-            <button class="tab-btn" onclick="switchPost('forum')" id="btn_post_forum">Share Buzz</button>
+            <button class="tab-btn" onclick="switchPost('market')" id="btn_post_market">Sell Item</button>
+            <button class="tab-btn" onclick="switchPost('forum')" id="btn_post_forum">Post Buzz</button>
         </div>
 
         <div id="post_logistics" class="tab-content active card" style="padding:0; overflow:hidden;">
             <div id="map"></div>
-            <div class="route-info-strip">
-                <span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal" style="font-size:1.2rem;">0.00</b> km</span>
-                <span><i class="fas fa-hourglass-half"></i> EST. DRIVING: <b id="timeVal" style="font-size:1.2rem;">0</b> min</span>
-            </div>
+            <div class="route-info-strip"><span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal">0.00</b> km</span><span><i class="fas fa-clock"></i> <b id="timeVal">0</b> min</span></div>
             <form id="form_logistics" style="padding: 0 3rem 3rem;" onsubmit="submitLogistics(event)">
-                <div class="form-grid">
-                    <div><label>Pickup Building (Auto-fetched)</label><input type="text" id="p_from" readonly required placeholder="Waiting for map pin (Start)..."></div>
-                    <div><label>Destination Building (Auto-fetched)</label><input type="text" id="p_to" readonly required placeholder="Waiting for map pin (End)..."></div>
+                <div class="form-grid"><div><label>Pickup Building</label><input type="text" id="p_from" readonly required placeholder="Waiting for map pin..."></div><div><label>Destination</label><input type="text" id="p_to" readonly required placeholder="Waiting for map pin..."></div></div>
+                <div class="form-grid"><div><label>Moving Date</label><input type="datetime-local" id="p_date" required></div><div><label>Reward (NZD)</label><input type="text" id="p_reward" required></div></div>
+                <label>Inventory & Notes</label><textarea id="p_desc" rows="4" required></textarea>
+                <div class="form-grid" style="margin-top:1.5rem; margin-bottom:2rem; background:#fffbeb; padding:1.5rem; border-radius:12px;">
+                    <div><label style="color:var(--medal);">Task Scale (Awards Points)</label><select id="p_scale"><option value="Small">Small Task (1 Pt)</option><option value="Medium">Medium Task (3 Pts)</option><option value="Large">Large Task (5 Pts)</option></select></div>
+                    <div style="display:flex; align-items:center; padding-top:1.5rem;"><input type="checkbox" id="p_elevator" style="margin-right:12px; transform:scale(1.2);"><label style="margin:0; text-transform:none;">Elevator Available</label></div>
                 </div>
-                <div class="form-grid">
-                    <div><label>Moving Date & Precision Time</label><input type="datetime-local" id="p_date" required></div>
-                    <div><label>Offer Reward (NZD)</label><input type="text" id="p_reward" placeholder="e.g. 45" required></div>
-                </div>
-                <label>Mission Inventory & Notes</label>
-                <textarea id="p_desc" rows="4" placeholder="List items, describe stairs or elevators." required></textarea>
-                
-                <div class="form-grid" style="margin-top:1.5rem; margin-bottom:2rem; background:#fffbeb; padding:1.5rem; border-radius:12px; border:1px solid #fde68a;">
-                    <div>
-                        <label style="color:var(--medal);">Task Scale (Awards Helper)</label>
-                        <select id="p_scale" style="border-color:#fcd34d;">
-                            <option value="Small">Small Task (Awards 🏅 1 Medal Point)</option>
-                            <option value="Medium">Medium Task (Awards 🏅 3 Medal Points)</option>
-                            <option value="Large">Large Task (Awards 🏅 5 Medal Points)</option>
-                        </select>
-                    </div>
-                    <div style="display:flex; align-items:center; padding-top:1.5rem;">
-                        <input type="checkbox" id="p_elevator" style="width:auto; margin-right:12px; transform:scale(1.2);">
-                        <label style="margin:0; text-transform:none; font-size:0.95rem; color:var(--dark);">Elevator Available</label>
-                    </div>
-                </div>
-
-                <label>Evidence Photos (Max 5)</label>
-                <input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')">
-                <div id="p_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">Broadcast Logistics Task <i class="fas fa-paper-plane"></i></button>
+                <label>Photos</label><input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">Broadcast Logistics Task</button>
             </form>
         </div>
 
         <div id="post_market" class="tab-content card">
             <form id="form_market" onsubmit="submitMarket(event)">
-                <div class="form-grid">
-                    <div><label>Item Title</label><input type="text" id="m_title" placeholder="e.g. IKEA Study Desk" required></div>
-                    <div><label>Price (NZD)</label><input type="number" id="m_price" placeholder="e.g. 50" required></div>
-                </div>
-                <div class="form-grid">
-                    <div><label>Condition</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option><option>Fair</option></select></div>
-                    <div><label>Pickup Location</label><input type="text" id="m_loc" placeholder="e.g. Grafton Hall" required></div>
-                </div>
-                <label>Item Description & Specs</label>
-                <textarea id="m_desc" rows="4" placeholder="Dimensions, reason for selling, defects..." required></textarea>
-                <label>Photos (Crucial for Sales)</label>
-                <input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')">
-                <div id="m_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">List Item in Market <i class="fas fa-store"></i></button>
+                <div class="form-grid"><div><label>Item Title</label><input type="text" id="m_title" required></div><div><label>Price (NZD)</label><input type="number" id="m_price" required></div></div>
+                <div class="form-grid"><div><label>Condition</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option><option>Fair</option></select></div><div><label>Pickup Location</label><input type="text" id="m_loc" required></div></div>
+                <label>Description</label><textarea id="m_desc" rows="4" required></textarea>
+                <label>Photos (Crucial)</label><input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')"><div id="m_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">List Item in Market</button>
             </form>
         </div>
 
         <div id="post_forum" class="tab-content card">
             <form id="form_forum" onsubmit="submitForum(event)">
-                <label>What's happening on campus?</label>
-                <textarea id="f_content" rows="6" placeholder="Spill the tea, ask a question, or share an event..." required style="font-size:1.1rem; padding:1.5rem;"></textarea>
-                <label style="margin-top:1.5rem;">Attach Media (Optional)</label>
-                <input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')">
-                <div id="f_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">Post to Campus Buzz <i class="fas fa-fire"></i></button>
+                <label>Campus Buzz</label><textarea id="f_content" rows="6" placeholder="Spill the tea..." required style="font-size:1.1rem; padding:1.5rem;"></textarea>
+                <label style="margin-top:1.5rem;">Media (Optional)</label><input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')"><div id="f_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">Post to Campus Buzz</button>
             </form>
         </div>
     </div>
@@ -308,7 +268,7 @@
             <div class="card" style="margin:0; border-left: 8px solid var(--success); display:flex; flex-direction:column; justify-content:center; background:#f0fdf4;">
                 <h3 style="margin:0; color:var(--success);">Virtual Wallet</h3>
                 <div style="font-size:3.5rem; font-weight:900; color:var(--success);">💰 <span id="p_wallet">0</span></div>
-                <p style="color:var(--success); font-size:0.85rem; font-weight:800; margin-top:0.5rem;">Used for Flea Market Escrow</p>
+                <p style="color:var(--success); font-size:0.85rem; font-weight:800; margin-top:0.5rem;">Used for Market Escrow</p>
             </div>
 
             <div class="card" style="margin:0; border-left: 8px solid var(--warning); background: linear-gradient(to right, #fffbeb, #ffffff); display:flex; flex-direction:column; justify-content:center;">
@@ -494,26 +454,66 @@
 
     function logout() { localStorage.clear(); location.reload(); }
 
+    // ======================= CRITICAL FIX: HARD JS DISPLAY OVERRIDES =======================
     function switchHall(tab) {
         ['logistics', 'market', 'forum'].forEach(t => {
-            const btn = document.getElementById(`btn_hall_${t}`); const content = document.getElementById(`hall_${t}`);
-            if(btn) btn.classList.toggle('active', t===tab);
-            if(content) content.classList.toggle('active', t===tab);
+            const btn = document.getElementById(`btn_hall_${t}`);
+            const content = document.getElementById(`hall_${t}`);
+            if(btn) {
+                if (t === tab) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+            if(content) {
+                if (t === tab) {
+                    content.classList.add('active');
+                    content.style.setProperty('display', 'block', 'important');
+                } else {
+                    content.classList.remove('active');
+                    content.style.setProperty('display', 'none', 'important');
+                }
+            }
         });
     }
+
     function switchPost(tab) {
         ['logistics', 'market', 'forum'].forEach(t => {
-            const btn = document.getElementById(`btn_post_${t}`); const content = document.getElementById(`post_${t}`);
-            if(btn) btn.classList.toggle('active', t===tab);
-            if(content) content.classList.toggle('active', t===tab);
+            const btn = document.getElementById(`btn_post_${t}`);
+            const content = document.getElementById(`post_${t}`);
+            if(btn) {
+                if (t === tab) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+            if(content) {
+                if (t === tab) {
+                    content.classList.add('active');
+                    content.style.setProperty('display', 'block', 'important');
+                } else {
+                    content.classList.remove('active');
+                    content.style.setProperty('display', 'none', 'important');
+                }
+            }
         });
         if(tab==='logistics' && map) setTimeout(()=>map.invalidateSize(), 200);
     }
+
     function switchProf(tab) {
         ['kb_log', 'kb_mar', 'kb_for'].forEach(t => {
-            const btn = document.getElementById(`btn_prof_${t}`); const content = document.getElementById(t);
-            if(btn) btn.classList.toggle('active', t===tab);
-            if(content) content.classList.toggle('active', t===tab);
+            const btn = document.getElementById(`btn_prof_${t}`);
+            const content = document.getElementById(t);
+            if(btn) {
+                if (t === tab) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+            if(content) {
+                if (t === tab) {
+                    content.classList.add('active');
+                    // Force GRID for kanban boards, BLOCK for forum list
+                    content.style.setProperty('display', t === 'kb_for' ? 'block' : 'grid', 'important');
+                } else {
+                    content.classList.remove('active');
+                    content.style.setProperty('display', 'none', 'important');
+                }
+            }
         });
     }
     
@@ -571,66 +571,67 @@
         }, 300);
     }
 
+    // ======================= CACHE-BUSTING FETCH UTILITY =======================
+    async function safeFetchList(url) {
+        try {
+            const r = await fetch(url);
+            const d = await r.json();
+            return d.list || [];
+        } catch(e) { return []; }
+    }
+
     // ======================= UNIFIED DISCOVERY HUB =======================
     async function loadHall() {
-        try {
-            // Added ?t= cache bust to prevent stale lists
-            const [resL, resM, resF] = await Promise.all([
-                fetch('/api/task/all?t=' + Date.now()).catch(() => ({json: () => ({list: []})})), 
-                fetch('/api/market/all?t=' + Date.now()).catch(() => ({json: () => ({list: []})})), 
-                fetch('/api/forum/all?t=' + Date.now()).catch(() => ({json: () => ({list: []})}))
-            ]);
-            state.log = (await resL.json()).list || []; 
-            state.mar = (await resM.json()).list || []; 
-            state.for = (await resF.json()).list || [];
-            
-            document.getElementById('list_logistics').innerHTML = state.log.map(t => {
-                const pubDate = new Date(t.created_at).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
-                return `
-                <div class="hub-row" onclick="openMasterModal('log', '${t._id}')">
-                    <div class="posted-col">PUB<span>${pubDate}</span></div>
-                    <div class="details-strip">
-                        <div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
-                        <div class="strip-route"><i class="fas fa-circle"></i> ${getAddrText(t.from_addr)} <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> <i class="fas fa-flag-checkered"></i> ${getAddrText(t.to_addr)}</div>
-                        <div class="strip-inventory"><span style="background:#fef3c7; color:var(--medal); padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">🏅 ${t.medal_points||1} Pts</span> <b>Items:</b> ${t.items_desc.substring(0, 60)}...</div>
-                    </div>
-                    <div class="reward-col">${t.reward}</div>
-                </div>`;
-            }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active logistics missions.</div>';
+        state.log = await safeFetchList('/api/task/all?t=' + Date.now());
+        state.mar = await safeFetchList('/api/market/all?t=' + Date.now());
+        state.for = await safeFetchList('/api/forum/all?t=' + Date.now());
+        
+        document.getElementById('list_logistics').innerHTML = state.log.map(t => {
+            const pubDate = new Date(t.created_at).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+            return `
+            <div class="hub-row" onclick="openMasterModal('log', '${t._id}')">
+                <div class="posted-col">PUB<span>${pubDate}</span></div>
+                <div class="details-strip">
+                    <div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
+                    <div class="strip-route"><i class="fas fa-circle"></i> ${getAddrText(t.from_addr)} <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> <i class="fas fa-flag-checkered"></i> ${getAddrText(t.to_addr)}</div>
+                    <div class="strip-inventory"><span style="background:#fef3c7; color:var(--medal); padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">🏅 ${t.medal_points||1} Pts</span> <b>Items:</b> ${t.items_desc.substring(0, 60)}...</div>
+                </div>
+                <div class="reward-col">${t.reward}</div>
+            </div>`;
+        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active logistics missions.</div>';
 
-            document.getElementById('list_market').innerHTML = state.mar.map(m => {
-                const img = JSON.parse(m.img_url)[0] || '';
-                return `
-                <div class="market-card" onclick="openMasterModal('mar', '${m._id}')">
-                    <img src="${img}" class="m-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'100\\\' height=\\\'100\\\'></svg>'">
-                    <div class="m-body">
-                        <div>
-                            <h3 class="m-title">${m.title}</h3>
-                            <div class="m-meta" style="margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; color:var(--dark); font-weight:700;">${m.condition}</span></div>
-                        </div>
-                        <div><div class="m-price">$${m.price}</div><div class="m-meta"><i class="fas fa-map-marker-alt"></i> ${m.location}</div></div>
+        document.getElementById('list_market').innerHTML = state.mar.map(m => {
+            const img = JSON.parse(m.img_url)[0] || '';
+            return `
+            <div class="market-card" onclick="openMasterModal('mar', '${m._id}')">
+                <img src="${img}" class="m-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'100\\\' height=\\\'100\\\'></svg>'">
+                <div class="m-body">
+                    <div>
+                        <h3 class="m-title">${m.title}</h3>
+                        <div class="m-meta" style="margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; color:var(--dark); font-weight:700;">${m.condition}</span></div>
                     </div>
-                </div>`;
-            }).join('') || '<div style="padding:5rem; text-align:center; grid-column:1/-1; color:var(--muted); font-weight:600;">Flea market is empty.</div>';
+                    <div><div class="m-price">$${m.price}</div><div class="m-meta"><i class="fas fa-map-marker-alt"></i> ${m.location}</div></div>
+                </div>
+            </div>`;
+        }).join('') || '<div style="padding:5rem; text-align:center; grid-column:1/-1; color:var(--muted); font-weight:600;">Flea market is empty.</div>';
 
-            document.getElementById('list_forum').innerHTML = state.for.map(f => {
-                const imgs = JSON.parse(f.img_url).map(u => `<img src="${u}" onclick="window.open('${u}')">`).join('');
-                const isLiked = user && f.likes.includes(user.email);
-                return `
-                <div class="forum-card">
-                    <div class="f-header">
-                        <div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div>
-                        <div class="f-time">${new Date(f.created_at).toLocaleString()}</div>
-                    </div>
-                    <div class="f-content">${f.content}</div>
-                    ${imgs ? `<div class="f-images">${imgs}</div>` : ''}
-                    <div class="f-actions">
-                        <button class="btn btn-outline btn-sm" style="${isLiked?'background:var(--primary);color:white;border-color:var(--primary);':''}" onclick="interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button>
-                        <button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button>
-                    </div>
-                </div>`;
-            }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-weight:600;">No buzz yet on campus.</div>';
-        } catch(e) { console.log("Hub Load Error:", e); }
+        document.getElementById('list_forum').innerHTML = state.for.map(f => {
+            const imgs = JSON.parse(f.img_url).map(u => `<img src="${u}" onclick="window.open('${u}')">`).join('');
+            const isLiked = user && f.likes.includes(user.email);
+            return `
+            <div class="forum-card">
+                <div class="f-header">
+                    <div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div>
+                    <div class="f-time">${new Date(f.created_at).toLocaleString()}</div>
+                </div>
+                <div class="f-content">${f.content}</div>
+                ${imgs ? `<div class="f-images">${imgs}</div>` : ''}
+                <div class="f-actions">
+                    <button class="btn btn-outline btn-sm" style="${isLiked?'background:var(--primary);color:white;border-color:var(--primary);':''}" onclick="interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button>
+                    <button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button>
+                </div>
+            </div>`;
+        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-weight:600;">No buzz yet on campus.</div>';
     }
 
     // ======================= UNIVERSAL MASTER MODAL =======================
@@ -656,8 +657,9 @@
 
     async function openMasterModal(type, id) {
         state.activeType = type; state.activeId = id;
+        
         let endpoint = type === 'log' ? '/api/task/all' : (type === 'mar' ? '/api/market/all' : '/api/forum/all');
-        const res = await fetch(endpoint + '?t=' + Date.now()); const d = await res.json();
+        let d = await (await fetch(endpoint + '?t=' + Date.now())).json();
         
         let item = (d.list || []).find(x => x._id === id);
         if(!item) {
@@ -751,27 +753,43 @@
                             </div>`).join('')}
                     </div>`).join('')}
             </div>`;
-        }).join('') || '<p style="color:var(--muted); text-align:center; padding:2rem; font-weight:600;">No discussion yet. Start the thread!</p>';
+        }).join('') || '<p id="empty_comments_msg" style="color:var(--muted); text-align:center; padding:2rem; font-weight:600;">No discussion yet. Start the thread!</p>';
     }
 
     function setReply(id, name) { state.activeReplyId = id; document.getElementById('reply_hint').style.display='block'; document.getElementById('reply_name').innerText=name; document.getElementById('mod_input').focus(); }
     function cancelReply() { state.activeReplyId = null; document.getElementById('reply_hint').style.display='none'; }
 
+    // ======================= CRITICAL FIX: OPTIMISTIC UI FOR COMMENTS =======================
     async function postMasterComment() {
         const text = document.getElementById('mod_input').value; if(!text) return;
         const apiPath = state.activeType === 'log' ? '/api/task/comment' : (state.activeType === 'mar' ? '/api/market/comment' : '/api/forum/interact');
         const payload = { id: String(Date.now()), user: user.anonymous_name, text, parentId: state.activeReplyId, time: new Date() };
         const body = state.activeType === 'for' ? { post_id: state.activeId, action: 'comment', email: user.email, comment: payload } : (state.activeType === 'log' ? { task_id: state.activeId, comment: payload } : { item_id: state.activeId, comment: payload });
         
+        // OPTIMISTIC UI: Inject comment instantly
+        const emptyMsg = document.getElementById('empty_comments_msg');
+        if(emptyMsg) emptyMsg.style.display = 'none';
+        
+        let newHtml = "";
+        if(!state.activeReplyId) {
+            newHtml = `<div class="comment-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b style="color:var(--dark);">${payload.user}</b><small style="color:var(--success);">Just now</small></div><div style="font-size:1rem;">${payload.text}</div></div>`;
+            document.getElementById('mod_comments').insertAdjacentHTML('beforeend', newHtml);
+        } else {
+            // Very basic visual indication for a reply instantly (real reload will fix structure)
+            newHtml = `<div class="comment-item comment-reply"><div style="margin-bottom:6px;"><small style="color:var(--success); font-weight:700;"><b>${payload.user}</b> replied</small></div><div style="font-size:0.95rem;">${payload.text}</div></div>`;
+            document.getElementById('mod_comments').insertAdjacentHTML('beforeend', newHtml);
+        }
+
+        document.getElementById('mod_input').value = ""; cancelReply(); 
+
         try {
             await fetch(apiPath, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
-            document.getElementById('mod_input').value = ""; cancelReply(); 
-            openMasterModal(state.activeType, state.activeId); 
+            // Background sync
             loadHall(); 
         } catch(e) { alert("Network error logging comment."); }
     }
 
-    // ======================= 5. MOCK PAYMENT & UX FIX WORKFLOWS =======================
+    // ======================= MOCK PAYMENT & UX HIGHLIGHTING WORKFLOWS =======================
     function openPaymentModal(id, price, title) {
         state.pendingPayId = id;
         document.getElementById('pay_item_title').innerText = title;
@@ -812,8 +830,9 @@
                         
                         switchProf('kb_mar');
                         navigate('profile');
+                        
                         setTimeout(() => {
-                            const targetCol = document.getElementById('wrap_mar_prog');
+                            const targetCol = document.getElementById('col_mar_prog').parentElement;
                             if (targetCol) {
                                 targetCol.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 targetCol.style.boxShadow = "0 0 0 4px var(--warning)";
@@ -848,8 +867,8 @@
                 navigate('profile');
                 
                 setTimeout(() => {
-                    const colMap = { 'log': 'wrap_log_prog', 'mar': 'wrap_mar_prog' };
-                    const targetCol = document.getElementById(colMap[type]);
+                    const colMap = { 'log': 'col_log_prog', 'mar': 'col_mar_prog' };
+                    const targetCol = document.getElementById(colMap[type]).parentElement;
                     if (targetCol) {
                         targetCol.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         targetCol.style.boxShadow = "0 0 0 4px var(--primary)";
