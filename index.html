@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | UoA Professional Peer Logistics Hub</title>
+    <title>DormLift Pro | The Campus Super App</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V10.6 Ultimate Gamification Edition
+           DESIGN SYSTEM: V11.0 Super App Ecosystem
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -23,13 +23,14 @@
             --success: #059669;
             --warning: #f59e0b;
             --danger: #dc2626;
-            --medal: #d97706; /* Medal Gold */
+            --medal: #d97706; 
             --dark: #0f172a;
             --text: #334155;
             --muted: #64748b;
             --bg: #f8fafc;
             --surface: #ffffff;
             --radius-lg: 1.25rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
         }
 
@@ -41,11 +42,7 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Navigation */
-        nav { 
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); 
-            padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; 
-            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-        }
+        nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
         .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
         .brand-icon { width: 42px; height: 42px; background: var(--primary-gradient); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
         .brand-text { font-size: 1.5rem; font-weight: 800; color: var(--dark); letter-spacing: -1px; }
@@ -58,13 +55,20 @@
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
-        /* MISSION HUB */
+        /* Unified Tabs */
+        .tab-container { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 0.5rem; border-radius: 1rem; box-shadow: var(--shadow-sm); border: 1px solid #eef2f6; }
+        .tab-btn { flex: 1; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.1rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; }
+        .tab-btn:hover { background: #f8fafc; color: var(--dark); }
+        .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slideUp 0.3s ease forwards; }
+
+        /* =============================================================
+           HUB LAYOUTS (Logistics, Market, Forum)
+        ============================================================= */
+        /* 1. Logistics Strip */
         .hub-container { display: flex; flex-direction: column; gap: 1rem; }
-        .hub-row { 
-            display: grid; grid-template-columns: 100px 1fr 130px; align-items: center; 
-            background: white; border-radius: 16px; padding: 1.25rem 2rem; border: 1px solid #eef2f6;
-            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer;
-        }
+        .hub-row { display: grid; grid-template-columns: 100px 1fr 130px; align-items: center; background: white; border-radius: 16px; padding: 1.25rem 2rem; border: 1px solid #eef2f6; transition: 0.3s; cursor: pointer; }
         .hub-row:hover { transform: translateX(8px); border-color: var(--primary); box-shadow: var(--shadow-premium); }
         .posted-col { font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; border-right: 2px solid #f1f5f9; line-height: 1.3; }
         .posted-col span { display: block; font-size: 1.05rem; color: var(--dark); margin-top: 2px; }
@@ -74,18 +78,43 @@
         .strip-inventory { font-size: 0.85rem; color: var(--text); background: #f8fafc; padding: 6px 14px; border-radius: 8px; display: inline-flex; align-items: center; gap:10px; width: fit-content; border: 1px solid #f1f5f9; }
         .reward-col { text-align: right; font-size: 1.6rem; font-weight: 900; color: var(--success); letter-spacing: -0.5px; }
 
-        /* KANBAN WORKFLOW */
-        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 400px; border: 1px dashed #e2e8f0; }
+        /* 2. Flea Market Grid */
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+        .market-card { background: white; border-radius: 1rem; overflow: hidden; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+        .market-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-premium); border-color: var(--primary); }
+        .m-img { width: 100%; height: 200px; object-fit: cover; background: #f8fafc; border-bottom: 1px solid #eef2f6; }
+        .m-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .m-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); margin: 0 0 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .m-price { color: var(--success); font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; }
+        .m-meta { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+
+        /* 3. Campus Buzz Forum Feed */
+        .forum-feed { max-width: 750px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .forum-card { background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #eef2f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .f-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+        .f-author { font-weight: 800; color: var(--dark); background: #f1f5f9; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; }
+        .f-time { font-size: 0.8rem; color: var(--muted); }
+        .f-content { font-size: 1.1rem; color: var(--text); line-height: 1.6; margin-bottom: 1.5rem; }
+        .f-images { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 1.5rem; padding-bottom: 5px; }
+        .f-images img { height: 180px; border-radius: 10px; border: 1px solid #eef2f6; object-fit: cover; cursor: pointer; }
+        .f-actions { display: flex; gap: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
+
+        /* =============================================================
+           KANBAN WORKFLOW DASHBOARDS
+        ============================================================= */
+        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 350px; border: 1px dashed #e2e8f0; }
         .kanban-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 1.5rem; }
         .kanban-badge { background: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: var(--primary); border: 1px solid #eef2f6; }
-        .kanban-card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1px solid transparent; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .kanban-card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1px solid transparent; cursor: pointer; transition: 0.3s; position: relative; }
         .kanban-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--shadow-premium); }
         .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
         .kb-pub { background: #f1f5f9; color: var(--muted); }
         .kb-help { background: var(--primary-gradient); color: white; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
 
-        /* MAP & ROUTING */
+        /* =============================================================
+           MAP & ROUTING
+        ============================================================= */
         #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
         #modal-map { height: 300px; border-radius: 1.5rem; border: 2px solid #eef2f6; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 1.5rem; display: none; }
         .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; border-bottom: 4px solid var(--primary); }
@@ -93,35 +122,45 @@
         .custom-pin { background: transparent; border: none; }
         .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
-        /* Forms */
+        /* =============================================================
+           FORMS & BUTTONS
+        ============================================================= */
         .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; justify-content: center; transition: 0.3s; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4); }
         .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
+        .btn-outline:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .btn-danger { background: #fee2e2; color: var(--danger); border: 1.5px solid #fecaca; }
+        
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
         input, select, textarea { width: 100%; padding: 1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: 0.2s; }
         input:focus, textarea:focus, select:focus { border-color: var(--primary); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
         input:read-only { background: #f1f5f9; color: var(--muted); font-weight: 500; }
         label { font-size: 0.8rem; font-weight: 800; color: var(--muted); margin-bottom: 0.6rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Modals & History Lists */
+        /* =============================================================
+           MODALS & INTERACTIONS
+        ============================================================= */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; backdrop-filter: blur(12px); align-items: center; justify-content: center; }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
         .interaction-box { background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6; }
-        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .history-list-item { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; border-bottom: 1px solid #eef2f6; }
-        .history-list-item:last-child { border-bottom: none; }
-        .medal-badge { background: #fef3c7; color: var(--medal); padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 0.8rem; border: 1px solid #fde68a; }
+        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .comment-reply { margin-left: 3.5rem; margin-top: 1rem; border-left: 4px solid var(--primary); padding-left: 1.5rem; background: #fafafa; border-radius: 0 1.2rem 1.2rem 0; }
+        .reply-btn { font-size: 0.75rem; color: var(--primary); font-weight: 800; cursor: pointer; text-transform: uppercase; margin-left: 15px; }
+        .reply-btn:hover { text-decoration: underline; }
+        .reply-hint { display: none; background: #eef2ff; padding: 12px 20px; border-radius: 12px; margin-bottom: 15px; font-size: 0.88rem; border-left: 6px solid var(--primary); }
+
         .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
-        .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; border: 2px solid #f1f5f9; cursor: pointer; transition: 0.3s; }
+        .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; border: 2px solid #f1f5f9; cursor: pointer; flex-shrink: 0; transition: 0.3s; }
+        .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
+        .status-badge { font-size: 0.8rem; padding: 6px 16px; border-radius: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
 
 <nav>
     <a class="brand" onclick="navigate('home')">
-        <div class="brand-icon"><i class="fas fa-truck-fast"></i></div>
-        <div class="brand-text">DormLift Pro</div>
+        <div class="brand-icon"><i class="fas fa-layer-group"></i></div>
+        <div class="brand-text">DormLift Hub</div>
     </a>
     <div class="nav-links" id="menu"></div>
 </nav>
@@ -129,52 +168,70 @@
 <div class="container">
     <div id="home" class="page active">
         <section class="card" style="text-align:center; padding: 7rem 2rem; border:none; background: radial-gradient(circle at top right, #ffffff 0%, #f1f5f9 100%);">
-            <h1 style="font-size:4.2rem; margin:0; line-height:1; letter-spacing:-2.5px;">Campus Logistics,<br><span style="color:var(--primary)">Perfectly Engineered.</span></h1>
-            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">The trusted, building-to-building logistics hub exclusively for University of Auckland students.</p>
+            <h1 style="font-size:4.5rem; margin:0; line-height:1; letter-spacing:-2.5px;">The Campus<br><span style="color:var(--primary)">Super App.</span></h1>
+            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">Logistics, Flea Market, and Community Buzz. A verified ecosystem exclusively for University of Auckland students.</p>
             <div style="display:flex; justify-content:center; gap:1.5rem;">
-                <button class="btn" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('post-task')">Broadcast Task</button>
-                <button class="btn btn-outline" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('hall')">Mission Hub</button>
+                <button class="btn" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('post')">Publish to Network</button>
+                <button class="btn btn-outline" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('hall')">Explore Discoveries</button>
             </div>
             
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2.5rem; margin-top: 6rem;">
-                <div class="card" style="margin:0; padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top: 4px solid var(--primary);"><i class="fas fa-hand-holding-dollar" style="font-size:2rem; color:var(--primary); margin-bottom:1rem;"></i><h3 style="margin:0;">Peer Pricing</h3><p style="font-size:0.9rem; color:var(--muted);">Zero platform fees.</p></div>
-                <div class="card" style="margin:0; padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top: 4px solid var(--success);"><i class="fas fa-shield-halved" style="font-size:2rem; color:var(--success); margin-bottom:1rem;"></i><h3 style="margin:0;">Verified Safety</h3><p style="font-size:0.9rem; color:var(--muted);">UoA SID required.</p></div>
-                <div class="card" style="margin:0; padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top: 4px solid var(--warning);"><i class="fas fa-medal" style="font-size:2rem; color:var(--warning); margin-bottom:1rem;"></i><h3 style="margin:0;">Medal Rewards</h3><p style="font-size:0.9rem; color:var(--muted);">Earn points by helping.</p></div>
+                <div class="card" style="margin:0; padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top: 4px solid var(--primary);"><i class="fas fa-truck-fast" style="font-size:2rem; color:var(--primary); margin-bottom:1rem;"></i><h3 style="margin:0;">Peer Logistics</h3><p style="font-size:0.9rem; color:var(--muted);">Verified campus moving.</p></div>
+                <div class="card" style="margin:0; padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top: 4px solid var(--success);"><i class="fas fa-store" style="font-size:2rem; color:var(--success); margin-bottom:1rem;"></i><h3 style="margin:0;">Flea Market</h3><p style="font-size:0.9rem; color:var(--muted);">Escrow secured trading.</p></div>
+                <div class="card" style="margin:0; padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top: 4px solid var(--warning);"><i class="fas fa-fire" style="font-size:2rem; color:var(--warning); margin-bottom:1rem;"></i><h3 style="margin:0;">Campus Buzz</h3><p style="font-size:0.9rem; color:var(--muted);">Local student forum.</p></div>
             </div>
         </section>
     </div>
 
     <div id="hall" class="page">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3rem;">
-            <h2 style="font-size:2.5rem; margin:0; letter-spacing:-1.5px;">Live Mission Hub</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+            <h2 style="font-size:2.5rem; margin:0; letter-spacing:-1.5px;">Discovery Hub</h2>
             <button class="btn btn-outline btn-sm" style="border-radius:50px; padding: 0.8rem 1.8rem;" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh Feed</button>
         </div>
-        <div id="hall_list" class="hub-container"></div>
+        
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchHall('logistics')" id="btn_hall_logistics"><i class="fas fa-truck-fast" style="margin-right:8px;"></i> Peer Logistics</button>
+            <button class="tab-btn" onclick="switchHall('market')" id="btn_hall_market"><i class="fas fa-store" style="margin-right:8px;"></i> Flea Market</button>
+            <button class="tab-btn" onclick="switchHall('forum')" id="btn_hall_forum"><i class="fas fa-fire" style="margin-right:8px;"></i> Campus Buzz</button>
+        </div>
+
+        <div id="hall_logistics" class="tab-content active">
+            <div id="list_logistics" class="hub-container"></div>
+        </div>
+
+        <div id="hall_market" class="tab-content">
+            <div id="list_market" class="market-grid"></div>
+        </div>
+
+        <div id="hall_forum" class="tab-content">
+            <div id="list_forum" class="forum-feed"></div>
+        </div>
     </div>
 
-    <div id="post-task" class="page">
-        <div class="card" style="padding:0; overflow:hidden;">
-            <div style="padding: 2.5rem 3rem 1.5rem;">
-                <h2 style="margin:0; font-size:2.2rem; letter-spacing:-1px;">Broadcast New Mission</h2>
-                <p style="color:var(--muted); font-size:0.95rem;">Mark buildings on the map to auto-fetch campus addresses.</p>
-            </div>
-            
+    <div id="post" class="page">
+        <h2 style="font-size:2.5rem; margin:0 0 2rem 0; letter-spacing:-1.5px;">Publish to Network</h2>
+        
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchPost('logistics')" id="btn_post_logistics">Logistics Request</button>
+            <button class="tab-btn" onclick="switchPost('market')" id="btn_post_market">Sell Used Item</button>
+            <button class="tab-btn" onclick="switchPost('forum')" id="btn_post_forum">Share Buzz</button>
+        </div>
+
+        <div id="post_logistics" class="tab-content active card" style="padding:0; overflow:hidden;">
             <div id="map"></div>
             <div class="route-info-strip">
                 <span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal" style="font-size:1.2rem;">0.00</b> km</span>
                 <span><i class="fas fa-hourglass-half"></i> EST. DRIVING: <b id="timeVal" style="font-size:1.2rem;">0</b> min</span>
             </div>
-
-            <form id="taskForm" style="padding: 0 3rem 3rem;">
+            <form id="form_logistics" style="padding: 0 3rem 3rem;" onsubmit="submitLogistics(event)">
                 <div class="form-grid">
                     <div><label>Pickup Building (Auto-fetched)</label><input type="text" id="p_from" readonly required placeholder="Waiting for map pin (Start)..."></div>
                     <div><label>Destination Building (Auto-fetched)</label><input type="text" id="p_to" readonly required placeholder="Waiting for map pin (End)..."></div>
                 </div>
                 <div class="form-grid">
-                    <div><label>Moving Date & Time</label><input type="datetime-local" id="p_date" required></div>
+                    <div><label>Moving Date & Precision Time</label><input type="datetime-local" id="p_date" required></div>
                     <div><label>Offer Reward (NZD)</label><input type="text" id="p_reward" placeholder="e.g. $45" required></div>
                 </div>
-                
                 <label>Mission Inventory & Notes</label>
                 <textarea id="p_desc" rows="4" placeholder="List items, describe stairs or elevators." required></textarea>
                 
@@ -189,15 +246,44 @@
                     </div>
                     <div style="display:flex; align-items:center; padding-top:1.5rem;">
                         <input type="checkbox" id="p_elevator" style="width:auto; margin-right:12px; transform:scale(1.2);">
-                        <label style="margin:0; text-transform:none; font-size:0.95rem; color:var(--dark);">Elevator Available at location</label>
+                        <label style="margin:0; text-transform:none; font-size:0.95rem; color:var(--dark);">Elevator Available</label>
                     </div>
                 </div>
 
                 <label>Evidence Photos (Max 5)</label>
-                <input type="file" id="p_file" multiple accept="image/*" onchange="handlePreview(event)">
+                <input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')">
                 <div id="p_preview" class="thumb-strip"></div>
-                
-                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">Post to Hub <i class="fas fa-paper-plane"></i></button>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">Broadcast Logistics Task <i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+
+        <div id="post_market" class="tab-content card">
+            <form id="form_market" onsubmit="submitMarket(event)">
+                <div class="form-grid">
+                    <div><label>Item Title</label><input type="text" id="m_title" placeholder="e.g. IKEA Study Desk" required></div>
+                    <div><label>Price (NZD)</label><input type="number" id="m_price" placeholder="e.g. 50" required></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>Condition</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option><option>Fair</option></select></div>
+                    <div><label>Pickup Location</label><input type="text" id="m_loc" placeholder="e.g. Grafton Hall" required></div>
+                </div>
+                <label>Item Description & Specs</label>
+                <textarea id="m_desc" rows="4" placeholder="Dimensions, reason for selling, defects..." required></textarea>
+                <label>Photos (Crucial for Sales)</label>
+                <input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')">
+                <div id="m_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">List Item in Market <i class="fas fa-store"></i></button>
+            </form>
+        </div>
+
+        <div id="post_forum" class="tab-content card">
+            <form id="form_forum" onsubmit="submitForum(event)">
+                <label>What's happening on campus?</label>
+                <textarea id="f_content" rows="6" placeholder="Spill the tea, ask a question, or share an event..." required style="font-size:1.1rem; padding:1.5rem;"></textarea>
+                <label style="margin-top:1.5rem;">Attach Media (Optional)</label>
+                <input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')">
+                <div id="f_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem; font-size:1.2rem;">Post to Campus Buzz <i class="fas fa-fire"></i></button>
             </form>
         </div>
     </div>
@@ -206,7 +292,7 @@
         <div style="display:grid; grid-template-columns: 1fr 300px 300px; gap:1.5rem; margin-bottom:2rem;">
             <div class="card" style="margin:0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                    <h2 style="margin:0; font-size:1.8rem; letter-spacing:-1px;">UoA Verified Profile</h2>
+                    <h2 style="margin:0; font-size:1.8rem; letter-spacing:-1px;">UoA Identity</h2>
                     <button class="btn btn-outline btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
                 <div id="profileDetails" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin:0;"></div>
@@ -226,28 +312,81 @@
         </div>
 
         <div class="card" style="background:transparent; border:none; box-shadow:none; padding:0;">
-            <h2 style="font-size:2.2rem; margin:0 0 1rem 0; letter-spacing:-1px;"><i class="fas fa-layer-group" style="color:var(--primary); margin-right:10px;"></i> My Workflow</h2>
-            <div class="kanban-board">
-                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-hourglass-half" style="color:var(--warning);"></i> Pending</span><span class="kanban-badge" id="cnt_pending">0</span></div><div id="col_pending"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-truck-ramp-box" style="color:var(--primary);"></i> In Progress</span><span class="kanban-badge" id="cnt_progress">0</span></div><div id="col_progress"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-check-circle" style="color:var(--success);"></i> History</span><span class="kanban-badge" id="cnt_history">0</span></div><div id="col_history"></div></div>
+            <h2 style="font-size:2.2rem; margin:0 0 1.5rem 0; letter-spacing:-1px;"><i class="fas fa-layer-group" style="color:var(--primary); margin-right:10px;"></i> My Dashboard</h2>
+            
+            <div class="tab-container" style="background:white; border:1px solid #eef2f6;">
+                <button class="tab-btn active" onclick="switchProf('kb_log')" id="btn_prof_log">Logistics Workflow</button>
+                <button class="tab-btn" onclick="switchProf('kb_mar')" id="btn_prof_mar">Market Listings</button>
             </div>
+            
+            <div id="kb_log" class="tab-content active kanban-board">
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-hourglass-half" style="color:var(--warning);"></i> Pending</span><span class="kanban-badge" id="cnt_log_pend">0</span></div><div id="col_log_pend"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-truck-ramp-box" style="color:var(--primary);"></i> In Progress</span><span class="kanban-badge" id="cnt_log_prog">0</span></div><div id="col_log_prog"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-check-circle" style="color:var(--success);"></i> History</span><span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist"></div></div>
+            </div>
+
+            <div id="kb_mar" class="tab-content kanban-board">
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-store" style="color:var(--success);"></i> Available</span><span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-lock" style="color:var(--warning);"></i> Reserved (Escrow)</span><span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-handshake" style="color:var(--primary);"></i> Sold / Released</span><span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist"></div></div>
+            </div>
+        </div>
+
+        <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:5rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
+    </div>
+
+    <div id="register" class="page">
+        <div class="card" style="max-width:650px; margin:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);">
+            <h2 style="text-align:center; font-size:2.5rem; letter-spacing:-1.5px;">Join the Ecosystem</h2>
+            <form id="regForm">
+                <div class="form-grid"><div><label>UoA Student ID</label><input type="text" id="r_sid" required></div><div><label>Display Nickname</label><input type="text" id="r_anon" required></div></div>
+                <div class="form-grid"><div><label>First Name</label><input type="text" id="r_fn" required></div><div><label>Last Name</label><input type="text" id="r_ln" required></div></div>
+                <label>University Email</label>
+                <div style="display:flex; gap:12px; margin-bottom:1.5rem;"><input type="email" id="r_email" required style="margin:0"><button type="button" class="btn btn-outline btn-sm" style="width:150px; font-weight:800;" onclick="sendCode()" id="btnSendCode">Get Code</button></div>
+                <div class="form-grid"><div><label>Verification Code</label><input type="text" id="r_code" required></div><div><label>Phone Number</label><input type="text" id="r_phone" required></div></div>
+                <div class="form-grid"><div><label>Gender</label><select id="r_gender"><option>Male</option><option>Female</option></select></div><div><label>Create Password</label><input type="password" id="r_pwd" required></div></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Authorize & Join</button>
+            </form>
+            <p style="text-align:center; margin-top:2rem; font-size:0.95rem;">Already registered? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('login')">Sign In</b></p>
         </div>
     </div>
 
-    <div id="register" class="page"><div class="card" style="max-width:650px; margin:auto;"><h2 style="text-align:center;">Join the Hub</h2><form id="regForm"><div class="form-grid"><div><label>UoA Student ID</label><input type="text" id="r_sid" required></div><div><label>Display Nickname</label><input type="text" id="r_anon" required></div></div><div class="form-grid"><div><label>First Name</label><input type="text" id="r_fn" required></div><div><label>Last Name</label><input type="text" id="r_ln" required></div></div><label>University Email</label><div style="display:flex; gap:12px; margin-bottom:1.5rem;"><input type="email" id="r_email" required style="margin:0"><button type="button" class="btn btn-outline btn-sm" style="width:150px;" onclick="sendCode()" id="btnSendCode">Get Code</button></div><div class="form-grid"><div><label>Verification Code</label><input type="text" id="r_code" required></div><div><label>Phone</label><input type="text" id="r_phone" required></div></div><div class="form-grid"><div><label>Gender</label><select id="r_gender"><option value="Male">Male</option><option value="Female">Female</option></select></div><div><label>Password</label><input type="password" id="r_pwd" required></div></div><button type="submit" class="btn" style="width:100%; margin-top:1.5rem;">Authorize & Join</button></form></div></div>
-    <div id="login" class="page"><div class="card" style="max-width:440px; margin:auto;"><h2 style="text-align:center;">Portal Login</h2><form id="loginForm"><label>Email or SID</label><input type="text" id="l_user" required><label>Password</label><input type="password" id="l_pwd" required><button type="submit" class="btn" style="width:100%; margin-top:1.5rem;">Access Hub</button></form><p style="text-align:center; margin-top:2.5rem;">New to DormLift? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('register')">Register Now</b></p></div></div>
+    <div id="login" class="page">
+        <div class="card" style="max-width:440px; margin:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);">
+            <h2 style="text-align:center; font-size:2.5rem; letter-spacing:-1.5px;">Portal Login</h2>
+            <form id="loginForm"><label>Email Address or SID</label><input type="text" id="l_user" required><label>Password</label><input type="password" id="l_pwd" required><button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Access Hub</button></form>
+            <p style="text-align:center; margin-top:2.5rem; font-size:0.95rem;">New to DormLift? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('register')">Register Now</b></p>
+        </div>
+    </div>
 </div>
 
-<div id="taskModal" class="modal" onclick="if(event.target.id==='taskModal') this.style.display='none'">
+<div id="masterModal" class="modal" onclick="if(event.target.id==='masterModal') this.style.display='none'">
     <div class="modal-content">
-        <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:52px; height:52px; border-radius:50%; font-size:1.8rem; cursor:pointer;" onclick="document.getElementById('taskModal').style.display='none'">&times;</button>
-        <div id="m_header" style="margin-bottom:1.5rem;"></div>
+        <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:52px; height:52px; border-radius:50%; font-size:1.8rem; cursor:pointer;" onclick="document.getElementById('masterModal').style.display='none'">&times;</button>
+        
+        <div id="mod_header" style="margin-bottom:1.5rem;"></div>
+        
         <div id="modal-map"></div>
-        <div class="thumb-strip" id="m_thumbs"></div>
-        <div id="m_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
-        <div id="m_interaction" class="interaction-box"><h4 style="margin-top:0;"><i class="far fa-comments"></i> Discussion Thread</h4><div id="c_list" style="max-height:300px; overflow-y:auto; margin-bottom:2rem;"></div><div id="reply_hint" style="display:none; background:#eef2ff; padding:12px; border-radius:12px; margin-bottom:15px; font-size:0.88rem;">Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right;">[Cancel]</span></div><div style="display:flex; gap:12px;"><input type="text" id="c_in" placeholder="Ask publisher..." style="margin:0; height:54px;"><button class="btn btn-sm" style="width:130px;" onclick="postComment()">Send</button></div></div>
-        <div id="m_footer" style="margin-top:3rem; display:flex; justify-content:flex-end; gap:15px;"></div>
+        
+        <div class="thumb-strip" id="mod_thumbs"></div>
+        <div id="mod_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
+        
+        <div id="mod_interaction" class="interaction-box">
+            <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="margin-right:10px; color:var(--primary);"></i> Discussion Thread</h4>
+            <div id="mod_comments" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; scrollbar-width:thin; padding-right:10px;"></div>
+            
+            <div id="reply_hint" class="reply-hint">
+                <i class="fas fa-reply fa-flip-horizontal" style="margin-right:5px;"></i> Replying to <b id="reply_name"></b> 
+                <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span>
+            </div>
+            
+            <div style="display:flex; gap:12px;">
+                <input type="text" id="mod_input" placeholder="Ask a question or reply..." style="margin:0; height:54px;">
+                <button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postMasterComment()">Send</button>
+            </div>
+        </div>
+        
+        <div id="mod_footer" style="margin-top:3rem; display:flex; justify-content:flex-end; gap:15px;"></div>
     </div>
 </div>
 
@@ -255,18 +394,19 @@
     <div class="modal-content" style="max-width:600px;">
         <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('pointsModal').style.display='none'">&times;</button>
         <h2 style="margin-top:0; color:var(--dark);"><i class="fas fa-medal" style="color:var(--medal);"></i> Medal Point History</h2>
-        <p style="color:var(--muted); margin-bottom:2rem;">Records of points awarded for successfully assisting peers.</p>
-        <div id="point_history_list" style="max-height: 400px; overflow-y: auto; border: 1px solid #eef2f6; border-radius: 12px;">
-            </div>
+        <p style="color:var(--muted); margin-bottom:2rem;">Ledger of points awarded for assisting peers in logistics.</p>
+        <div id="pts_list" style="max-height: 400px; overflow-y: auto; border: 1px solid #eef2f6; border-radius: 12px;"></div>
     </div>
 </div>
 
 <script>
+    // ======================= 1. GLOBAL STATE & ROUTING =======================
     let user = JSON.parse(localStorage.getItem('user'));
-    let map, markers = [], routingControl, globalTaskPool = [], activeTaskId = null, activeReplyId = null;
+    let map, markers = [], routingControl;
     let modalMap, modalRoutingControl = null, modalMarkers = [];
-    let userPointHistory = [];
+    let state = { log: [], mar: [], for: [], activeId: null, activeType: null };
 
+    // Address String Parsers
     const getAddrText = (str) => str && str.includes('@@') ? str.split('@@')[1] : str;
     const getAddrCoords = (str) => {
         if (!str || !str.includes('@@')) return null;
@@ -275,31 +415,62 @@
     };
 
     function navigate(p) {
-        if (!user && ['post-task', 'profile'].includes(p)) p = 'login';
+        if (!user && ['post', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
         document.getElementById(p).classList.add('active');
         renderMenu(); window.scrollTo(0,0);
+        
         if(p === 'hall') loadHall();
-        if(p === 'post-task') initMap();
+        if(p === 'post') initMap();
         if(p === 'profile') loadProfileData();
     }
 
     function renderMenu() {
         const menu = document.getElementById('menu');
-        if(!user) menu.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Hub</a><a onclick="navigate('login')">Login</a>`;
-        else menu.innerHTML = `<div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check"></i> ${user.anonymous_name}</div><a onclick="navigate('hall')">Market</a><a onclick="navigate('post-task')">Post</a><a onclick="navigate('profile')">Profile & Workflow</a>`;
+        if(!user) {
+            menu.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Discover</a><a onclick="navigate('login')">Login</a>`;
+        } else {
+            menu.innerHTML = `
+                <div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check" style="margin-right:5px;"></i> ${user.anonymous_name}</div>
+                <a onclick="navigate('hall')">Discover</a>
+                <a onclick="navigate('post')">Publish</a>
+                <a onclick="navigate('profile')">Dashboard</a>
+            `;
+        }
     }
 
     function logout() { localStorage.clear(); location.reload(); }
 
-    function updatePool(list) {
-        list.forEach(t => {
-            const idx = globalTaskPool.findIndex(x => x._id === t._id);
-            if(idx !== -1) globalTaskPool[idx] = t; else globalTaskPool.push(t);
+    // Tab Switchers
+    function switchHall(tab) {
+        ['logistics', 'market', 'forum'].forEach(t => {
+            document.getElementById(`btn_hall_${t}`).classList.toggle('active', t===tab);
+            document.getElementById(`hall_${t}`).classList.toggle('active', t===tab);
+        });
+    }
+    function switchPost(tab) {
+        ['logistics', 'market', 'forum'].forEach(t => {
+            document.getElementById(`btn_post_${t}`).classList.toggle('active', t===tab);
+            document.getElementById(`post_${t}`).classList.toggle('active', t===tab);
+        });
+        if(tab==='logistics' && map) setTimeout(()=>map.invalidateSize(), 200);
+    }
+    function switchProf(tab) {
+        document.getElementById('btn_prof_log').classList.toggle('active', tab==='kb_log');
+        document.getElementById('btn_prof_mar').classList.toggle('active', tab==='kb_mar');
+        document.getElementById('kb_log').classList.toggle('active', tab==='kb_log');
+        document.getElementById('kb_mar').classList.toggle('active', tab==='kb_mar');
+    }
+    function previewFiles(e, id) {
+        const s = document.getElementById(id); s.innerHTML = "";
+        Array.from(e.target.files).slice(0, 5).forEach(f => { 
+            const r = new FileReader(); 
+            r.onload = ev => s.innerHTML += `<img src="${ev.target.result}" class="thumb-img">`; 
+            r.readAsDataURL(f); 
         });
     }
 
-    // MAIN MAP ENGINE
+    // ======================= 2. MAP ENGINE =======================
     function initMap() {
         if(map) return;
         setTimeout(() => {
@@ -334,7 +505,7 @@
                 const input = document.getElementById(isStart ? 'p_from' : 'p_to');
                 input.value = "Fetching campus address...";
                 try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/10.6'} });
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/11.0'} });
                     const d = await res.json();
                     input.value = d.display_name ? d.display_name.split(',').slice(0,3).join(',').trim() : `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
                 } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
@@ -344,25 +515,66 @@
         }, 300);
     }
 
-    // HUB RENDERER
+    // ======================= 3. UNIFIED DISCOVERY HUB RENDERER =======================
     async function loadHall() {
-        const res = await fetch('/api/task/all'); const d = await res.json(); updatePool(d.list);
-        document.getElementById('hall_list').innerHTML = d.list.map(t => {
+        const [resL, resM, resF] = await Promise.all([fetch('/api/task/all'), fetch('/api/market/all'), fetch('/api/forum/all')]);
+        state.log = (await resL.json()).list; state.mar = (await resM.json()).list; state.for = (await resF.json()).list;
+        
+        // Logistics List
+        document.getElementById('list_logistics').innerHTML = state.log.map(t => {
             const pubDate = new Date(t.created_at).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
             return `
-            <div class="hub-row" onclick="openDetails('${t._id}')">
+            <div class="hub-row" onclick="openMasterModal('log', '${t._id}')">
                 <div class="posted-col">PUB<span>${pubDate}</span></div>
                 <div class="details-strip">
                     <div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
                     <div class="strip-route"><i class="fas fa-circle"></i> ${getAddrText(t.from_addr)} <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> <i class="fas fa-flag-checkered"></i> ${getAddrText(t.to_addr)}</div>
-                    <div class="strip-inventory"><span class="medal-badge">🏅 ${t.medal_points || 1} Pts</span> <b>Items:</b> ${t.items_desc.substring(0, 60)}...</div>
+                    <div class="strip-inventory"><span style="background:#fef3c7; color:var(--medal); padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">🏅 ${t.medal_points||1} Pts</span> <b>Items:</b> ${t.items_desc.substring(0, 60)}...</div>
                 </div>
                 <div class="reward-col">${t.reward}</div>
             </div>`;
-        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem;">No active missions in Hub.</div>';
+        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active missions.</div>';
+
+        // Market Grid
+        document.getElementById('list_market').innerHTML = state.mar.map(m => {
+            const img = JSON.parse(m.img_url)[0] || '';
+            return `
+            <div class="market-card" onclick="openMasterModal('mar', '${m._id}')">
+                <img src="${img}" class="m-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'100\\\' height=\\\'100\\\'></svg>'">
+                <div class="m-body">
+                    <div>
+                        <h3 class="m-title">${m.title}</h3>
+                        <div class="m-meta" style="margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; color:var(--dark); font-weight:700;">${m.condition}</span></div>
+                    </div>
+                    <div>
+                        <div class="m-price">$${m.price}</div>
+                        <div class="m-meta"><i class="fas fa-map-marker-alt"></i> ${m.location}</div>
+                    </div>
+                </div>
+            </div>`;
+        }).join('') || '<div style="padding:5rem; text-align:center; grid-column:1/-1; color:var(--muted); font-weight:600;">Flea market is empty.</div>';
+
+        // Forum Feed
+        document.getElementById('list_forum').innerHTML = state.for.map(f => {
+            const imgs = JSON.parse(f.img_url).map(u => `<img src="${u}" onclick="window.open('${u}')">`).join('');
+            const isLiked = user && f.likes.includes(user.email);
+            return `
+            <div class="forum-card">
+                <div class="f-header">
+                    <div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div>
+                    <div class="f-time">${new Date(f.created_at).toLocaleString()}</div>
+                </div>
+                <div class="f-content">${f.content}</div>
+                ${imgs ? `<div class="f-images">${imgs}</div>` : ''}
+                <div class="f-actions">
+                    <button class="btn btn-outline btn-sm" style="${isLiked?'background:var(--primary);color:white;border-color:var(--primary);':''}" onclick="interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button>
+                    <button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button>
+                </div>
+            </div>`;
+        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-weight:600;">No buzz yet on campus.</div>';
     }
 
-    // MODAL ROUTE MAP
+    // ======================= 4. UNIVERSAL MASTER MODAL =======================
     function initModalMap(fromC, toC) {
         if(!modalMap) {
             modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14);
@@ -383,162 +595,252 @@
         setTimeout(() => modalMap.invalidateSize(), 300); 
     }
 
-    // DETAILS MODAL
-    async function openDetails(id) {
-        activeTaskId = id;
-        const res = await fetch('/api/task/all'); const d = await res.json(); updatePool(d.list);
-        let t = globalTaskPool.find(x => x._id === id);
-        if(!t) { const r2 = await fetch('/api/user/dashboard', {method:'POST', body:JSON.stringify({email:user.email}), headers:{'Content-Type':'application/json'}}); const d2 = await r2.json(); updatePool(d2.list); t = globalTaskPool.find(x => x._id === id); }
-        if(!t) return;
-
-        document.getElementById('m_header').innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem; letter-spacing:-1px;">${t.reward}</h2><span style="background:var(--primary); color:white; padding:6px 16px; border-radius:20px; font-size:0.85rem; font-weight:800; text-transform:uppercase;">${t.status}</span></div>`;
+    async function openMasterModal(type, id) {
+        state.activeType = type; state.activeId = id;
         
-        let fC = getAddrCoords(t.from_addr); let tC = getAddrCoords(t.to_addr);
-        const mapDiv = document.getElementById('modal-map');
-        if(fC && tC) { mapDiv.style.display = 'block'; initModalMap(fC, tC); } else mapDiv.style.display = 'none';
-
-        const imgs = JSON.parse(t.img_url || '[]');
-        document.getElementById('m_thumbs').innerHTML = imgs.map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('') || '<small style="color:var(--muted); font-weight:600;">No photos provided.</small>';
+        // Dynamic fetch based on type
+        let endpoint = type === 'log' ? '/api/task/all' : (type === 'mar' ? '/api/market/all' : '/api/forum/all');
+        const res = await fetch(endpoint); const d = await res.json();
         
-        document.getElementById('m_body').innerHTML = `
-            <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
-                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(t.from_addr)}</span></div>
-                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">🏁 Destination Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(t.to_addr)}</span></div>
-                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Logistics Complexity & Reward</b> <br>
-                    <span style="font-weight:700; color:var(--dark);">${t.task_scale || 'Small'} Task (${t.has_elevator==='true'?'Elevator':'Stairs Only'})</span>
-                    <span class="medal-badge" style="margin-left:10px;">🏅 ${t.medal_points || 1} Pts for Helper</span>
-                </div>
-                <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Complete Inventory</b> <br><span style="color:var(--text);">${t.items_desc}</span></div>
-            </div>`;
+        // Find item (check pool or dashboard if not in active feed)
+        let item = d.list.find(x => x._id === id);
+        if(!item && type !== 'for') {
+            const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
+            const dT = await resT.json();
+            const sourceArray = type === 'log' ? dT.tasks : dT.market;
+            item = sourceArray.find(x => x._id === id);
+        }
+        if(!item) return alert("Item data unavailable.");
 
-        renderThreadedComments(t.comments || []);
+        const h = document.getElementById('mod_header'); const b = document.getElementById('mod_body'); const f = document.getElementById('mod_footer');
+        const mapDiv = document.getElementById('modal-map'); mapDiv.style.display = 'none';
+
+        // Shared Image Render
+        const imgs = JSON.parse(item.img_url || '[]');
+        document.getElementById('mod_thumbs').innerHTML = imgs.map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('');
         
-        const foot = document.getElementById('m_footer');
-        let btns = '';
-        if(t.status === 'pending' && t.publisher_id !== user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="workflow('${t._id}', 'assigned')">Accept Mission & Start Helping <i class="fas fa-check-circle"></i></button>`;
-        if(t.status === 'assigned' && t.publisher_id === user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="workflow('${t._id}', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>`;
-        if(t.publisher_id === user.email) btns += `<button class="btn btn-danger" onclick="deleteTask('${t._id}')">Withdraw Task</button>`;
-        foot.innerHTML = btns || '<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>';
-        document.getElementById('taskModal').style.display = 'flex';
+        if (type === 'log') {
+            // Logistics Render
+            h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem; letter-spacing:-1.5px;">${item.reward} Mission</h2><span class="status-badge" style="background:var(--primary); color:white;">${item.status}</span></div>`;
+            
+            let fC = getAddrCoords(item.from_addr); let tC = getAddrCoords(item.to_addr);
+            if(fC && tC) { mapDiv.style.display = 'block'; initModalMap(fC, tC); }
+            
+            b.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.from_addr)}</span></div>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">🏁 Destination Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.to_addr)}</span></div>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Logistics Complexity & Reward</b> <br><span style="font-weight:700; color:var(--dark);">${item.task_scale || 'Small'} Task (${item.has_elevator==='true'?'Elevator':'Stairs Only'})</span><span style="margin-left:10px; background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:8px; font-weight:800; font-size:0.85rem; border:1px solid #fde68a;">🏅 ${item.medal_points || 1} Pts for Helper</span></div>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Complete Inventory</b> <br><span style="color:var(--text);">${item.items_desc}</span></div>
+                </div>`;
+            
+            let btns = '';
+            if(item.status === 'pending' && item.publisher_id !== user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'assigned')">Accept Mission & Start Helping <i class="fas fa-check-circle"></i></button>`;
+            if(item.status === 'assigned' && item.publisher_id === user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>`;
+            if(item.publisher_id === user.email) btns += `<button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw Task</button>`;
+            f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
+        
+        } else if (type === 'mar') {
+            // Market Render
+            h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--success); font-size:2.8rem; letter-spacing:-1.5px;">$${item.price}</h2><span class="status-badge" style="background:var(--success); color:white;">${item.status}</span></div>`;
+            b.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
+                    <h3 style="margin:0; color:var(--dark); font-size:1.8rem;">${item.title}</h3>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Condition & Location</b> <br><span style="font-weight:700; color:var(--dark);">${item.condition} • ${item.location}</span></div>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Description</b> <br><span style="color:var(--text);">${item.description}</span></div>
+                    <div style="font-size:0.85rem; color:var(--muted); font-weight:700; margin-top:1rem;">Seller: ${item.seller_id}</div>
+                </div>`;
+            
+            let btns = '';
+            if(item.status === 'available' && item.seller_id !== user.email) btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="execFlow('mar', 'reserved')">Reserve & Secure Funds in Escrow <i class="fas fa-lock"></i></button>`;
+            if(item.status === 'reserved' && item.buyer_id === user.email) btns = `<button class="btn" style="background:var(--primary); padding:1.4rem 3rem;" onclick="execFlow('mar', 'completed')">Confirm Receipt & Release Funds <i class="fas fa-handshake"></i></button>`;
+            if(item.seller_id === user.email && item.status !== 'completed') btns += `<button class="btn btn-danger" onclick="execFlow('mar', 'available')">Cancel & Relist</button>`;
+            f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
+            
+        } else if (type === 'for') {
+            // Forum Render
+            h.innerHTML = `<div style="display:flex; align-items:center; gap:15px;"><div class="brand-icon" style="border-radius:50%;"><i class="fas fa-user"></i></div><div><h3 style="margin:0;">${item.author_name}</h3><small style="color:var(--muted);">${new Date(item.created_at).toLocaleString()}</small></div></div>`;
+            b.innerHTML = `<div style="font-size:1.2rem; color:var(--dark); line-height:1.6;">${item.content}</div>`;
+            f.innerHTML = '';
+        }
+
+        renderThreadedComments(item.comments || []);
+        document.getElementById('masterModal').style.display = 'flex';
     }
 
-    function renderThreadedComments(c) {
-        const a = document.getElementById('c_list');
-        a.innerHTML = c.filter(x => !x.parentId).map(p => `
+    function renderThreadedComments(comments) {
+        const area = document.getElementById('mod_comments');
+        const parents = comments.filter(c => !c.parentId);
+        area.innerHTML = parents.map(p => {
+            const replies = comments.filter(r => String(r.parentId) === String(p.id));
+            return `
             <div class="comment-item">
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b style="color:var(--dark);">${p.user}</b><small style="color:var(--muted);">${new Date(p.time).toLocaleString()}</small></div>
                 <div style="font-size:1rem;">${p.text} <span class="reply-btn" onclick="setReply('${p.id}', '${p.user}')">Reply</span></div>
-                ${c.filter(r => String(r.parentId) === String(p.id)).map(r2 => `
+                ${replies.map(r2 => `
                     <div class="comment-item comment-reply">
                         <div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r2.user}</b> replied to <b>${p.user}</b></small></div>
                         <div style="font-size:0.95rem;">${r2.text} <span class="reply-btn" onclick="setReply('${r2.id}', '${r2.user}')">Reply</span></div>
-                        ${c.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `<div class="comment-item comment-reply" style="border-left-color:var(--warning); background:white;"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r3.user}</b> replied to <b>${r2.user}</b></small></div><div style="font-size:0.95rem;">${r3.text}</div></div>`).join('')}
+                        ${comments.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `
+                            <div class="comment-item comment-reply" style="border-left-color:var(--warning); background:white;">
+                                <div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r3.user}</b> replied to <b>${r2.user}</b></small></div>
+                                <div style="font-size:0.95rem;">${r3.text}</div>
+                            </div>`).join('')}
                     </div>`).join('')}
-            </div>`).join('') || '<p style="color:var(--muted); text-align:center; padding:2rem; font-weight:600;">No discussion yet.</p>';
+            </div>`;
+        }).join('') || '<p style="color:var(--muted); text-align:center; padding:2rem; font-weight:600;">No discussion yet. Start the thread!</p>';
     }
 
-    function setReply(id, name) { activeReplyId = String(id); document.getElementById('reply_hint').style.display='block'; document.getElementById('reply_name').innerText=name; document.getElementById('c_in').focus(); }
+    function setReply(id, name) { activeReplyId = String(id); document.getElementById('reply_hint').style.display='block'; document.getElementById('reply_name').innerText=name; document.getElementById('mod_input').focus(); }
     function cancelReply() { activeReplyId = null; document.getElementById('reply_hint').style.display='none'; }
-    async function postComment() {
-        const text = document.getElementById('c_in').value; if(!text) return;
-        await fetch('/api/task/comment', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:activeTaskId, comment:{ id: String(Date.now()), user: user.anonymous_name, text, parentId: activeReplyId, time: new Date() }}) });
-        document.getElementById('c_in').value = ""; cancelReply(); openDetails(activeTaskId);
+
+    async function postMasterComment() {
+        const text = document.getElementById('mod_input').value; if(!text) return;
+        const apiPath = state.activeType === 'log' ? '/api/task/comment' : (state.activeType === 'mar' ? '/api/market/comment' : '/api/forum/interact');
+        const payload = { id: String(Date.now()), user: user.anonymous_name, text, parentId: activeReplyId, time: new Date() };
+        const body = state.activeType === 'for' ? { post_id: state.activeId, action: 'comment', comment: payload } : (state.activeType === 'log' ? { task_id: state.activeId, comment: payload } : { item_id: state.activeId, comment: payload });
+        
+        await fetch(apiPath, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        document.getElementById('mod_input').value = ""; cancelReply(); openMasterModal(state.activeType, state.activeId);
     }
 
-    // WORKFLOW
-    async function workflow(id, status) {
-        if(!confirm("Confirm this workflow transition?")) return;
-        const b = { task_id: id, status }; if(status === 'assigned') b.helper_id = user.email;
-        const res = await fetch('/api/task/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b) });
-        if(res.ok) { alert("Workflow updated!"); document.getElementById('taskModal').style.display='none'; navigate('profile'); }
-    }
-    async function deleteTask(id) {
-        if(!confirm("Permanently withdraw mission?")) return;
-        await fetch('/api/task/delete', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, email:user.email})});
-        document.getElementById('taskModal').style.display='none'; loadHall();
+    // ======================= 5. WORKFLOWS & INTERACTIONS =======================
+    async function execFlow(type, status) {
+        if(!confirm("Confirm this transaction? Action is binding in the ecosystem.")) return;
+        const api = type === 'log' ? '/api/task/workflow' : '/api/market/workflow';
+        const body = type === 'log' ? { task_id: state.activeId, status, helper_id: user.email } : { item_id: state.activeId, status, buyer_id: user.email };
+        
+        await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        document.getElementById('masterModal').style.display = 'none'; navigate('profile');
     }
 
-    // PROFILE & KANBAN
+    async function deleteItem(type, id) {
+        if(!confirm("Permanently withdraw?")) return;
+        const api = type === 'log' ? '/api/task/delete' : '/api/market/delete'; // Market delete not implemented yet, using task for now
+        await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, email:user.email}) });
+        document.getElementById('masterModal').style.display = 'none'; loadHall();
+    }
+
+    async function interactForum(id, action) {
+        await fetch('/api/forum/interact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({post_id:id, action, email:user.email}) });
+        loadHall(); // Refresh feed quietly
+    }
+
+    // ======================= 6. MULTI-KANBAN PROFILE =======================
     async function loadProfileData() {
         const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json(); const u = d.user;
-        const fields = [['UoA Student ID', u.student_id], ['University', u.school_name], ['Full Name', `${u.first_name} ${u.given_name}`], ['Display Nickname', u.anonymous_name], ['Campus Email', u.email], ['Phone', u.phone]];
-        document.getElementById('profileDetails').innerHTML = fields.map(f => `<div style="background:#f8fafc; padding:1rem; border-radius:10px; border:1px solid #eef2f6;"><label style="margin-bottom:5px;">${f[0]}</label><div style="font-weight:800; color:var(--dark);">${f[1]}</div></div>`).join('');
+        const fields = [
+            ['Student ID', u.student_id], ['University', u.school_name], ['Full Name', `${u.first_name} ${u.given_name}`], 
+            ['Nickname', u.anonymous_name], ['Gender', u.gender], ['Email', u.email], ['Phone', u.phone]
+        ];
+        
+        document.getElementById('profileDetails').innerHTML = fields.map(f => `
+            <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                <label style="margin-bottom:8px;">${f[0]}</label><div style="font-weight:800; font-size:1.1rem; color:var(--dark);">${f[1]}</div>
+            </div>`).join('');
+            
         document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0";
         document.getElementById('p_task_count').innerText = u.task_count || 0;
         document.getElementById('p_medals').innerText = u.medal_points || 0;
-        userPointHistory = u.point_history || [];
 
-        // Render History Modal
-        const phList = document.getElementById('point_history_list');
-        phList.innerHTML = userPointHistory.slice().reverse().map(h => `
-            <div class="history-list-item">
+        // Point History
+        const phList = document.getElementById('pts_list');
+        phList.innerHTML = (u.point_history || []).slice().reverse().map(h => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:1.2rem; border-bottom:1px solid #eef2f6;">
                 <div><div style="font-weight:700; color:var(--dark); margin-bottom:4px;">${h.desc}</div><div style="font-size:0.8rem; color:var(--muted);">${new Date(h.date).toLocaleString()}</div></div>
-                <div class="medal-badge">+${h.points} Pts</div>
+                <div style="background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:8px; font-weight:800; font-size:0.8rem; border:1px solid #fde68a;">+${h.points} Pts</div>
             </div>
-        `).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No points earned yet. Help someone to get started!</div>';
+        `).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No points earned yet. Complete a logistics task to earn!</div>';
 
+        // Load Double Kanban
         const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
-        const dT = await resT.json(); updatePool(dT.list);
+        const dT = await resT.json();
         
-        const renderKanbanCol = (targetCol, validStatuses) => {
-            const list = dT.list.filter(t => validStatuses.includes(t.status));
-            document.getElementById(`cnt_${targetCol}`).innerText = list.length;
-            document.getElementById(`col_${targetCol}`).innerHTML = list.map(t => {
-                const isPub = t.publisher_id === user.email;
+        const renderKB = (prefix, col, validStatuses, listArray) => {
+            const fList = listArray.filter(t => validStatuses.includes(t.status));
+            document.getElementById(`cnt_${prefix}_${col}`).innerText = fList.length;
+            document.getElementById(`col_${prefix}_${col}`).innerHTML = fList.map(t => {
+                const isOwner = (t.publisher_id || t.seller_id) === user.email;
+                const topText = prefix === 'log' ? t.reward : `$${t.price} - ${t.title}`;
+                const btmText = prefix === 'log' ? getAddrText(t.from_addr) : t.location;
                 return `
-                <div class="kanban-card" onclick="openDetails('${t._id}')">
+                <div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <span class="kb-role-tag ${isPub?'kb-pub':'kb-help'}">${isPub?'Publisher':'Helper'}</span>
-                        <span style="font-size:0.7rem; color:var(--muted); font-weight:700;"><i class="far fa-calendar-alt"></i> ${t.move_date}</span>
+                        <span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}">${isOwner?(prefix==='log'?'Publisher':'Seller'):(prefix==='log'?'Helper':'Buyer')}</span>
+                        <span style="font-size:0.7rem; color:var(--muted); font-weight:700;">${new Date(t.created_at).toLocaleDateString()}</span>
                     </div>
-                    <div style="font-size:1.25rem; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-0.5px;">${t.reward}</div>
-                    <div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${getAddrText(t.from_addr)}</div>
+                    <div style="font-size:1.25rem; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-0.5px;">${topText}</div>
+                    <div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${btmText}</div>
                 </div>`;
             }).join('');
         };
-        renderKanbanCol('pending', ['pending']); renderKanbanCol('progress', ['assigned']); renderKanbanCol('history', ['completed', 'reviewed']);
+
+        renderKB('log', 'pend', ['pending'], dT.tasks); renderKB('log', 'prog', ['assigned'], dT.tasks); renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks);
+        renderKB('mar', 'pend', ['available'], dT.market); renderKB('mar', 'prog', ['reserved'], dT.market); renderKB('mar', 'hist', ['completed'], dT.market);
     }
 
-    // AUTH & POST
-    async function sendCode() {
-        const email = document.getElementById('r_email').value; if(!email) return alert("Email required");
-        const res = await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
-        if(res.ok) alert("Code dispatched.");
-    }
-    document.getElementById('regForm').onsubmit = async e => {
-        e.preventDefault();
-        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, gender: document.getElementById('r_gender').value };
-        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        if(res.ok) { alert("Registered!"); navigate('login'); } else alert("Failed.");
-    };
-    document.getElementById('loginForm').onsubmit = async e => {
-        e.preventDefault();
-        const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})});
-        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Failed.");
-    };
-    document.getElementById('taskForm').onsubmit = async e => {
+    // ======================= 7. SUBMIT FORMS & AUTH =======================
+    async function submitLogistics(e) {
         e.preventDefault();
         if(markers.length < 2) return alert("Please map locations.");
         const f = new FormData();
         f.append('publisher_id', user.email);
         f.append('from_addr', markers[0].getLatLng().lat + ',' + markers[0].getLatLng().lng + '@@' + document.getElementById('p_from').value);
         f.append('to_addr', markers[1].getLatLng().lat + ',' + markers[1].getLatLng().lng + '@@' + document.getElementById('p_to').value);
-        f.append('move_date', document.getElementById('p_date').value.split('T')[0]);
-        f.append('move_time', document.getElementById('p_date').value.split('T')[1] || '');
-        f.append('reward', document.getElementById('p_reward').value);
-        f.append('items_desc', document.getElementById('p_desc').value);
-        f.append('task_scale', document.getElementById('p_scale').value); // NEW: Task Size
-        f.append('has_elevator', document.getElementById('p_elevator').checked);
-        Array.from(document.getElementById('p_file').files).forEach(fi => f.append('task_images', fi));
-        document.querySelector('#taskForm button[type="submit"]').innerText = "Broadcasting...";
+        f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1] || '');
+        f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value);
+        f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
+        Array.from(document.getElementById('p_file').files).forEach(fi => f.append('images', fi));
+        document.querySelector('#form_logistics button[type="submit"]').innerText = "Broadcasting...";
         await fetch('/api/task/create', { method:'POST', body: f });
-        navigate('hall'); document.querySelector('#taskForm button[type="submit"]').innerHTML = 'Post to Hub <i class="fas fa-paper-plane"></i>';
-    };
-    function handlePreview(e) {
-        const strip = document.getElementById('p_preview'); strip.innerHTML = "";
-        Array.from(e.target.files).slice(0, 5).forEach(f => { const r = new FileReader(); r.onload = ev => { const img = document.createElement('img'); img.src = ev.target.result; img.className = 'thumb-img'; strip.appendChild(img); }; r.readAsDataURL(f); });
+        document.querySelector('#form_logistics button[type="submit"]').innerHTML = 'Broadcast Logistics Task <i class="fas fa-paper-plane"></i>';
+        switchHall('logistics'); navigate('hall');
     }
-    function nuke() { if(confirm("NUKE DATA?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
+
+    async function submitMarket(e) {
+        e.preventDefault(); const f = new FormData();
+        f.append('seller_id', user.email); f.append('title', document.getElementById('m_title').value);
+        f.append('price', document.getElementById('m_price').value); f.append('condition', document.getElementById('m_cond').value);
+        f.append('location', document.getElementById('m_loc').value); f.append('description', document.getElementById('m_desc').value);
+        Array.from(document.getElementById('m_file').files).forEach(fi => f.append('images', fi));
+        document.querySelector('#form_market button[type="submit"]').innerText = "Listing...";
+        await fetch('/api/market/create', { method:'POST', body: f });
+        document.querySelector('#form_market button[type="submit"]').innerHTML = 'List Item in Market <i class="fas fa-store"></i>';
+        switchHall('market'); navigate('hall');
+    }
+
+    async function submitForum(e) {
+        e.preventDefault(); const f = new FormData();
+        f.append('author_id', user.email); f.append('author_name', user.anonymous_name); f.append('content', document.getElementById('f_content').value);
+        Array.from(document.getElementById('f_file').files).forEach(fi => f.append('images', fi));
+        document.querySelector('#form_forum button[type="submit"]').innerText = "Posting...";
+        await fetch('/api/forum/create', { method:'POST', body: f });
+        document.querySelector('#form_forum button[type="submit"]').innerHTML = 'Post to Campus Buzz <i class="fas fa-fire"></i>';
+        document.getElementById('f_content').value = ""; // clear text
+        switchHall('forum'); navigate('hall');
+    }
+
+    async function sendCode() {
+        const email = document.getElementById('r_email').value; if(!email) return alert("Email required");
+        const btn = document.getElementById('btnSendCode'); btn.innerText = "Sending...";
+        await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
+        alert("6-digit code dispatched."); btn.innerText = "Get Code";
+    }
+
+    document.getElementById('regForm').onsubmit = async e => {
+        e.preventDefault();
+        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, gender: document.getElementById('r_gender').value };
+        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
+        if(res.ok) { alert("Registration Verified!"); navigate('login'); } else alert("Registration Failed. Check code.");
+    };
+
+    document.getElementById('loginForm').onsubmit = async e => {
+        e.preventDefault();
+        const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})});
+        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Authentication Failed.");
+    };
+
+    function nuke() { if(confirm("NUKE ALL GLOBAL DATA?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
     
     navigate('home');
 </script>
