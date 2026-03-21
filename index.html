@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V12.1 Financial Engine Escrow App
+           DESIGN SYSTEM: V12.2 UX Auto-Routing Edition
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -61,7 +61,6 @@
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
         
-        /* STRICT TAB CONTENT HIDING */
         .tab-content { display: none !important; }
         .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -98,64 +97,55 @@
         .forum-card { background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #eef2f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .f-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
         .f-author { font-weight: 800; color: var(--dark); background: #f1f5f9; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; }
-        .f-time { font-size: 0.8rem; color: var(--muted); }
         .f-content { font-size: 1.1rem; color: var(--text); line-height: 1.6; margin-bottom: 1.5rem; }
         .f-images { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 1.5rem; padding-bottom: 5px; }
         .f-images img { height: 180px; border-radius: 10px; border: 1px solid #eef2f6; object-fit: cover; cursor: pointer; }
-        .f-actions { display: flex; gap: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
 
         /* =============================================================
-           KANBAN WORKFLOW DASHBOARDS
+           KANBAN WORKFLOW DASHBOARDS (With Glow Animation Base)
         ============================================================= */
-        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; border-radius: 1.5rem; transition: box-shadow 0.6s ease; }
         .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 350px; border: 1px dashed #e2e8f0; }
         .kanban-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 1.5rem; }
         .kanban-badge { background: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: var(--primary); border: 1px solid #eef2f6; }
         .kanban-card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1.5px solid transparent; cursor: pointer; transition: 0.3s; position: relative; }
         .kanban-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--shadow-premium); }
-        .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
+        .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; display: inline-block; }
         .kb-pub { background: #f1f5f9; color: var(--dark); }
         .kb-help { background: var(--primary-gradient); color: white; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
 
         /* =============================================================
-           MAP & ROUTING
+           MAP & FORMS
         ============================================================= */
         #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
         #modal-map { height: 280px; border-radius: 1.5rem; border: 2px solid #eef2f6; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 1.5rem; display: none; }
         .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; border-bottom: 4px solid var(--primary); }
         .leaflet-routing-container { display: none !important; }
         .custom-pin { background: transparent; border: none; } .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-
-        /* =============================================================
-           FORMS & BUTTONS
-        ============================================================= */
-        .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
+        
+        .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
         .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
-        .btn-outline:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .btn-danger { background: #fee2e2; color: var(--danger); border: 1.5px solid #fecaca; }
         
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
         input, select, textarea { width: 100%; padding: 1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: 0.2s; }
         input:focus, textarea:focus, select:focus { border-color: var(--primary); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
-        input:read-only { background: #f1f5f9; color: var(--muted); font-weight: 500; }
         label { font-size: 0.8rem; font-weight: 800; color: var(--muted); margin-bottom: 0.6rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
 
         /* =============================================================
            MODALS & INTERACTIONS
         ============================================================= */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; backdrop-filter: blur(12px); align-items: center; justify-content: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
         .interaction-box { background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6; }
         .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .comment-reply { margin-left: 3.5rem; margin-top: 1rem; border-left: 4px solid var(--primary); padding-left: 1.5rem; background: #fafafa; border-radius: 0 1.2rem 1.2rem 0; }
         .reply-btn { font-size: 0.75rem; color: var(--primary); font-weight: 800; cursor: pointer; text-transform: uppercase; margin-left: 15px; }
-        .reply-btn:hover { text-decoration: underline; }
         .reply-hint { display: none; background: #eef2ff; padding: 12px 20px; border-radius: 12px; margin-bottom: 15px; font-size: 0.88rem; border-left: 6px solid var(--primary); }
         .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
         .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; cursor: pointer; border: 2px solid #f1f5f9; transition: 0.3s; }
-        .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
         .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* =============================================================
@@ -536,7 +526,7 @@
                 const input = document.getElementById(isStart ? 'p_from' : 'p_to');
                 input.value = "Fetching campus address...";
                 try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/12.1'} });
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/11.4'} });
                     const d = await res.json();
                     input.value = d.display_name ? d.display_name.split(',').slice(0,3).join(',').trim() : `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
                 } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
@@ -745,7 +735,7 @@
         loadHall(); 
     }
 
-    // ======================= 5. V12.1 MOCK PAYMENT & WORKFLOWS =======================
+    // ======================= 5. V12.2 MOCK PAYMENT & UX FIX WORKFLOWS =======================
     function openPaymentModal(id, price, title) {
         state.pendingPayId = id;
         document.getElementById('pay_item_title').innerText = title;
@@ -764,12 +754,10 @@
         btn.disabled = true;
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing Secure Payment...`;
         
-        // Simulate network authorization delay (1.5 seconds)
         setTimeout(async () => {
             btn.innerHTML = `<i class="fas fa-check-circle"></i> Payment Authorized`;
             btn.style.background = 'var(--success)';
             
-            // Execute the Escrow backend logic after fake card auth
             const res = await fetch('/api/market/workflow', { 
                 method:'POST', headers:{'Content-Type':'application/json'}, 
                 body:JSON.stringify({item_id: state.pendingPayId, status: 'reserved', buyer_id: user.email}) 
@@ -778,13 +766,24 @@
             
             setTimeout(() => {
                 document.getElementById('paymentModal').style.display = 'none';
-                btn.style.background = 'var(--primary-gradient)'; // Reset color
+                btn.style.background = 'var(--primary-gradient)'; 
                 
                 if(data.msg === 'INSUFFICIENT_FUNDS') {
                     alert("Virtual Bank declined: Insufficient wallet balance.");
                 } else if (data.success) {
                     alert("Payment Successful! Funds are now secured in Platform Escrow.");
+                    
+                    // UX FIX: Auto-Switch Tab and Scroll Down
+                    switchProf('kb_mar');
                     navigate('profile');
+                    setTimeout(() => {
+                        const board = document.getElementById('kb_mar');
+                        if (board) {
+                            board.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            board.style.boxShadow = "0 0 25px rgba(5, 150, 105, 0.4)";
+                            setTimeout(() => board.style.boxShadow = "none", 1500);
+                        }
+                    }, 400);
                 }
             }, 800);
         }, 1500);
@@ -796,7 +795,20 @@
         const body = type === 'log' ? { task_id: state.activeId, status, helper_id: user.email } : { item_id: state.activeId, status, buyer_id: user.email };
         
         await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
-        document.getElementById('masterModal').style.display = 'none'; navigate('profile');
+        document.getElementById('masterModal').style.display = 'none'; 
+        
+        // UX FIX: Auto-Switch Tab and Scroll Down
+        switchProf(`kb_${type}`);
+        navigate('profile');
+        
+        setTimeout(() => {
+            const board = document.getElementById(`kb_${type}`);
+            if (board) {
+                board.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                board.style.boxShadow = "0 0 25px rgba(79, 70, 229, 0.4)";
+                setTimeout(() => board.style.boxShadow = "none", 1500);
+            }
+        }, 400);
     }
 
     async function deleteItem(type, id) {
