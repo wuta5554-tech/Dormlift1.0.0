@@ -1,5 +1,5 @@
 /**
- * DormLift Pro - Super App Master Node (V11.0 Ecosystem Edition)
+ * DormLift Pro - Super App Master Node (V11.3 Stable Edition)
  * -------------------------------------------------------------
  * 包含三大核心生态系统：
  * 1. Peer Logistics (校园互助物流 - 含勋章积分引擎)
@@ -27,7 +27,7 @@ const MONGO_URI = process.env.MONGO_URI;
 const GAS_URL = process.env.GAS_URL;
 
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ DormLift Super App DB Connected (V11.0)'))
+    .then(() => console.log('✅ DormLift Super App DB Connected (V11.3)'))
     .catch(err => console.error('❌ DB Connection Error:', err));
 
 // ==========================================
@@ -150,6 +150,7 @@ app.post('/api/auth/send-code', async (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
     const { email, code, password, ...userData } = req.body;
     try {
+        // "8888" is a bypass code for developer testing
         if (code !== "8888") {
             const vRecord = await VerifyCode.findOne({ email });
             if (!vRecord || vRecord.code !== code || vRecord.expire_at < new Date()) {
@@ -160,7 +161,7 @@ app.post('/api/auth/register', async (req, res) => {
         const newUser = new User({ ...userData, email, password: hashedPassword });
         await newUser.save();
         res.status(201).json({ success: true });
-    } catch (e) { res.status(400).json({ success: false, msg: "Registration error" }); }
+    } catch (e) { res.status(400).json({ success: false, msg: "Registration error or duplicate email/SID" }); }
 });
 
 app.post('/api/auth/login', async (req, res) => {
@@ -204,8 +205,10 @@ app.get('/api/task/all', async (req, res) => {
 });
 
 app.post('/api/task/comment', async (req, res) => {
-    await Task.findByIdAndUpdate(req.body.task_id, { $push: { comments: req.body.comment } });
-    res.json({ success: true });
+    try {
+        await Task.findByIdAndUpdate(req.body.task_id, { $push: { comments: req.body.comment } });
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ success: false }); }
 });
 
 app.post('/api/task/workflow', async (req, res) => {
@@ -254,8 +257,10 @@ app.get('/api/market/all', async (req, res) => {
 });
 
 app.post('/api/market/comment', async (req, res) => {
-    await MarketItem.findByIdAndUpdate(req.body.item_id, { $push: { comments: req.body.comment } });
-    res.json({ success: true });
+    try {
+        await MarketItem.findByIdAndUpdate(req.body.item_id, { $push: { comments: req.body.comment } });
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ success: false }); }
 });
 
 app.post('/api/market/workflow', async (req, res) => {
@@ -267,6 +272,13 @@ app.post('/api/market/workflow', async (req, res) => {
         if(status === 'available') updates.buyer_id = null; 
         
         await MarketItem.findByIdAndUpdate(item_id, { $set: updates });
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ success: false }); }
+});
+
+app.post('/api/market/delete', async (req, res) => {
+    try {
+        await MarketItem.findByIdAndDelete(req.body.task_id); // Re-using task_id prop from frontend for generic delete
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
@@ -331,5 +343,5 @@ app.post('/api/dev/nuke', async (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 DormLift Super App V11.0 Active on Port ${PORT}`);
+    console.log(`🚀 DormLift Super App V11.3 Active on Port ${PORT}`);
 });
