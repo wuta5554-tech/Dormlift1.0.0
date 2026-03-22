@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V13.0 Panorama Control Center Edition
+           DESIGN SYSTEM: V13.5 Ultimate Finance & Stable UI Edition
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -55,7 +55,7 @@
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
-        /* Unified Modular Tabs for Hubs */
+        /* Unified Modular Tabs for Discovery Hub */
         .tab-container { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 0.5rem; border-radius: 1rem; box-shadow: var(--shadow-sm); border: 1px solid #eef2f6; }
         .tab-btn { flex: 1; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.1rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; }
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
@@ -99,7 +99,7 @@
         .f-images { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 1.5rem; padding-bottom: 5px; }
         .f-images img { height: 180px; border-radius: 10px; border: 1px solid #eef2f6; object-fit: cover; cursor: pointer; }
 
-        /* Kanban Dashboards - Now Display Grid by default! */
+        /* Kanban Dashboards (Panorama Grid layout forced) */
         .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .kanban-col { background: rgba(241, 245, 249, 0.5); border-radius: 1.5rem; padding: 1.5rem; min-height: 350px; border: 2px dashed #cbd5e1; display:flex; flex-direction:column; transition: 0.4s ease;}
         .kanban-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 1.5rem; }
@@ -135,7 +135,7 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
         .interaction-box { background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6; }
-        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: 0.3s; }
         .comment-reply { margin-left: 3.5rem; margin-top: 1rem; border-left: 4px solid var(--primary); padding-left: 1.5rem; background: #fafafa; border-radius: 0 1.2rem 1.2rem 0; }
         .reply-btn { font-size: 0.75rem; color: var(--primary); font-weight: 800; cursor: pointer; text-transform: uppercase; margin-left: 15px; }
         .reply-btn:hover { text-decoration: underline; }
@@ -145,13 +145,14 @@
         .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
         .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Payment Gateway */
+        /* Payment Gateway Simulator */
         .payment-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.3); }
         .payment-card::after { content: ''; position: absolute; right: -20px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
         .cc-input-group { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
         .cc-input-group i { color: #cbd5e1; font-size: 1.2rem; }
         .cc-input-group input { background: transparent; border: none; color: white; padding: 5px; font-size: 1.2rem; box-shadow: none; width: 100%; font-family: monospace; letter-spacing: 2px;}
         .cc-input-group input:focus { outline: none; border: none; box-shadow: none; background: transparent; }
+        .cc-input-group input::placeholder { color: rgba(255,255,255,0.3); }
     </style>
 </head>
 <body>
@@ -172,9 +173,9 @@
             </div>
             
             <div class="value-grid">
-                <div class="value-card"><i class="fas fa-tags"></i><h3 style="font-size:1.5rem; margin:0 0 10px 0;">Peer Pricing</h3><p style="color:var(--muted); margin:0;">By students, for students. Zero platform commission fees on logistics or items.</p></div>
-                <div class="value-card" style="border-color:var(--success);"><i class="fas fa-shield-alt" style="color:var(--success);"></i><h3 style="font-size:1.5rem; margin:0 0 10px 0;">Escrow Security</h3><p style="color:var(--muted); margin:0;">Funds are safely held in the platform wallet until buyer confirms receipt.</p></div>
-                <div class="value-card" style="border-color:var(--warning);"><i class="fas fa-shield-check" style="color:var(--warning);"></i><h3 style="font-size:1.5rem; margin:0 0 10px 0;">Verified Trust</h3><p style="color:var(--muted); margin:0;">Only UoA members with verified SIDs can trade, move, or post buzz dynamic.</p></div>
+                <div class="value-card"><i class="fas fa-tags"></i><h3 style="font-size:1.5rem; margin:0 0 10px 0; color:var(--dark);">Peer Pricing</h3><p style="color:var(--muted); margin:0;">By students, for students. Zero platform commission fees on logistics or items.</p></div>
+                <div class="value-card" style="border-color:var(--success);"><i class="fas fa-shield-alt" style="color:var(--success);"></i><h3 style="font-size:1.5rem; margin:0 0 10px 0; color:var(--dark);">Escrow Security</h3><p style="color:var(--muted); margin:0;">Flea market funds are safely held in the platform wallet until buyer confirms receipt.</p></div>
+                <div class="value-card" style="border-color:var(--warning);"><i class="fas fa-shield-check" style="color:var(--warning);"></i><h3 style="font-size:1.5rem; margin:0 0 10px 0; color:var(--dark);">Verified Trust</h3><p style="color:var(--muted); margin:0;">Only UoA members with verified SIDs can trade, move, or post buzz dynamic.</p></div>
             </div>
         </section>
     </div>
@@ -208,14 +209,14 @@
             <div id="map"></div>
             <div class="route-info-strip"><span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal">0.00</b> km</span><span><i class="fas fa-clock"></i> <b id="timeVal">0</b> min</span></div>
             <form id="form_logistics" style="padding: 0 3rem 3rem;" onsubmit="submitLogistics(event)">
-                <div class="form-grid"><div><label>Pickup Building</label><input type="text" id="p_from" readonly required placeholder="Waiting for map pin..."></div><div><label>Destination Building</label><input type="text" id="p_to" readonly required placeholder="Waiting for map pin..."></div></div>
-                <div class="form-grid"><div><label>Moving Date</label><input type="datetime-local" id="p_date" required></div><div><label>Reward (NZD)</label><input type="text" id="p_reward" required></div></div>
-                <label>Mission Inventory & Notes</label><textarea id="p_desc" rows="4" required></textarea>
+                <div class="form-grid"><div><label>Pickup Building</label><input type="text" id="p_from" readonly required placeholder="Waiting for map pin..."></div><div><label>Destination</label><input type="text" id="p_to" readonly required placeholder="Waiting for map pin..."></div></div>
+                <div class="form-grid"><div><label>Moving Date & Time</label><input type="datetime-local" id="p_date" required></div><div><label>Reward (NZD)</label><input type="text" id="p_reward" required></div></div>
+                <label>Inventory & Notes</label><textarea id="p_desc" rows="4" required></textarea>
                 <div class="form-grid" style="margin-top:1.5rem; margin-bottom:2rem; background:#fffbeb; padding:1.5rem; border-radius:12px;">
                     <div><label style="color:var(--medal);">Task Scale</label><select id="p_scale"><option value="Small">Small Task (1 Pt)</option><option value="Medium">Medium Task (3 Pts)</option><option value="Large">Large Task (5 Pts)</option></select></div>
                     <div style="display:flex; align-items:center; padding-top:1.5rem;"><input type="checkbox" id="p_elevator" style="margin-right:12px; transform:scale(1.2);"><label style="margin:0; text-transform:none;">Elevator Available</label></div>
                 </div>
-                <label>Evidence Photos</label><input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
+                <label>Photos (Max 5)</label><input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
                 <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">Broadcast Task <i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
@@ -225,16 +226,16 @@
                 <div class="form-grid"><div><label>Item Title</label><input type="text" id="m_title" required></div><div><label>Price (NZD)</label><input type="number" id="m_price" required></div></div>
                 <div class="form-grid"><div><label>Condition</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option><option>Fair</option></select></div><div><label>Pickup Location</label><input type="text" id="m_loc" required></div></div>
                 <label>Description & Specs</label><textarea id="m_desc" rows="4" required></textarea>
-                <label>Photos</label><input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')"><div id="m_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">List Item in Market</button>
+                <label>Photos (Crucial)</label><input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')"><div id="m_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">List Item in Market <i class="fas fa-store"></i></button>
             </form>
         </div>
 
         <div id="post_forum" class="tab-content card">
             <form id="form_forum" onsubmit="submitForum(event)">
-                <label>Campus Buzz</label><textarea id="f_content" rows="6" required style="font-size:1.1rem; padding:1.5rem;"></textarea>
-                <label style="margin-top:1.5rem;">Attach Media</label><input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')"><div id="f_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">Post to Campus Buzz</button>
+                <label>Campus Buzz</label><textarea id="f_content" rows="6" placeholder="What's happening..." required style="font-size:1.1rem; padding:1.5rem;"></textarea>
+                <label style="margin-top:1.5rem;">Attach Media (Optional)</label><input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')"><div id="f_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">Post to Campus Buzz <i class="fas fa-fire"></i></button>
             </form>
         </div>
     </div>
@@ -266,8 +267,8 @@
             <h2 style="font-size:2.5rem; margin:0 0 2rem 0; letter-spacing:-1px;"><i class="fas fa-layer-group" style="color:var(--primary); margin-right:10px;"></i> Panorama Control Center</h2>
             
             <div style="background:white; border-radius:1.5rem; padding:2.5rem; margin-bottom:2.5rem; box-shadow:var(--shadow-sm); border:1px solid #eef2f6;">
-                <h3 style="margin-top:0; font-size:1.8rem; color:var(--primary); display:flex; align-items:center; gap:10px;"><i class="fas fa-truck-fast"></i> Logistics Workflow</h3>
-                <div id="kb_log" class="kanban-board">
+                <h3 style="margin-top:0; font-size:1.8rem; color:var(--primary);"><i class="fas fa-truck-fast"></i> Logistics Workflow</h3>
+                <div class="kanban-board">
                     <div class="kanban-col" id="wrap_log_pend"><div class="kanban-header"><span>Pending</span><span class="kanban-badge" id="cnt_log_pend">0</span></div><div id="col_log_pend" style="flex:1; display:flex; flex-direction:column;"></div></div>
                     <div class="kanban-col" id="wrap_log_prog"><div class="kanban-header"><span>In Progress</span><span class="kanban-badge" id="cnt_log_prog">0</span></div><div id="col_log_prog" style="flex:1; display:flex; flex-direction:column;"></div></div>
                     <div class="kanban-col" id="wrap_log_hist"><div class="kanban-header"><span>History</span><span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist" style="flex:1; display:flex; flex-direction:column;"></div></div>
@@ -275,8 +276,8 @@
             </div>
 
             <div style="background:white; border-radius:1.5rem; padding:2.5rem; margin-bottom:2.5rem; box-shadow:var(--shadow-sm); border:1px solid #eef2f6;">
-                <h3 style="margin-top:0; font-size:1.8rem; color:var(--success); display:flex; align-items:center; gap:10px;"><i class="fas fa-store"></i> Flea Market (Escrow)</h3>
-                <div id="kb_mar" class="kanban-board">
+                <h3 style="margin-top:0; font-size:1.8rem; color:var(--success);"><i class="fas fa-store"></i> Flea Market (Escrow)</h3>
+                <div class="kanban-board">
                     <div class="kanban-col" id="wrap_mar_pend"><div class="kanban-header"><span>Available</span><span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend" style="flex:1; display:flex; flex-direction:column;"></div></div>
                     <div class="kanban-col" id="wrap_mar_prog"><div class="kanban-header"><span>Reserved (Locked)</span><span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog" style="flex:1; display:flex; flex-direction:column;"></div></div>
                     <div class="kanban-col" id="wrap_mar_hist"><div class="kanban-header"><span>Sold / Released</span><span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist" style="flex:1; display:flex; flex-direction:column;"></div></div>
@@ -284,11 +285,10 @@
             </div>
 
             <div style="background:white; border-radius:1.5rem; padding:2.5rem; margin-bottom:2.5rem; box-shadow:var(--shadow-sm); border:1px solid #eef2f6;">
-                <h3 style="margin-top:0; font-size:1.8rem; color:var(--warning); display:flex; align-items:center; gap:10px;"><i class="fas fa-fire"></i> My Campus Buzz</h3>
+                <h3 style="margin-top:0; font-size:1.8rem; color:var(--warning);"><i class="fas fa-fire"></i> My Campus Buzz</h3>
                 <div id="col_for_list" style="display:flex; flex-direction:column; gap:1.2rem; max-width:800px; margin-top:1.5rem;"></div>
             </div>
         </div>
-        
         <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:2rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
     </div>
 
@@ -324,6 +324,7 @@
         <div id="modal-map"></div>
         <div class="thumb-strip" id="mod_thumbs"></div>
         <div id="mod_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
+        
         <div id="mod_interaction" class="interaction-box">
             <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="color:var(--primary); margin-right:10px;"></i> Discussion Thread</h4>
             <div id="mod_comments" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; padding-right:10px; scrollbar-width:thin;"></div>
@@ -337,25 +338,54 @@
 <div id="paymentModal" class="modal" onclick="if(event.target.id==='paymentModal') this.style.display='none'">
     <div class="modal-content" style="max-width:550px; padding:3rem;">
         <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('paymentModal').style.display='none'">&times;</button>
+        
         <div style="text-align:center; margin-bottom:2rem;">
             <i class="fas fa-shield-alt" style="font-size:3rem; color:var(--success); margin-bottom:1rem;"></i>
             <h2 style="margin:0;">Secure Escrow Checkout</h2>
             <p style="color:var(--muted); margin-top:5px;">Funds will be held securely in platform escrow until you confirm receipt.</p>
         </div>
+
         <div class="payment-card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;"><i class="fab fa-cc-visa" style="font-size:2rem; color:rgba(255,255,255,0.8);"></i><i class="fas fa-wifi" style="font-size:1.5rem; color:rgba(255,255,255,0.5);"></i></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
+                <i class="fab fa-cc-visa" style="font-size:2rem; color:rgba(255,255,255,0.8);"></i>
+                <i class="fas fa-wifi" style="font-size:1.5rem; color:rgba(255,255,255,0.5);"></i>
+            </div>
+            
             <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Card Number</label>
-            <div class="cc-input-group"><i class="far fa-credit-card"></i><input type="text" placeholder="0000  0000  0000  0000" maxlength="19" id="cc_num" value="4242 4242 4242 4242"></div>
+            <div class="cc-input-group">
+                <i class="far fa-credit-card"></i>
+                <input type="text" placeholder="0000  0000  0000  0000" maxlength="19" id="cc_num" value="4242 4242 4242 4242">
+            </div>
+
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-                <div><label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Expiry Date</label><div class="cc-input-group"><i class="far fa-calendar-alt"></i><input type="text" placeholder="MM/YY" maxlength="5" value="12/28"></div></div>
-                <div><label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">CVC</label><div class="cc-input-group"><i class="fas fa-lock"></i><input type="password" placeholder="123" maxlength="3" value="123"></div></div>
+                <div>
+                    <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Expiry Date</label>
+                    <div class="cc-input-group">
+                        <i class="far fa-calendar-alt"></i>
+                        <input type="text" placeholder="MM/YY" maxlength="5" value="12/28">
+                    </div>
+                </div>
+                <div>
+                    <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">CVC</label>
+                    <div class="cc-input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="123" maxlength="3" value="123">
+                    </div>
+                </div>
             </div>
         </div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; background:#f8fafc; border-radius:1rem; margin-bottom:2rem; border:1px solid #eef2f6;">
-            <div><div style="font-weight:700; color:var(--dark); font-size:1.1rem;" id="pay_item_title">Item Name</div><div style="font-size:0.85rem; color:var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> DormLift Buyer Protection</div></div>
+            <div>
+                <div style="font-weight:700; color:var(--dark); font-size:1.1rem;" id="pay_item_title">Item Name</div>
+                <div style="font-size:0.85rem; color:var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> DormLift Buyer Protection</div>
+            </div>
             <div style="font-size:1.8rem; font-weight:900; color:var(--dark);" id="pay_item_price">$0.00</div>
         </div>
-        <button id="btn_process_pay" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="processPayment()">Pay Securely <i class="fas fa-arrow-right"></i></button>
+
+        <button id="btn_process_pay" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="processPayment()">
+            Pay Securely <i class="fas fa-arrow-right"></i>
+        </button>
     </div>
 </div>
 
@@ -372,9 +402,11 @@
     // ======================= STATE & NAVIGATION =======================
     let user = JSON.parse(localStorage.getItem('user'));
     let map, routingControl, modalMap, modalRoutingControl, markers = [], modalMarkers = [];
-    let state = { log: [], mar: [], for: [], activeId: null, activeType: null, activeReplyId: null, pendingPayId: null };
+    
+    // THE CRITICAL FIX: state.activeItem keeps data in memory, dodging HTML quote crashes!
+    let state = { log: [], mar: [], for: [], activeId: null, activeType: null, activeReplyId: null, pendingPayId: null, activeItem: null };
 
-    const getAddrText = (str) => { return str && str.includes('@@') ? str.split('@@')[1] : str || 'Unknown Location'; };
+    const getAddrText = (str) => { return (!str) ? 'Unknown Location' : (str.includes('@@') ? str.split('@@')[1] : str); };
     const getAddrCoords = (str) => { if (!str || !str.includes('@@')) return null; let coords = str.split('@@')[0].split(',').map(Number); return (coords.length === 2 && !isNaN(coords[0])) ? coords : null; };
 
     function navigate(p) {
@@ -393,12 +425,7 @@
         if(!user) {
             menu.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Discover</a><a onclick="navigate('login')">Login</a>`;
         } else {
-            menu.innerHTML = `
-                <div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check" style="margin-right:5px;"></i> ${user.anonymous_name} <span style="margin-left:5px; background:white; color:var(--primary); padding:2px 8px; border-radius:10px; font-weight:900;">$${user.wallet_balance || 1000}</span></div>
-                <a onclick="navigate('hall')">Discover</a>
-                <a onclick="navigate('post')">Publish</a>
-                <a onclick="navigate('profile')">Control Center</a>
-            `;
+            menu.innerHTML = `<div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check" style="margin-right:5px;"></i> ${user.anonymous_name} <span style="margin-left:5px; background:white; color:var(--primary); padding:2px 8px; border-radius:10px; font-weight:900;">$${user.wallet_balance || 1000}</span></div><a onclick="navigate('hall')">Discover</a><a onclick="navigate('post')">Publish</a><a onclick="navigate('profile')">Control Center</a>`;
         }
     }
 
@@ -407,15 +434,16 @@
     function switchHall(tab) {
         ['logistics', 'market', 'forum'].forEach(t => {
             const btn = document.getElementById(`btn_hall_${t}`); const content = document.getElementById(`hall_${t}`);
-            if(btn) { if(t===tab) btn.classList.add('active'); else btn.classList.remove('active'); }
-            if(content) { if(t===tab) { content.classList.add('active'); content.style.setProperty('display', 'block', 'important'); } else { content.classList.remove('active'); content.style.setProperty('display', 'none', 'important'); } }
+            if(btn) { if (t === tab) btn.classList.add('active'); else btn.classList.remove('active'); }
+            if(content) { if (t === tab) { content.classList.add('active'); content.style.setProperty('display', 'block', 'important'); } else { content.classList.remove('active'); content.style.setProperty('display', 'none', 'important'); } }
         });
     }
+
     function switchPost(tab) {
         ['logistics', 'market', 'forum'].forEach(t => {
             const btn = document.getElementById(`btn_post_${t}`); const content = document.getElementById(`post_${t}`);
-            if(btn) { if(t===tab) btn.classList.add('active'); else btn.classList.remove('active'); }
-            if(content) { if(t===tab) { content.classList.add('active'); content.style.setProperty('display', 'block', 'important'); } else { content.classList.remove('active'); content.style.setProperty('display', 'none', 'important'); } }
+            if(btn) { if (t === tab) btn.classList.add('active'); else btn.classList.remove('active'); }
+            if(content) { if (t === tab) { content.classList.add('active'); content.style.setProperty('display', 'block', 'important'); } else { content.classList.remove('active'); content.style.setProperty('display', 'none', 'important'); } }
         });
         if(tab==='logistics' && map) setTimeout(()=>map.invalidateSize(), 200);
     }
@@ -428,8 +456,12 @@
     function initMap() {
         if(map) return;
         setTimeout(() => {
-            map = L.map('map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); L.control.zoom({position: 'topright'}).addTo(map); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
-            routingControl = L.Routing.control({ lineOptions: { styles: [{ color: '#4f46e5', weight: 6, opacity: 0.8, dashArray: '10, 10' }] }, createMarker: () => null, show: false, addWaypoints: false }).on('routesfound', ev => { document.getElementById('distVal').innerText = (ev.routes[0].summary.totalDistance / 1000).toFixed(2); document.getElementById('timeVal').innerText = Math.round(ev.routes[0].summary.totalTime / 60); }).addTo(map);
+            map = L.map('map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); L.control.zoom({position: 'topright'}).addTo(map);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {attribution: '&copy; CARTO'}).addTo(map);
+            routingControl = L.Routing.control({ lineOptions: { styles: [{ color: '#4f46e5', weight: 6, opacity: 0.8, dashArray: '10, 10' }] }, createMarker: () => null, show: false, addWaypoints: false }).on('routesfound', ev => {
+                document.getElementById('distVal').innerText = (ev.routes[0].summary.totalDistance / 1000).toFixed(2); document.getElementById('timeVal').innerText = Math.round(ev.routes[0].summary.totalTime / 60);
+            }).addTo(map);
+
             map.on('click', async e => {
                 if (markers.length >= 2) { markers.forEach(m => map.removeLayer(m)); markers = []; routingControl.setWaypoints([]); document.getElementById('distVal').innerText = "0.00"; document.getElementById('timeVal').innerText = "0"; document.getElementById('p_from').value = ""; document.getElementById('p_to').value = ""; }
                 let isStart = markers.length === 0;
@@ -442,20 +474,23 @@
         }, 300);
     }
 
+    async function safeFetchList(url) { try { const r = await fetch(url); const d = await r.json(); return d.list || []; } catch(e) { return []; } }
+
     async function loadHall() {
-        try {
-            const [resL, resM, resF] = await Promise.all([fetch('/api/task/all?t=' + Date.now()).catch(() => ({json: () => ({list: []})})), fetch('/api/market/all?t=' + Date.now()).catch(() => ({json: () => ({list: []})})), fetch('/api/forum/all?t=' + Date.now()).catch(() => ({json: () => ({list: []})}))]);
-            state.log = (await resL.json()).list || []; state.mar = (await resM.json()).list || []; state.for = (await resF.json()).list || [];
-            
-            document.getElementById('list_logistics').innerHTML = state.log.map(t => `<div class="hub-row" onclick="openMasterModal('log', '${t._id}')"><div class="posted-col">PUB<span>${new Date(t.created_at).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}</span></div><div class="details-strip"><div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div><div class="strip-route"><i class="fas fa-circle"></i> ${getAddrText(t.from_addr)} <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> <i class="fas fa-flag-checkered"></i> ${getAddrText(t.to_addr)}</div><div class="strip-inventory"><span style="background:#fef3c7; color:var(--medal); padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">🏅 ${t.medal_points||1} Pts</span> <b>Items:</b> ${t.items_desc.substring(0, 60)}...</div></div><div class="reward-col">${t.reward}</div></div>`).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active logistics missions.</div>';
+        state.log = await safeFetchList('/api/task/all?t=' + Date.now()); state.mar = await safeFetchList('/api/market/all?t=' + Date.now()); state.for = await safeFetchList('/api/forum/all?t=' + Date.now());
+        
+        document.getElementById('list_logistics').innerHTML = state.log.map(t => {
+            return `<div class="hub-row" onclick="openMasterModal('log', '${t._id}')"><div class="posted-col">PUB<span>${new Date(t.created_at).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}</span></div><div class="details-strip"><div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div><div class="strip-route"><i class="fas fa-circle"></i> ${getAddrText(t.from_addr)} <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> <i class="fas fa-flag-checkered"></i> ${getAddrText(t.to_addr)}</div><div class="strip-inventory"><span style="background:#fef3c7; color:var(--medal); padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">🏅 ${t.medal_points||1} Pts</span> <b>Items:</b> ${t.items_desc.substring(0, 60)}...</div></div><div class="reward-col">${t.reward}</div></div>`;
+        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-size:1.1rem; font-weight:600;">No active logistics missions.</div>';
 
-            document.getElementById('list_market').innerHTML = state.mar.map(m => `<div class="market-card" onclick="openMasterModal('mar', '${m._id}')"><img src="${JSON.parse(m.img_url)[0] || ''}" class="m-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'100\\\' height=\\\'100\\\'></svg>'"><div class="m-body"><div><h3 class="m-title">${m.title}</h3><div class="m-meta" style="margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; color:var(--dark); font-weight:700;">${m.condition}</span></div></div><div><div class="m-price">$${m.price}</div><div class="m-meta"><i class="fas fa-map-marker-alt"></i> ${m.location}</div></div></div></div>`).join('') || '<div style="padding:5rem; text-align:center; grid-column:1/-1; color:var(--muted); font-weight:600;">Flea market is empty.</div>';
+        document.getElementById('list_market').innerHTML = state.mar.map(m => {
+            return `<div class="market-card" onclick="openMasterModal('mar', '${m._id}')"><img src="${JSON.parse(m.img_url)[0] || ''}" class="m-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'100\\\' height=\\\'100\\\'></svg>'"><div class="m-body"><div><h3 class="m-title">${m.title}</h3><div class="m-meta" style="margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; color:var(--dark); font-weight:700;">${m.condition}</span></div></div><div><div class="m-price">$${m.price}</div><div class="m-meta"><i class="fas fa-map-marker-alt"></i> ${m.location}</div></div></div></div>`;
+        }).join('') || '<div style="padding:5rem; text-align:center; grid-column:1/-1; color:var(--muted); font-weight:600;">Flea market is empty.</div>';
 
-            document.getElementById('list_forum').innerHTML = state.for.map(f => {
-                const imgs = JSON.parse(f.img_url).map(u => `<img src="${u}" onclick="window.open('${u}')">`).join(''); const isLiked = user && f.likes.includes(user.email);
-                return `<div class="forum-card"><div class="f-header"><div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div><div class="f-time">${new Date(f.created_at).toLocaleString()}</div></div><div class="f-content">${f.content}</div>${imgs ? `<div class="f-images">${imgs}</div>` : ''}<div class="f-actions"><button class="btn btn-outline btn-sm" style="${isLiked?'background:var(--primary);color:white;border-color:var(--primary);':''}" onclick="interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button><button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button></div></div>`;
-            }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-weight:600;">No buzz yet on campus.</div>';
-        } catch(e) { console.log("Hub Load Error:", e); }
+        document.getElementById('list_forum').innerHTML = state.for.map(f => {
+            const isLiked = user && f.likes.includes(user.email);
+            return `<div class="forum-card"><div class="f-header"><div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div><div class="f-time">${new Date(f.created_at).toLocaleString()}</div></div><div class="f-content">${f.content}</div>${JSON.parse(f.img_url).length ? `<div class="f-images">${JSON.parse(f.img_url).map(u => `<img src="${u}" onclick="window.open('${u}')">`).join('')}</div>` : ''}<div class="f-actions"><button class="btn btn-outline btn-sm" style="${isLiked?'background:var(--primary);color:white;border-color:var(--primary);':''}" onclick="interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button><button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button></div></div>`;
+        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-weight:600;">No buzz yet on campus.</div>';
     }
 
     function initModalMap(fromC, toC) {
@@ -475,7 +510,7 @@
     async function openMasterModal(type, id) {
         state.activeType = type; state.activeId = id;
         let endpoint = type === 'log' ? '/api/task/all' : (type === 'mar' ? '/api/market/all' : '/api/forum/all');
-        const res = await fetch(endpoint + '?t=' + Date.now()); const d = await res.json();
+        let d = await (await fetch(endpoint + '?t=' + Date.now())).json();
         
         let item = (d.list || []).find(x => x._id === id);
         if(!item) {
@@ -483,16 +518,27 @@
             const sourceArray = type === 'log' ? (dT.tasks||[]) : (type === 'mar' ? (dT.market||[]) : (dT.posts||[])); item = sourceArray.find(x => x._id === id);
         }
         if(!item) return alert("Item data unavailable.");
+        
+        // THE CRITICAL FIX: Bind the active item to state to avoid parameter passing in HTML
+        state.activeItem = item; 
 
         const h = document.getElementById('mod_header'); const b = document.getElementById('mod_body'); const f = document.getElementById('mod_footer');
         const mapDiv = document.getElementById('modal-map'); mapDiv.style.display = 'none';
+
         document.getElementById('mod_thumbs').innerHTML = JSON.parse(item.img_url || '[]').map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('');
         
         if (type === 'log') {
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem; letter-spacing:-1.5px;">${item.reward} Mission</h2><span class="status-badge" style="background:var(--primary); color:white;">${item.status}</span></div>`;
             let fC = getAddrCoords(item.from_addr); let tC = getAddrCoords(item.to_addr);
             if(fC && tC) { mapDiv.style.display = 'block'; initModalMap(fC, tC); }
-            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.from_addr)}</span></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">🏁 Destination Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.to_addr)}</span></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Logistics Complexity & Reward</b> <br><span style="font-weight:700; color:var(--dark);">${item.task_scale || 'Small'} Task (${item.has_elevator==='true'?'Elevator':'Stairs Only'})</span><span style="margin-left:10px; background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:8px; font-weight:800; font-size:0.85rem; border:1px solid #fde68a;">🏅 ${item.medal_points || 1} Pts for Helper</span></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Complete Inventory</b> <br><span style="color:var(--text);">${item.items_desc}</span></div></div>`;
+            
+            b.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.from_addr)}</span></div>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">🏁 Destination Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.to_addr)}</span></div>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Logistics Complexity & Reward</b> <br><span style="font-weight:700; color:var(--dark);">${item.task_scale || 'Small'} Task (${item.has_elevator==='true'?'Elevator':'Stairs Only'})</span><span style="margin-left:10px; background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:8px; font-weight:800; font-size:0.85rem; border:1px solid #fde68a;">🏅 ${item.medal_points || 1} Pts for Helper</span></div>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Complete Inventory</b> <br><span style="color:var(--text);">${item.items_desc}</span></div>
+                </div>`;
             
             let btns = '';
             if(item.status === 'pending' && item.publisher_id !== user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'assigned')">Accept Mission & Start Helping <i class="fas fa-check-circle"></i></button>`;
@@ -503,76 +549,145 @@
         } else if (type === 'mar') {
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--success); font-size:2.8rem; letter-spacing:-1.5px;">$${item.price}</h2><span class="status-badge" style="background:var(--success); color:white;">${item.status}</span></div>`;
             let escrowNote = item.status === 'reserved' ? `<div style="background:#fef3c7; color:#b45309; padding:12px; border-radius:8px; margin-bottom:15px; font-weight:700;"><i class="fas fa-lock"></i> Funds ($${item.price}) secured in Escrow.</div>` : '';
-            b.innerHTML = `${escrowNote}<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><h3 style="margin:0; color:var(--dark); font-size:1.8rem;">${item.title}</h3><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Condition & Location</b> <br><span style="font-weight:700; color:var(--dark);">${item.condition} • ${item.location}</span></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Description</b> <br><span style="color:var(--text);">${item.description}</span></div><div style="font-size:0.85rem; color:var(--muted); font-weight:700; margin-top:1rem;">Seller: ${item.seller_id}</div></div>`;
+            b.innerHTML = `${escrowNote}
+                <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
+                    <h3 style="margin:0; color:var(--dark); font-size:1.8rem;">${item.title}</h3>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Condition & Location</b> <br><span style="font-weight:700; color:var(--dark);">${item.condition} • ${item.location}</span></div>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Description</b> <br><span style="color:var(--text);">${item.description}</span></div>
+                    <div style="font-size:0.85rem; color:var(--muted); font-weight:700; margin-top:1rem;">Seller: ${item.seller_id}</div>
+                </div>`;
             
             let btns = '';
-            if(item.status === 'available' && item.seller_id !== user.email) { btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="openPaymentModal('${item._id}', ${item.price}, '${item.title.replace(/'/g, "\\'")}')">Pay securely to Escrow <i class="fas fa-credit-card"></i></button>`; }
-            if(item.status === 'reserved' && item.buyer_id === user.email) { btns = `<button class="btn" style="background:var(--primary); padding:1.4rem 3rem;" onclick="execFlow('mar', 'completed')">Confirm Receipt & Release Funds <i class="fas fa-handshake"></i></button><button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger);" onclick="execFlow('mar', 'available')">Cancel & Refund</button>`; }
-            if(item.status === 'reserved' && item.seller_id === user.email) { btns = `<span style="color:var(--muted); font-weight:700;">Waiting for Buyer to confirm receipt...</span>`; }
-            if(item.seller_id === user.email && item.status === 'available') { btns += `<button class="btn btn-danger" onclick="deleteItem('mar', '${item._id}')">Remove Listing</button>`; }
+            // THE CRITICAL FIX: Safe button call, no inline strings
+            if(item.status === 'available' && item.seller_id !== user.email) {
+                btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="openPaymentModal()">Pay securely to Escrow <i class="fas fa-credit-card"></i></button>`;
+            }
+            if(item.status === 'reserved' && item.buyer_id === user.email) {
+                btns = `<button class="btn" style="background:var(--primary); padding:1.4rem 3rem;" onclick="execFlow('mar', 'completed')">Confirm Receipt & Release Funds <i class="fas fa-handshake"></i></button>
+                        <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger);" onclick="execFlow('mar', 'available')">Cancel & Refund</button>`;
+            }
+            if(item.status === 'reserved' && item.seller_id === user.email) {
+                btns = `<span style="color:var(--muted); font-weight:700;">Waiting for Buyer to confirm receipt...</span>`;
+            }
+            if(item.seller_id === user.email && item.status === 'available') {
+                btns += `<button class="btn btn-danger" onclick="deleteItem('mar', '${item._id}')">Remove Listing</button>`;
+            }
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
             
         } else if (type === 'for') {
             h.innerHTML = `<div style="display:flex; align-items:center; gap:15px;"><div class="brand-icon" style="border-radius:50%;"><i class="fas fa-user"></i></div><div><h3 style="margin:0;">${item.author_name}</h3><small style="color:var(--muted);">${new Date(item.created_at).toLocaleString()}</small></div></div>`;
-            b.innerHTML = `<div style="font-size:1.2rem; color:var(--dark); line-height:1.6;">${item.content}</div>`; f.innerHTML = '';
+            b.innerHTML = `<div style="font-size:1.2rem; color:var(--dark); line-height:1.6;">${item.content}</div>`;
+            f.innerHTML = '';
         }
-        renderThreadedComments(item.comments || []); document.getElementById('masterModal').style.display = 'flex';
+
+        renderThreadedComments(item.comments || []);
+        document.getElementById('masterModal').style.display = 'flex';
     }
 
     function renderThreadedComments(comments) {
-        const area = document.getElementById('mod_comments'); const parents = comments.filter(c => !c.parentId);
+        const area = document.getElementById('mod_comments');
+        const parents = comments.filter(c => !c.parentId);
         area.innerHTML = parents.map(p => {
             const replies = comments.filter(r => String(r.parentId) === String(p.id));
-            return `<div class="comment-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b style="color:var(--dark);">${p.user}</b><small style="color:var(--muted);">${new Date(p.time).toLocaleString()}</small></div><div style="font-size:1rem;">${p.text} <span class="reply-btn" onclick="setReply('${p.id}', '${p.user}')">Reply</span></div>${replies.map(r2 => `<div class="comment-item comment-reply"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r2.user}</b> replied to <b>${p.user}</b></small></div><div style="font-size:0.95rem;">${r2.text} <span class="reply-btn" onclick="setReply('${r2.id}', '${r2.user}')">Reply</span></div>${comments.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `<div class="comment-item comment-reply" style="border-left-color:var(--warning); background:white;"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r3.user}</b> replied to <b>${r2.user}</b></small></div><div style="font-size:0.95rem;">${r3.text}</div></div>`).join('')}</div>`).join('')}</div>`;
+            return `
+            <div class="comment-item">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b style="color:var(--dark);">${p.user}</b><small style="color:var(--muted);">${new Date(p.time).toLocaleString()}</small></div>
+                <div style="font-size:1rem;">${p.text} <span class="reply-btn" onclick="setReply('${p.id}', '${p.user.replace(/'/g, "\\'")}')">Reply</span></div>
+                ${replies.map(r2 => `
+                    <div class="comment-item comment-reply">
+                        <div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r2.user}</b> replied to <b>${p.user}</b></small></div>
+                        <div style="font-size:0.95rem;">${r2.text} <span class="reply-btn" onclick="setReply('${r2.id}', '${r2.user.replace(/'/g, "\\'")}')">Reply</span></div>
+                        ${comments.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `
+                            <div class="comment-item comment-reply" style="border-left-color:var(--warning); background:white;">
+                                <div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r3.user}</b> replied to <b>${r2.user}</b></small></div>
+                                <div style="font-size:0.95rem;">${r3.text}</div>
+                            </div>`).join('')}
+                    </div>`).join('')}
+            </div>`;
         }).join('') || '<p id="empty_comments_msg" style="color:var(--muted); text-align:center; padding:2rem; font-weight:600;">No discussion yet. Start the thread!</p>';
     }
 
     function setReply(id, name) { state.activeReplyId = id; document.getElementById('reply_hint').style.display='block'; document.getElementById('reply_name').innerText=name; document.getElementById('mod_input').focus(); }
     function cancelReply() { state.activeReplyId = null; document.getElementById('reply_hint').style.display='none'; }
 
-    // ======================= OPTIMISTIC UI FOR COMMENTS =======================
+    // ======================= THE CRITICAL FIX: OPTIMISTIC UI FOR COMMENTS =======================
     async function postMasterComment() {
         const text = document.getElementById('mod_input').value; if(!text) return;
         const apiPath = state.activeType === 'log' ? '/api/task/comment' : (state.activeType === 'mar' ? '/api/market/comment' : '/api/forum/interact');
         const payload = { id: String(Date.now()), user: user.anonymous_name, text, parentId: state.activeReplyId, time: new Date() };
         const body = state.activeType === 'for' ? { post_id: state.activeId, action: 'comment', email: user.email, comment: payload } : (state.activeType === 'log' ? { task_id: state.activeId, comment: payload } : { item_id: state.activeId, comment: payload });
         
-        const emptyMsg = document.getElementById('empty_comments_msg'); if(emptyMsg) emptyMsg.style.display = 'none';
+        const emptyMsg = document.getElementById('empty_comments_msg');
+        if(emptyMsg) emptyMsg.style.display = 'none';
         
         let newHtml = "";
-        if(!state.activeReplyId) { newHtml = `<div class="comment-item" style="border-left: 4px solid var(--success);"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b style="color:var(--dark);">${payload.user}</b><small style="color:var(--success); font-weight:bold;">Just now</small></div><div style="font-size:1rem;">${payload.text}</div></div>`; document.getElementById('mod_comments').insertAdjacentHTML('beforeend', newHtml); } 
-        else { newHtml = `<div class="comment-item comment-reply" style="border-left: 4px solid var(--success);"><div style="margin-bottom:6px;"><small style="color:var(--success); font-weight:700;"><b>${payload.user}</b> replied</small></div><div style="font-size:0.95rem;">${payload.text}</div></div>`; document.getElementById('mod_comments').insertAdjacentHTML('beforeend', newHtml); }
+        if(!state.activeReplyId) {
+            newHtml = `<div class="comment-item" style="border-left: 4px solid var(--success);"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b style="color:var(--dark);">${payload.user}</b><small style="color:var(--success); font-weight:bold;">Just now</small></div><div style="font-size:1rem;">${payload.text}</div></div>`;
+            document.getElementById('mod_comments').insertAdjacentHTML('beforeend', newHtml);
+        } else {
+            newHtml = `<div class="comment-item comment-reply" style="border-left: 4px solid var(--success);"><div style="margin-bottom:6px;"><small style="color:var(--success); font-weight:700;"><b>${payload.user}</b> replied</small></div><div style="font-size:0.95rem;">${payload.text}</div></div>`;
+            document.getElementById('mod_comments').insertAdjacentHTML('beforeend', newHtml);
+        }
 
-        const box = document.getElementById('mod_comments'); box.scrollTop = box.scrollHeight;
+        const box = document.getElementById('mod_comments');
+        box.scrollTop = box.scrollHeight;
         document.getElementById('mod_input').value = ""; cancelReply(); 
         
         try { await fetch(apiPath, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }); loadHall(); } catch(e) { alert("Network error logging comment."); }
     }
 
-    // ======================= MOCK PAYMENT & UX HIGHLIGHTING WORKFLOWS =======================
-    function openPaymentModal(id, price, title) {
-        state.pendingPayId = id; document.getElementById('pay_item_title').innerText = title; document.getElementById('pay_item_price').innerText = `$${price.toFixed(2)}`;
-        const btn = document.getElementById('btn_process_pay'); btn.innerHTML = `Pay Securely <i class="fas fa-arrow-right"></i>`; btn.disabled = false;
-        document.getElementById('masterModal').style.display = 'none'; document.getElementById('paymentModal').style.display = 'flex';
+    // ======================= THE CRITICAL FIX: SAFE PAYMENT INVOCATION =======================
+    function openPaymentModal() {
+        const item = state.activeItem;
+        if(!item) return alert("System error: Item context lost.");
+        
+        state.pendingPayId = item._id;
+        document.getElementById('pay_item_title').innerText = item.title;
+        document.getElementById('pay_item_price').innerText = `$${parseFloat(item.price).toFixed(2)}`;
+        
+        const btn = document.getElementById('btn_process_pay');
+        btn.innerHTML = `Pay Securely <i class="fas fa-arrow-right"></i>`;
+        btn.disabled = false;
+        
+        document.getElementById('masterModal').style.display = 'none';
+        document.getElementById('paymentModal').style.display = 'flex';
     }
 
     function processPayment() {
-        const btn = document.getElementById('btn_process_pay'); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing Secure Payment...`;
+        const btn = document.getElementById('btn_process_pay');
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing Secure Payment...`;
+        
         setTimeout(async () => {
-            btn.innerHTML = `<i class="fas fa-check-circle"></i> Payment Authorized`; btn.style.background = 'var(--success)';
+            btn.innerHTML = `<i class="fas fa-check-circle"></i> Payment Authorized`;
+            btn.style.background = 'var(--success)';
+            
             try {
-                const res = await fetch('/api/market/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({item_id: state.pendingPayId, status: 'reserved', buyer_id: user.email}) });
+                const res = await fetch('/api/market/workflow', { 
+                    method:'POST', headers:{'Content-Type':'application/json'}, 
+                    body:JSON.stringify({item_id: state.pendingPayId, status: 'reserved', buyer_id: user.email}) 
+                });
                 const data = await res.json();
+                
                 setTimeout(() => {
-                    document.getElementById('paymentModal').style.display = 'none'; btn.style.background = 'var(--primary-gradient)'; 
-                    if(data.msg === 'INSUFFICIENT_FUNDS') { alert("Virtual Bank declined: Insufficient wallet balance."); } 
-                    else if (data.success) {
+                    document.getElementById('paymentModal').style.display = 'none';
+                    btn.style.background = 'var(--primary-gradient)'; 
+                    
+                    if(data.msg === 'INSUFFICIENT_FUNDS') {
+                        alert("Virtual Bank declined: Insufficient wallet balance.");
+                    } else if (data.success) {
                         alert("✅ Payment Successful!\n\nFunds are secured in Platform Escrow.\nThe item has been moved to your 'Reserved' Dashboard.");
-                        navigate('profile'); // Force load the full control center
+                        navigate('profile'); 
                         setTimeout(() => { const targetCol = document.getElementById('wrap_mar_prog'); if (targetCol) { targetCol.scrollIntoView({ behavior: 'smooth', block: 'center' }); targetCol.style.boxShadow = "0 0 0 4px var(--warning)"; setTimeout(() => targetCol.style.boxShadow = "none", 2000); } }, 600);
+                    } else {
+                        alert("Payment processing error on server.");
                     }
                 }, 800);
-            } catch(e) { alert("Network error processing payment."); document.getElementById('paymentModal').style.display = 'none'; btn.style.background = 'var(--primary-gradient)'; }
+            } catch(e) {
+                alert("Network error processing payment.");
+                document.getElementById('paymentModal').style.display = 'none';
+                btn.style.background = 'var(--primary-gradient)'; 
+            }
         }, 1500);
     }
 
@@ -584,11 +699,12 @@
         const body = type === 'log' ? { task_id: state.activeId, status, helper_id: user.email } : { item_id: state.activeId, status, buyer_id: user.email };
         
         try {
-            const res = await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }); const data = await res.json();
+            const res = await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+            const data = await res.json();
             if (data.success) {
                 alert(`✅ Success!\n\nThe item has been updated on your Dashboard.`);
                 document.getElementById('masterModal').style.display = 'none'; 
-                navigate('profile'); // Full panorama loaded
+                navigate('profile'); 
                 setTimeout(() => { const colMap = { 'log': 'wrap_log_prog', 'mar': 'wrap_mar_prog' }; const targetCol = document.getElementById(colMap[type]); if (targetCol) { targetCol.scrollIntoView({ behavior: 'smooth', block: 'center' }); targetCol.style.boxShadow = "0 0 0 4px var(--primary)"; setTimeout(() => targetCol.style.boxShadow = "none", 2000); } }, 600);
             }
         } catch(e) { alert("Network error executing flow."); }
@@ -601,67 +717,144 @@
         document.getElementById('masterModal').style.display = 'none'; loadHall();
     }
 
-    async function interactForum(id, action) { await fetch('/api/forum/interact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({post_id:id, action, email:user.email}) }); loadHall(); }
+    async function interactForum(id, action) {
+        await fetch('/api/forum/interact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({post_id:id, action, email:user.email}) });
+        loadHall(); 
+    }
 
     // ======================= 6. MULTI-KANBAN PROFILE =======================
     async function loadProfileData() {
         try {
             const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json(); const u = d.user;
+            
             user.wallet_balance = u.wallet_balance; localStorage.setItem('user', JSON.stringify(user)); renderMenu();
-            const fields = [['Student ID', u.student_id], ['University', u.school_name], ['Full Name', `${u.first_name} ${u.given_name}`], ['Nickname', u.anonymous_name], ['Gender', u.gender], ['Email', u.email], ['Phone', u.phone]];
-            document.getElementById('profileDetails').innerHTML = fields.map(f => `<div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;"><label style="margin-bottom:8px;">${f[0]}</label><div style="font-weight:800; font-size:1.1rem; color:var(--dark);">${f[1]}</div></div>`).join('');
-            document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0"; document.getElementById('p_task_count').innerText = u.task_count || 0; document.getElementById('p_medals').innerText = u.medal_points || 0; document.getElementById('p_wallet').innerText = u.wallet_balance || 0;
+
+            const fields = [
+                ['Student ID', u.student_id], ['University', u.school_name], ['Full Name', `${u.first_name} ${u.given_name}`], 
+                ['Nickname', u.anonymous_name], ['Gender', u.gender], ['Email', u.email], ['Phone', u.phone]
+            ];
+            
+            document.getElementById('profileDetails').innerHTML = fields.map(f => `
+                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                    <label style="margin-bottom:8px;">${f[0]}</label><div style="font-weight:800; font-size:1.1rem; color:var(--dark);">${f[1]}</div>
+                </div>`).join('');
+                
+            document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0";
+            document.getElementById('p_task_count').innerText = u.task_count || 0;
+            document.getElementById('p_medals').innerText = u.medal_points || 0;
+            document.getElementById('p_wallet').innerText = u.wallet_balance || 0;
 
             const phList = document.getElementById('pts_list');
-            phList.innerHTML = (u.point_history || []).slice().reverse().map(h => `<div style="display:flex; justify-content:space-between; align-items:center; padding:1.2rem; border-bottom:1px solid #eef2f6;"><div><div style="font-weight:700; color:var(--dark); margin-bottom:4px;">${h.desc}</div><div style="font-size:0.8rem; color:var(--muted);">${new Date(h.date).toLocaleString()}</div></div><div style="background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:8px; font-weight:800; font-size:0.8rem; border:1px solid #fde68a;">+${h.points} Pts</div></div>`).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No points earned yet. Complete a logistics task to earn!</div>';
+            phList.innerHTML = (u.point_history || []).slice().reverse().map(h => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:1.2rem; border-bottom:1px solid #eef2f6;">
+                    <div><div style="font-weight:700; color:var(--dark); margin-bottom:4px;">${h.desc}</div><div style="font-size:0.8rem; color:var(--muted);">${new Date(h.date).toLocaleString()}</div></div>
+                    <div style="background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:8px; font-weight:800; font-size:0.8rem; border:1px solid #fde68a;">+${h.points} Pts</div>
+                </div>
+            `).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No points earned yet. Complete a logistics task to earn!</div>';
 
-            const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})}); const dT = await resT.json();
-            const tasksArray = dT.tasks || []; const marketArray = dT.market || []; const postsArray = dT.posts || [];
+            const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
+            const dT = await resT.json();
+            
+            const tasksArray = dT.tasks || [];
+            const marketArray = dT.market || [];
+            const postsArray = dT.posts || [];
             
             const renderKB = (prefix, col, validStatuses, listArray) => {
                 const fList = listArray.filter(t => validStatuses.includes(t.status));
                 document.getElementById(`cnt_${prefix}_${col}`).innerText = fList.length;
-                if (fList.length === 0) { document.getElementById(`col_${prefix}_${col}`).innerHTML = `<div class="empty-col-placeholder"><i class="fas fa-box-open" style="margin-right:8px;"></i> Empty</div>`; return; }
+                
+                if (fList.length === 0) {
+                    document.getElementById(`col_${prefix}_${col}`).innerHTML = `<div class="empty-col-placeholder"><i class="fas fa-box-open" style="margin-right:8px;"></i> Empty</div>`;
+                    return;
+                }
+                
                 document.getElementById(`col_${prefix}_${col}`).innerHTML = fList.map(t => {
-                    const isOwner = (t.publisher_id || t.seller_id) === user.email; const topText = prefix === 'log' ? t.reward : `$${t.price} - ${t.title}`; const btmText = prefix === 'log' ? getAddrText(t.from_addr) : t.location;
-                    return `<div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}">${isOwner?(prefix==='log'?'Publisher':'Seller'):(prefix==='log'?'Helper':'Buyer')}</span><span style="font-size:0.7rem; color:var(--muted); font-weight:700;">${new Date(t.created_at).toLocaleDateString()}</span></div><div style="font-size:1.25rem; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-0.5px;">${topText}</div><div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${btmText}</div></div>`;
+                    const isOwner = (t.publisher_id || t.seller_id) === user.email;
+                    const topText = prefix === 'log' ? t.reward : `$${t.price} - ${t.title}`;
+                    const btmText = prefix === 'log' ? getAddrText(t.from_addr) : t.location;
+                    return `
+                    <div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}">${isOwner?(prefix==='log'?'Publisher':'Seller'):(prefix==='log'?'Helper':'Buyer')}</span>
+                            <span style="font-size:0.7rem; color:var(--muted); font-weight:700;">${new Date(t.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div style="font-size:1.25rem; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-0.5px;">${topText}</div>
+                        <div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${btmText}</div>
+                    </div>`;
                 }).join('');
             };
 
             renderKB('log', 'pend', ['pending'], tasksArray); renderKB('log', 'prog', ['assigned'], tasksArray); renderKB('log', 'hist', ['completed', 'reviewed'], tasksArray);
             renderKB('mar', 'pend', ['available'], marketArray); renderKB('mar', 'prog', ['reserved'], marketArray); renderKB('mar', 'hist', ['completed'], marketArray);
 
-            document.getElementById('col_for_list').innerHTML = postsArray.map(p => `<div class="card" style="padding:1.5rem; margin-bottom:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.02); cursor:pointer; transition:0.3s;" onclick="openMasterModal('for', '${p._id}')" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#eef2f6'"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span class="kb-role-tag kb-pub" style="background:#f1f5f9; color:var(--dark);">My Post</span><small style="color:var(--muted);">${new Date(p.created_at).toLocaleString()}</small></div><div style="font-size:1.1rem; color:var(--dark); margin-bottom:10px;">${p.content}</div><div style="font-size:0.85rem; color:var(--muted);"><i class="fas fa-heart" style="color:var(--danger);"></i> ${p.likes.length} Likes • <i class="fas fa-comment"></i> ${p.comments.length} Comments</div></div>`).join('') || '<div style="padding:3rem; text-align:center; color:var(--muted); font-weight:600; border:2px dashed #e2e8f0; border-radius:1rem;">You haven\'t posted anything in Campus Buzz yet.</div>';
+            document.getElementById('col_for_list').innerHTML = postsArray.map(p => `
+                <div class="card" style="padding:1.5rem; margin-bottom:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.02); cursor:pointer; transition:0.3s;" onclick="openMasterModal('for', '${p._id}')" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#eef2f6'">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span class="kb-role-tag kb-pub" style="background:#f1f5f9; color:var(--dark);">My Post</span>
+                        <small style="color:var(--muted);">${new Date(p.created_at).toLocaleString()}</small>
+                    </div>
+                    <div style="font-size:1.1rem; color:var(--dark); margin-bottom:10px;">${p.content}</div>
+                    <div style="font-size:0.85rem; color:var(--muted);"><i class="fas fa-heart" style="color:var(--danger);"></i> ${p.likes.length} Likes • <i class="fas fa-comment"></i> ${p.comments.length} Comments</div>
+                </div>
+            `).join('') || '<div style="padding:3rem; text-align:center; color:var(--muted); font-weight:600; border:2px dashed #e2e8f0; border-radius:1rem;">You haven\'t posted anything in Campus Buzz yet.</div>';
 
         } catch(e) { console.log("Profile Load Error:", e); }
     }
 
     // ======================= 7. POSTING ENGINES =======================
     async function submitLogistics(e) {
-        e.preventDefault(); if(markers.length < 2) return alert("Please map locations."); const f = new FormData();
-        f.append('publisher_id', user.email); f.append('from_addr', markers[0].getLatLng().lat+','+markers[0].getLatLng().lng+'@@'+document.getElementById('p_from').value); f.append('to_addr', markers[1].getLatLng().lat+','+markers[1].getLatLng().lng+'@@'+document.getElementById('p_to').value); f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1] || ''); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
-        Array.from(document.getElementById('p_file').files).forEach(x=>f.append('images', x)); document.querySelector('#form_logistics button[type="submit"]').innerText = "Broadcasting...";
-        await fetch('/api/task/create', {method:'POST', body:f}); document.querySelector('#form_logistics button[type="submit"]').innerHTML = 'Broadcast Logistics Task <i class="fas fa-paper-plane"></i>'; switchHall('logistics'); navigate('hall');
+        e.preventDefault(); if(markers.length < 2) return alert("Please map locations.");
+        const f = new FormData();
+        f.append('publisher_id', user.email); f.append('from_addr', markers[0].getLatLng().lat+','+markers[0].getLatLng().lng+'@@'+document.getElementById('p_from').value); f.append('to_addr', markers[1].getLatLng().lat+','+markers[1].getLatLng().lng+'@@'+document.getElementById('p_to').value);
+        f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1] || ''); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
+        Array.from(document.getElementById('p_file').files).forEach(x=>f.append('images', x));
+        document.querySelector('#form_logistics button[type="submit"]').innerText = "Broadcasting...";
+        await fetch('/api/task/create', {method:'POST', body:f}); 
+        document.querySelector('#form_logistics button[type="submit"]').innerHTML = 'Broadcast Logistics Task <i class="fas fa-paper-plane"></i>';
+        switchHall('logistics'); navigate('hall');
     }
 
     async function submitMarket(e) {
         e.preventDefault(); const f = new FormData();
         f.append('seller_id', user.email); f.append('title', document.getElementById('m_title').value); f.append('price', document.getElementById('m_price').value); f.append('condition', document.getElementById('m_cond').value); f.append('location', document.getElementById('m_loc').value); f.append('description', document.getElementById('m_desc').value);
-        Array.from(document.getElementById('m_file').files).forEach(x=>f.append('images', x)); document.querySelector('#form_market button[type="submit"]').innerText = "Listing...";
-        await fetch('/api/market/create', {method:'POST', body:f}); document.querySelector('#form_market button[type="submit"]').innerHTML = 'List Item in Market <i class="fas fa-store"></i>'; switchHall('market'); navigate('hall');
+        Array.from(document.getElementById('m_file').files).forEach(x=>f.append('images', x));
+        document.querySelector('#form_market button[type="submit"]').innerText = "Listing...";
+        await fetch('/api/market/create', {method:'POST', body:f}); 
+        document.querySelector('#form_market button[type="submit"]').innerHTML = 'List Item in Market <i class="fas fa-store"></i>';
+        switchHall('market'); navigate('hall');
     }
 
     async function submitForum(e) {
         e.preventDefault(); const f = new FormData();
         f.append('author_id', user.email); f.append('author_name', user.anonymous_name); f.append('content', document.getElementById('f_content').value);
-        Array.from(document.getElementById('f_file').files).forEach(x=>f.append('images', x)); document.querySelector('#form_forum button[type="submit"]').innerText = "Posting...";
-        await fetch('/api/forum/create', {method:'POST', body:f}); document.querySelector('#form_forum button[type="submit"]').innerHTML = 'Post to Campus Buzz <i class="fas fa-fire"></i>'; document.getElementById('f_content').value = ""; switchHall('forum'); navigate('hall');
+        Array.from(document.getElementById('f_file').files).forEach(x=>f.append('images', x));
+        document.querySelector('#form_forum button[type="submit"]').innerText = "Posting...";
+        await fetch('/api/forum/create', {method:'POST', body:f}); 
+        document.querySelector('#form_forum button[type="submit"]').innerHTML = 'Post to Campus Buzz <i class="fas fa-fire"></i>';
+        document.getElementById('f_content').value = ""; switchHall('forum'); navigate('hall');
     }
 
     // ======================= 8. AUTHENTICATION =======================
-    async function sendCode() { const email = document.getElementById('r_email').value; if(!email) return alert("Email required"); const btn = document.getElementById('btnSendCode'); btn.innerText = "Sending..."; await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})}); alert("6-digit code dispatched."); btn.innerText = "Get Code"; }
-    document.getElementById('regForm').onsubmit = async e => { e.preventDefault(); const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, gender: document.getElementById('r_gender').value }; const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)}); if(res.ok) { alert("Registration Verified!"); navigate('login'); } else alert("Registration Failed. Check code."); };
-    document.getElementById('loginForm').onsubmit = async e => { e.preventDefault(); const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})}); const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Authentication Failed."); };
+    async function sendCode() {
+        const email = document.getElementById('r_email').value; if(!email) return alert("Email required");
+        const btn = document.getElementById('btnSendCode'); btn.innerText = "Sending...";
+        await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
+        alert("6-digit code dispatched."); btn.innerText = "Get Code";
+    }
+
+    document.getElementById('regForm').onsubmit = async e => {
+        e.preventDefault();
+        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, gender: document.getElementById('r_gender').value };
+        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
+        if(res.ok) { alert("Registration Verified!"); navigate('login'); } else alert("Registration Failed. Check code.");
+    };
+
+    document.getElementById('loginForm').onsubmit = async e => {
+        e.preventDefault();
+        const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})});
+        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Authentication Failed.");
+    };
+
     function nuke() { if(confirm("NUKE ALL GLOBAL DATA?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
     
     navigate('home');
