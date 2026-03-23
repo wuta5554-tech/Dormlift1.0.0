@@ -14,9 +14,6 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <style>
-        /* =============================================================
-           DESIGN SYSTEM: V13.8 Ultimate Anti-AdBlock Edition
-        ============================================================= */
         :root {
             --primary: #4f46e5;
             --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
@@ -105,7 +102,6 @@
         .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; display: inline-block; }
         .kb-pub { background: #f1f5f9; color: var(--dark); }
         .kb-help { background: var(--primary-gradient); color: white; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
-        
         .empty-col-placeholder { flex:1; display:flex; align-items:center; justify-content:center; color:var(--muted); font-weight:600; font-size:0.95rem; border:2px dashed #e2e8f0; border-radius:1rem; padding:2rem; text-align:center;}
 
         #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
@@ -139,13 +135,13 @@
         .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
         .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* THE FIX: Completely evading AdBlockers by renaming to Vault */
-        .vault-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.3); }
-        .vault-card::after { content: ''; position: absolute; right: -20px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
-        .secure-input-group { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
-        .secure-input-group i { color: #cbd5e1; font-size: 1.2rem; }
-        .secure-input-group input { background: transparent; border: none; color: white; padding: 5px; font-size: 1.2rem; box-shadow: none; width: 100%; font-family: monospace; letter-spacing: 2px;}
-        .secure-input-group input:focus { outline: none; border: none; box-shadow: none; background: transparent; }
+        /* Payment Gateway Card UI */
+        .payment-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.3); }
+        .payment-card::after { content: ''; position: absolute; right: -20px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+        .cc-input-group { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+        .cc-input-group i { color: #cbd5e1; font-size: 1.2rem; }
+        .cc-input-group input { background: transparent; border: none; color: white; padding: 5px; font-size: 1.2rem; box-shadow: none; width: 100%; font-family: monospace; letter-spacing: 2px;}
+        .cc-input-group input:focus { outline: none; border: none; box-shadow: none; background: transparent; }
     </style>
 </head>
 <body>
@@ -210,7 +206,7 @@
                     <div style="display:flex; align-items:center; padding-top:1.5rem;"><input type="checkbox" id="p_elevator" style="margin-right:12px; transform:scale(1.2);"><label style="margin:0; text-transform:none;">Elevator Available</label></div>
                 </div>
                 <label>Photos (Max 5)</label><input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">Broadcast Logistics Task <i class="fas fa-paper-plane"></i></button>
+                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">Broadcast Task <i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
 
@@ -266,15 +262,15 @@
             </div>
             
             <div id="kb_log" class="kanban-board tab-content active">
-                <div class="kanban-col" id="wrap_log_pend"><div class="kanban-header"><span><i class="fas fa-hourglass-half" style="color:var(--warning);"></i> Pending</span><span class="kanban-badge" id="cnt_log_pend">0</span></div><div id="col_log_pend" style="flex:1; display:flex; flex-direction:column;"></div></div>
-                <div class="kanban-col" id="wrap_log_prog"><div class="kanban-header"><span><i class="fas fa-truck-ramp-box" style="color:var(--primary);"></i> In Progress</span><span class="kanban-badge" id="cnt_log_prog">0</span></div><div id="col_log_prog" style="flex:1; display:flex; flex-direction:column;"></div></div>
-                <div class="kanban-col" id="wrap_log_hist"><div class="kanban-header"><span><i class="fas fa-check-circle" style="color:var(--success);"></i> History</span><span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist" style="flex:1; display:flex; flex-direction:column;"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-hourglass-half" style="color:var(--warning);"></i> Pending</span><span class="kanban-badge" id="cnt_log_pend">0</span></div><div id="col_log_pend" style="flex:1; display:flex; flex-direction:column;"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-truck-ramp-box" style="color:var(--primary);"></i> In Progress</span><span class="kanban-badge" id="cnt_log_prog">0</span></div><div id="col_log_prog" style="flex:1; display:flex; flex-direction:column;"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-check-circle" style="color:var(--success);"></i> History</span><span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist" style="flex:1; display:flex; flex-direction:column;"></div></div>
             </div>
 
             <div id="kb_mar" class="kanban-board tab-content">
-                <div class="kanban-col" id="wrap_mar_pend"><div class="kanban-header"><span><i class="fas fa-store" style="color:var(--success);"></i> Available</span><span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend" style="flex:1; display:flex; flex-direction:column;"></div></div>
-                <div class="kanban-col" id="wrap_mar_prog"><div class="kanban-header"><span><i class="fas fa-lock" style="color:var(--warning);"></i> Reserved (Escrow)</span><span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog" style="flex:1; display:flex; flex-direction:column;"></div></div>
-                <div class="kanban-col" id="wrap_mar_hist"><div class="kanban-header"><span><i class="fas fa-handshake" style="color:var(--primary);"></i> Sold / Released</span><span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist" style="flex:1; display:flex; flex-direction:column;"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-store" style="color:var(--success);"></i> Available</span><span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend" style="flex:1; display:flex; flex-direction:column;"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-lock" style="color:var(--warning);"></i> Reserved (Escrow)</span><span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog" style="flex:1; display:flex; flex-direction:column;"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-handshake" style="color:var(--primary);"></i> Sold / Released</span><span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist" style="flex:1; display:flex; flex-direction:column;"></div></div>
             </div>
 
             <div id="kb_for" class="tab-content">
@@ -327,56 +323,36 @@
     </div>
 </div>
 
-<div id="vaultModal" class="modal" onclick="if(event.target.id==='vaultModal') this.style.display='none'">
+<div id="checkoutModal" class="modal" onclick="if(event.target.id==='checkoutModal') this.style.display='none'">
     <div class="modal-content" style="max-width:550px; padding:3rem;">
-        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('vaultModal').style.display='none'">&times;</button>
+        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('checkoutModal').style.display='none'">&times;</button>
         
         <div style="text-align:center; margin-bottom:2rem;">
             <i class="fas fa-shield-alt" style="font-size:3rem; color:var(--success); margin-bottom:1rem;"></i>
-            <h2 style="margin:0;">Secure Escrow Transfer</h2>
+            <h2 style="margin:0;">Secure Checkout</h2>
             <p style="color:var(--muted); margin-top:5px;">Funds will be held securely in platform escrow until you confirm receipt.</p>
         </div>
 
-        <div class="vault-card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
-                <i class="fab fa-cc-visa" style="font-size:2rem; color:rgba(255,255,255,0.8);"></i>
-                <i class="fas fa-wifi" style="font-size:1.5rem; color:rgba(255,255,255,0.5);"></i>
-            </div>
-            
+        <div class="payment-card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;"><i class="fab fa-cc-visa" style="font-size:2rem; color:rgba(255,255,255,0.8);"></i><i class="fas fa-wifi" style="font-size:1.5rem; color:rgba(255,255,255,0.5);"></i></div>
             <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Card Number</label>
-            <div class="secure-input-group">
-                <i class="far fa-credit-card"></i>
-                <input type="text" placeholder="0000  0000  0000  0000" maxlength="19" id="secure_num" value="4242 4242 4242 4242">
-            </div>
-
+            <div class="cc-input-group"><i class="far fa-credit-card"></i><input type="text" placeholder="0000  0000  0000  0000" maxlength="19" value="4242 4242 4242 4242"></div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-                <div>
-                    <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Expiry Date</label>
-                    <div class="secure-input-group">
-                        <i class="far fa-calendar-alt"></i>
-                        <input type="text" placeholder="MM/YY" maxlength="5" value="12/28">
-                    </div>
-                </div>
-                <div>
-                    <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">CVC</label>
-                    <div class="secure-input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" placeholder="123" maxlength="3" value="123">
-                    </div>
-                </div>
+                <div><label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Expiry Date</label><div class="cc-input-group"><i class="far fa-calendar-alt"></i><input type="text" placeholder="MM/YY" maxlength="5" value="12/28"></div></div>
+                <div><label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">CVC</label><div class="cc-input-group"><i class="fas fa-lock"></i><input type="password" placeholder="123" maxlength="3" value="123"></div></div>
             </div>
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; background:#f8fafc; border-radius:1rem; margin-bottom:2rem; border:1px solid #eef2f6;">
             <div>
-                <div style="font-weight:700; color:var(--dark); font-size:1.1rem;" id="vault_item_title">Item Name</div>
+                <div style="font-weight:700; color:var(--dark); font-size:1.1rem;" id="checkout_item_title">Item Name</div>
                 <div style="font-size:0.85rem; color:var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> DormLift Buyer Protection</div>
             </div>
-            <div style="font-size:1.8rem; font-weight:900; color:var(--dark);" id="vault_item_price">$0.00</div>
+            <div style="font-size:1.8rem; font-weight:900; color:var(--dark);" id="checkout_item_price">$0.00</div>
         </div>
 
-        <button id="btn_process_vault" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="processVaultTransfer()">
-            Authorize Transfer <i class="fas fa-arrow-right"></i>
+        <button id="btn_process_checkout" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="processCheckout()">
+            Pay Securely <i class="fas fa-arrow-right"></i>
         </button>
     </div>
 </div>
@@ -395,8 +371,7 @@
     let user = JSON.parse(localStorage.getItem('user'));
     let map, routingControl, modalMap, modalRoutingControl, markers = [], modalMarkers = [];
     
-    // Memory state holds active Item directly
-    let state = { log: [], mar: [], for: [], activeId: null, activeType: null, activeReplyId: null, pendingVaultId: null, activeItem: null };
+    let state = { log: [], mar: [], for: [], activeId: null, activeType: null, activeReplyId: null, pendingPayId: null, activeItem: null };
 
     const getAddrText = (str) => { return (!str) ? 'Unknown Location' : (str.includes('@@') ? str.split('@@')[1] : str); };
     const getAddrCoords = (str) => { if (!str || !str.includes('@@')) return null; let coords = str.split('@@')[0].split(',').map(Number); return (coords.length === 2 && !isNaN(coords[0])) ? coords : null; };
@@ -559,7 +534,15 @@
             let btns = '';
             if(item.status === 'pending' && item.publisher_id !== currentUserEmail) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'assigned')">Accept Mission & Start Helping <i class="fas fa-check-circle"></i></button>`;
             if(item.status === 'assigned' && item.publisher_id === currentUserEmail) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>`;
-            if(item.publisher_id === currentUserEmail) btns += `<button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw Task</button>`;
+            
+            // THE FIX: DEV MODE EXPLICIT BUTTONS SO YOU CAN TEST ALONE!
+            if(item.publisher_id === currentUserEmail) {
+                if(item.status === 'pending') {
+                    btns += `<button class="btn" style="background:#0f172a; padding:1.4rem 3rem; margin-right:10px;" onclick="execFlow('log', 'assigned')">DEV TEST: Accept Own Mission</button>`;
+                }
+                btns += `<button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw Task</button>`;
+            }
+
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
         
         } else if (type === 'mar') {
@@ -574,9 +557,14 @@
                 </div>`;
             
             let btns = '';
-            // THE FIX: Safe Vault Invocation without parameters to avoid AdBlock
-            if(item.status === 'available' && item.seller_id !== currentUserEmail) {
-                btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="openVaultModal()">Secure Transfer to Escrow <i class="fas fa-shield-alt"></i></button>`;
+            if(item.status === 'available') {
+                if(item.seller_id !== currentUserEmail) {
+                    btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="openCheckoutModal()">Pay securely to Escrow <i class="fas fa-credit-card"></i></button>`;
+                } else {
+                    // THE FIX: DEV MODE BUY BUTTON SO YOU CAN BUY YOUR OWN ITEMS TO TEST!
+                    btns = `<button class="btn" style="background:#0f172a; padding:1.4rem 3rem; margin-right:10px;" onclick="openCheckoutModal()">DEV TEST: Buy Own Item</button>
+                            <button class="btn btn-danger" onclick="deleteItem('mar', '${item._id}')">Remove Listing</button>`;
+                }
             }
             if(item.status === 'reserved' && item.buyer_id === currentUserEmail) {
                 btns = `<button class="btn" style="background:var(--primary); padding:1.4rem 3rem;" onclick="execFlow('mar', 'completed')">Confirm Receipt & Release Funds <i class="fas fa-handshake"></i></button>
@@ -585,9 +573,7 @@
             if(item.status === 'reserved' && item.seller_id === currentUserEmail) {
                 btns = `<span style="color:var(--muted); font-weight:700;">Waiting for Buyer to confirm receipt...</span>`;
             }
-            if(item.seller_id === currentUserEmail && item.status === 'available') {
-                btns += `<button class="btn btn-danger" onclick="deleteItem('mar', '${item._id}')">Remove Listing</button>`;
-            }
+
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
             
         } else if (type === 'for') {
@@ -654,58 +640,62 @@
         try { await fetch(apiPath, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }); loadHall(); } catch(e) { console.error("Comment Sync Error"); }
     }
 
-    // ======================= THE FIX: TRY-CATCH WRAPPED VAULT MODAL =======================
-    function openVaultModal() {
+    // ======================= THE FIX: SAFE CHECKOUT WITH EXACT IDS =======================
+    function openCheckoutModal() {
         try {
-            if (!user) { alert("Please log in to secure this item."); return navigate('login'); }
+            if (!user) { alert("Please log in to purchase."); return navigate('login'); }
             
             const item = state.activeItem;
             if(!item) { alert("System Error: Failed to retrieve active item from memory."); return; }
 
-            state.pendingVaultId = item._id;
-            document.getElementById('val_item_title').innerText = item.title;
-            document.getElementById('val_item_price').innerText = `$${parseFloat(item.price).toFixed(2)}`;
+            state.pendingPayId = item._id;
             
-            const btn = document.getElementById('btn_process_vault');
-            btn.innerHTML = `Authorize Escrow Transfer <i class="fas fa-arrow-right"></i>`;
+            let safePrice = parseFloat(item.price);
+            if (isNaN(safePrice)) safePrice = 0;
+            
+            // Explicitly setting inner text with EXACT matching HTML IDs
+            document.getElementById('checkout_item_title').innerText = item.title;
+            document.getElementById('checkout_item_price').innerText = `$${safePrice.toFixed(2)}`;
+            
+            const btn = document.getElementById('btn_process_checkout');
+            btn.innerHTML = `Pay Securely <i class="fas fa-arrow-right"></i>`;
             btn.disabled = false;
             
             document.getElementById('masterModal').style.display = 'none';
-            document.getElementById('vaultModal').style.display = 'flex';
+            document.getElementById('checkoutModal').style.display = 'flex';
         } catch (err) {
+            console.error(err);
             alert("UI Rendering Error: " + err.message);
         }
     }
 
-    function processVaultTransfer() {
+    function processCheckout() {
         if (!user) return alert("Session expired.");
-        const btn = document.getElementById('btn_process_vault');
+        const btn = document.getElementById('btn_process_checkout');
         btn.disabled = true;
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Authorizing Transfer...`;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
         
         setTimeout(async () => {
-            btn.innerHTML = `<i class="fas fa-check-circle"></i> Transfer Approved`;
+            btn.innerHTML = `<i class="fas fa-check-circle"></i> Authorized`;
             btn.style.background = 'var(--success)';
             
             try {
                 const res = await fetch('/api/market/workflow', { 
                     method:'POST', headers:{'Content-Type':'application/json'}, 
-                    body:JSON.stringify({item_id: state.pendingVaultId, status: 'reserved', buyer_id: user.email}) 
+                    body:JSON.stringify({item_id: state.pendingPayId, status: 'reserved', buyer_id: user.email}) 
                 });
                 const data = await res.json();
                 
                 setTimeout(() => {
-                    document.getElementById('vaultModal').style.display = 'none';
+                    document.getElementById('checkoutModal').style.display = 'none';
                     btn.style.background = 'var(--primary-gradient)'; 
                     
                     if(data.msg === 'INSUFFICIENT_FUNDS') {
                         alert("Transaction declined: Insufficient wallet balance.");
                     } else if (data.success) {
-                        alert("✅ Transfer Authorized!\n\nFunds are secured in Platform Escrow.\nThe item has been moved to your 'Reserved' Dashboard.");
-                        
+                        alert("✅ Payment Successful!\n\nFunds are secured in Platform Escrow.\nThe item has been moved to your 'Reserved' Dashboard.");
                         switchProf('kb_mar');
                         navigate('profile');
-                        
                         setTimeout(() => {
                             const targetCol = document.getElementById('wrap_mar_prog');
                             if (targetCol) {
@@ -720,7 +710,7 @@
                 }, 800);
             } catch(e) {
                 alert("Network error processing transfer: " + e.message);
-                document.getElementById('vaultModal').style.display = 'none';
+                document.getElementById('checkoutModal').style.display = 'none';
                 btn.style.background = 'var(--primary-gradient)'; 
             }
         }, 1500);
