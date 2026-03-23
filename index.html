@@ -14,6 +14,9 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <style>
+        /* =============================================================
+           DESIGN SYSTEM: V14.0 Flawless Logic & Dev Mode Edition
+        ============================================================= */
         :root {
             --primary: #4f46e5;
             --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
@@ -135,9 +138,9 @@
         .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
         .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Payment Gateway Card UI */
-        .payment-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.3); }
-        .payment-card::after { content: ''; position: absolute; right: -20px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+        /* Secure Payment UI */
+        .secure-vault-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.3); }
+        .secure-vault-card::after { content: ''; position: absolute; right: -20px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
         .cc-input-group { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
         .cc-input-group i { color: #cbd5e1; font-size: 1.2rem; }
         .cc-input-group input { background: transparent; border: none; color: white; padding: 5px; font-size: 1.2rem; box-shadow: none; width: 100%; font-family: monospace; letter-spacing: 2px;}
@@ -323,17 +326,15 @@
     </div>
 </div>
 
-<div id="checkoutModal" class="modal" onclick="if(event.target.id==='checkoutModal') this.style.display='none'">
+<div id="secureVaultModal" class="modal" onclick="if(event.target.id==='secureVaultModal') this.style.display='none'">
     <div class="modal-content" style="max-width:550px; padding:3rem;">
-        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('checkoutModal').style.display='none'">&times;</button>
-        
+        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('secureVaultModal').style.display='none'">&times;</button>
         <div style="text-align:center; margin-bottom:2rem;">
             <i class="fas fa-shield-alt" style="font-size:3rem; color:var(--success); margin-bottom:1rem;"></i>
-            <h2 style="margin:0;">Secure Checkout</h2>
+            <h2 style="margin:0;">Secure Escrow Transfer</h2>
             <p style="color:var(--muted); margin-top:5px;">Funds will be held securely in platform escrow until you confirm receipt.</p>
         </div>
-
-        <div class="payment-card">
+        <div class="secure-vault-card">
             <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;"><i class="fab fa-cc-visa" style="font-size:2rem; color:rgba(255,255,255,0.8);"></i><i class="fas fa-wifi" style="font-size:1.5rem; color:rgba(255,255,255,0.5);"></i></div>
             <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Card Number</label>
             <div class="cc-input-group"><i class="far fa-credit-card"></i><input type="text" placeholder="0000  0000  0000  0000" maxlength="19" value="4242 4242 4242 4242"></div>
@@ -342,18 +343,11 @@
                 <div><label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">CVC</label><div class="cc-input-group"><i class="fas fa-lock"></i><input type="password" placeholder="123" maxlength="3" value="123"></div></div>
             </div>
         </div>
-
         <div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; background:#f8fafc; border-radius:1rem; margin-bottom:2rem; border:1px solid #eef2f6;">
-            <div>
-                <div style="font-weight:700; color:var(--dark); font-size:1.1rem;" id="checkout_item_title">Item Name</div>
-                <div style="font-size:0.85rem; color:var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> DormLift Buyer Protection</div>
-            </div>
-            <div style="font-size:1.8rem; font-weight:900; color:var(--dark);" id="checkout_item_price">$0.00</div>
+            <div><div style="font-weight:700; color:var(--dark); font-size:1.1rem;" id="val_item_title">Item Name</div><div style="font-size:0.85rem; color:var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> DormLift Buyer Protection</div></div>
+            <div style="font-size:1.8rem; font-weight:900; color:var(--dark);" id="val_item_price">$0.00</div>
         </div>
-
-        <button id="btn_process_checkout" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="processCheckout()">
-            Pay Securely <i class="fas fa-arrow-right"></i>
-        </button>
+        <button id="btn_process_transfer" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="processVaultTransfer()">Authorize Transfer <i class="fas fa-arrow-right"></i></button>
     </div>
 </div>
 
@@ -371,7 +365,8 @@
     let user = JSON.parse(localStorage.getItem('user'));
     let map, routingControl, modalMap, modalRoutingControl, markers = [], modalMarkers = [];
     
-    let state = { log: [], mar: [], for: [], activeId: null, activeType: null, activeReplyId: null, pendingPayId: null, activeItem: null };
+    // Memory state holds active Item directly
+    let state = { log: [], mar: [], for: [], activeId: null, activeType: null, activeReplyId: null, activeItem: null };
 
     const getAddrText = (str) => { return (!str) ? 'Unknown Location' : (str.includes('@@') ? str.split('@@')[1] : str); };
     const getAddrCoords = (str) => { if (!str || !str.includes('@@')) return null; let coords = str.split('@@')[0].split(',').map(Number); return (coords.length === 2 && !isNaN(coords[0])) ? coords : null; };
@@ -510,6 +505,7 @@
         }
         if(!item) return alert("Item data unavailable. It might have been deleted.");
         
+        // THE FIX: Directly save the full item.
         state.activeItem = item; 
         const currentUserEmail = user ? user.email : null;
 
@@ -535,7 +531,7 @@
             if(item.status === 'pending' && item.publisher_id !== currentUserEmail) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'assigned')">Accept Mission & Start Helping <i class="fas fa-check-circle"></i></button>`;
             if(item.status === 'assigned' && item.publisher_id === currentUserEmail) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>`;
             
-            // THE FIX: DEV MODE EXPLICIT BUTTONS SO YOU CAN TEST ALONE!
+            // THE FIX: Provide Dev Mode Test Button
             if(item.publisher_id === currentUserEmail) {
                 if(item.status === 'pending') {
                     btns += `<button class="btn" style="background:#0f172a; padding:1.4rem 3rem; margin-right:10px;" onclick="execFlow('log', 'assigned')">DEV TEST: Accept Own Mission</button>`;
@@ -559,10 +555,10 @@
             let btns = '';
             if(item.status === 'available') {
                 if(item.seller_id !== currentUserEmail) {
-                    btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="openCheckoutModal()">Pay securely to Escrow <i class="fas fa-credit-card"></i></button>`;
+                    btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="initiateSecureTransfer()">Transfer securely to Escrow <i class="fas fa-shield-alt"></i></button>`;
                 } else {
-                    // THE FIX: DEV MODE BUY BUTTON SO YOU CAN BUY YOUR OWN ITEMS TO TEST!
-                    btns = `<button class="btn" style="background:#0f172a; padding:1.4rem 3rem; margin-right:10px;" onclick="openCheckoutModal()">DEV TEST: Buy Own Item</button>
+                    // THE FIX: DEV MODE BUTTON so you don't disappear your own test item's button!
+                    btns = `<button class="btn" style="background:#0f172a; padding:1.4rem 3rem; margin-right:10px;" onclick="initiateSecureTransfer()">DEV TEST: Buy Own Item</button>
                             <button class="btn btn-danger" onclick="deleteItem('mar', '${item._id}')">Remove Listing</button>`;
                 }
             }
@@ -640,60 +636,57 @@
         try { await fetch(apiPath, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }); loadHall(); } catch(e) { console.error("Comment Sync Error"); }
     }
 
-    // ======================= THE FIX: SAFE CHECKOUT WITH EXACT IDS =======================
-    function openCheckoutModal() {
-        try {
-            if (!user) { alert("Please log in to purchase."); return navigate('login'); }
-            
-            const item = state.activeItem;
-            if(!item) { alert("System Error: Failed to retrieve active item from memory."); return; }
+    // ======================= THE FIX: DIRECT OBJECT REFERENCE WITHOUT ID MIXUP =======================
+    function initiateSecureTransfer() {
+        if (!user) { alert("Please log in to purchase."); return navigate('login'); }
+        
+        const item = state.activeItem;
+        if(!item) return alert("System error: Item context lost.");
 
-            state.pendingPayId = item._id;
-            
-            let safePrice = parseFloat(item.price);
-            if (isNaN(safePrice)) safePrice = 0;
-            
-            // Explicitly setting inner text with EXACT matching HTML IDs
-            document.getElementById('checkout_item_title').innerText = item.title;
-            document.getElementById('checkout_item_price').innerText = `$${safePrice.toFixed(2)}`;
-            
-            const btn = document.getElementById('btn_process_checkout');
-            btn.innerHTML = `Pay Securely <i class="fas fa-arrow-right"></i>`;
-            btn.disabled = false;
-            
-            document.getElementById('masterModal').style.display = 'none';
-            document.getElementById('checkoutModal').style.display = 'flex';
-        } catch (err) {
-            console.error(err);
-            alert("UI Rendering Error: " + err.message);
-        }
+        let safePrice = parseFloat(item.price);
+        if (isNaN(safePrice)) safePrice = 0;
+        
+        document.getElementById('val_item_title').innerText = item.title;
+        document.getElementById('val_item_price').innerText = `$${safePrice.toFixed(2)}`;
+        
+        const btn = document.getElementById('btn_process_transfer');
+        btn.innerHTML = `Authorize Escrow Transfer <i class="fas fa-arrow-right"></i>`;
+        btn.disabled = false;
+        
+        document.getElementById('masterModal').style.display = 'none';
+        document.getElementById('secureVaultModal').style.display = 'flex';
     }
 
-    function processCheckout() {
+    function processVaultTransfer() {
         if (!user) return alert("Session expired.");
-        const btn = document.getElementById('btn_process_checkout');
+        
+        const item = state.activeItem;
+        if(!item) return alert("Critical Error: Missing item in memory state.");
+
+        const btn = document.getElementById('btn_process_transfer');
         btn.disabled = true;
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Securing Transfer...`;
         
         setTimeout(async () => {
-            btn.innerHTML = `<i class="fas fa-check-circle"></i> Authorized`;
+            btn.innerHTML = `<i class="fas fa-check-circle"></i> Identity Verified`;
             btn.style.background = 'var(--success)';
             
             try {
+                // THE FIX: Directly passing item._id here! No more variables getting crossed!
                 const res = await fetch('/api/market/workflow', { 
                     method:'POST', headers:{'Content-Type':'application/json'}, 
-                    body:JSON.stringify({item_id: state.pendingPayId, status: 'reserved', buyer_id: user.email}) 
+                    body:JSON.stringify({item_id: item._id, status: 'reserved', buyer_id: user.email}) 
                 });
                 const data = await res.json();
                 
                 setTimeout(() => {
-                    document.getElementById('checkoutModal').style.display = 'none';
+                    document.getElementById('secureVaultModal').style.display = 'none';
                     btn.style.background = 'var(--primary-gradient)'; 
                     
                     if(data.msg === 'INSUFFICIENT_FUNDS') {
                         alert("Transaction declined: Insufficient wallet balance.");
                     } else if (data.success) {
-                        alert("✅ Payment Successful!\n\nFunds are secured in Platform Escrow.\nThe item has been moved to your 'Reserved' Dashboard.");
+                        alert("✅ Transfer Authorized!\n\nFunds are secured in Platform Escrow.\nThe item has been moved to your 'Reserved' Dashboard.");
                         switchProf('kb_mar');
                         navigate('profile');
                         setTimeout(() => {
@@ -705,12 +698,12 @@
                             }
                         }, 400);
                     } else {
-                        alert("Server execution failed.");
+                        alert("Server rejection. Item might have been purchased by someone else.");
                     }
                 }, 800);
             } catch(e) {
                 alert("Network error processing transfer: " + e.message);
-                document.getElementById('checkoutModal').style.display = 'none';
+                document.getElementById('secureVaultModal').style.display = 'none';
                 btn.style.background = 'var(--primary-gradient)'; 
             }
         }, 1500);
