@@ -14,6 +14,9 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <style>
+        /* =============================================================
+           DESIGN SYSTEM: V13.6 Ultimate Bulletproof Edition
+        ============================================================= */
         :root {
             --primary: #4f46e5;
             --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
@@ -31,11 +34,11 @@
             --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
         }
 
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
         
-        .page { display: none !important; opacity: 0; }
-        .page.active { display: block !important; animation: slideUp 0.4s ease forwards; }
+        .page { display: none; opacity: 0; }
+        .page.active { display: block; animation: slideUp 0.4s ease forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
@@ -51,14 +54,14 @@
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
+        /* Pure Class-based Tabs */
         .tab-container { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 0.5rem; border-radius: 1rem; box-shadow: var(--shadow-sm); border: 1px solid #eef2f6; }
         .tab-btn { flex: 1; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.1rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; }
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
-        
-        .tab-content { display: none !important; }
-        .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
-        .kanban-board.tab-content.active { display: grid !important; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease forwards; }
+        .kanban-board.tab-content.active { display: grid; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .value-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 5rem; }
@@ -135,9 +138,9 @@
         .thumb-img:hover { transform: scale(1.04); border-color: var(--primary); box-shadow: var(--shadow-sm); }
         .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Payment Gateway */
-        .payment-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.3); }
-        .payment-card::after { content: ''; position: absolute; right: -20px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+        /* THE FIX: Adblock Evasion. Renamed "payment" to "secure-vault" */
+        .secure-vault-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.3); }
+        .secure-vault-card::after { content: ''; position: absolute; right: -20px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
         .cc-input-group { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
         .cc-input-group i { color: #cbd5e1; font-size: 1.2rem; }
         .cc-input-group input { background: transparent; border: none; color: white; padding: 5px; font-size: 1.2rem; box-shadow: none; width: 100%; font-family: monospace; letter-spacing: 2px;}
@@ -202,7 +205,7 @@
                 <div class="form-grid"><div><label>Moving Date & Time</label><input type="datetime-local" id="p_date" required></div><div><label>Reward (NZD)</label><input type="text" id="p_reward" required></div></div>
                 <label>Inventory & Notes</label><textarea id="p_desc" rows="4" required></textarea>
                 <div class="form-grid" style="margin-top:1.5rem; margin-bottom:2rem; background:#fffbeb; padding:1.5rem; border-radius:12px;">
-                    <div><label style="color:var(--medal);">Task Scale (Awards Points)</label><select id="p_scale"><option value="Small">Small Task (1 Pt)</option><option value="Medium">Medium Task (3 Pts)</option><option value="Large">Large Task (5 Pts)</option></select></div>
+                    <div><label style="color:var(--medal);">Task Scale</label><select id="p_scale"><option value="Small">Small Task (1 Pt)</option><option value="Medium">Medium Task (3 Pts)</option><option value="Large">Large Task (5 Pts)</option></select></div>
                     <div style="display:flex; align-items:center; padding-top:1.5rem;"><input type="checkbox" id="p_elevator" style="margin-right:12px; transform:scale(1.2);"><label style="margin:0; text-transform:none;">Elevator Available</label></div>
                 </div>
                 <label>Photos (Max 5)</label><input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
@@ -323,21 +326,18 @@
     </div>
 </div>
 
-<div id="paymentModal" class="modal" onclick="if(event.target.id==='paymentModal') this.style.display='none'">
+<div id="secureVaultModal" class="modal" onclick="if(event.target.id==='secureVaultModal') this.style.display='none'">
     <div class="modal-content" style="max-width:550px; padding:3rem;">
-        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('paymentModal').style.display='none'">&times;</button>
+        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('secureVaultModal').style.display='none'">&times;</button>
         
         <div style="text-align:center; margin-bottom:2rem;">
             <i class="fas fa-shield-alt" style="font-size:3rem; color:var(--success); margin-bottom:1rem;"></i>
-            <h2 style="margin:0;">Secure Escrow Checkout</h2>
+            <h2 style="margin:0;">Secure Escrow Transfer</h2>
             <p style="color:var(--muted); margin-top:5px;">Funds will be held securely in platform escrow until you confirm receipt.</p>
         </div>
 
-        <div class="payment-card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
-                <i class="fab fa-cc-visa" style="font-size:2rem; color:rgba(255,255,255,0.8);"></i>
-                <i class="fas fa-wifi" style="font-size:1.5rem; color:rgba(255,255,255,0.5);"></i>
-            </div>
+        <div class="secure-vault-card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;"><i class="fab fa-cc-visa" style="font-size:2rem; color:rgba(255,255,255,0.8);"></i><i class="fas fa-wifi" style="font-size:1.5rem; color:rgba(255,255,255,0.5);"></i></div>
             <label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Card Number</label>
             <div class="cc-input-group"><i class="far fa-credit-card"></i><input type="text" placeholder="0000  0000  0000  0000" maxlength="19" id="cc_num" value="4242 4242 4242 4242"></div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
@@ -347,13 +347,10 @@
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; background:#f8fafc; border-radius:1rem; margin-bottom:2rem; border:1px solid #eef2f6;">
-            <div>
-                <div style="font-weight:700; color:var(--dark); font-size:1.1rem;" id="pay_item_title">Item Name</div>
-                <div style="font-size:0.85rem; color:var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> DormLift Buyer Protection</div>
-            </div>
-            <div style="font-size:1.8rem; font-weight:900; color:var(--dark);" id="pay_item_price">$0.00</div>
+            <div><div style="font-weight:700; color:var(--dark); font-size:1.1rem;" id="val_item_title">Item Name</div><div style="font-size:0.85rem; color:var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> DormLift Buyer Protection</div></div>
+            <div style="font-size:1.8rem; font-weight:900; color:var(--dark);" id="val_item_price">$0.00</div>
         </div>
-        <button id="btn_process_pay" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="processPayment()">Pay Securely <i class="fas fa-arrow-right"></i></button>
+        <button id="btn_process_transfer" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="authorizeTransaction()">Authorize Escrow Transfer <i class="fas fa-arrow-right"></i></button>
     </div>
 </div>
 
@@ -404,7 +401,6 @@
 
     function logout() { localStorage.clear(); location.reload(); }
 
-    // THE ULTIMATE FIX: Flawless Tab Logic using Class toggling
     function switchHall(tab) {
         ['logistics', 'market', 'forum'].forEach(t => {
             const btn = document.getElementById(`btn_hall_${t}`); const content = document.getElementById(`hall_${t}`);
@@ -491,11 +487,16 @@
 
     async function openMasterModal(type, id) {
         state.activeType = type; state.activeId = id;
+        let endpoint = type === 'log' ? '/api/task/all' : (type === 'mar' ? '/api/market/all' : '/api/forum/all');
+        let d = await (await fetch(endpoint + '?t=' + Date.now())).json();
         
-        let item = state[type].find(x => x._id === id);
+        let item = (d.list || []).find(x => x._id === id);
         if(!item) {
-            const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})}); const dT = await resT.json();
-            const sourceArray = type === 'log' ? (dT.tasks||[]) : (type === 'mar' ? (dT.market||[]) : (dT.posts||[])); item = sourceArray.find(x => x._id === id);
+            const currentUser = user ? user.email : null;
+            if (currentUser) {
+                const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:currentUser})}); const dT = await resT.json();
+                const sourceArray = type === 'log' ? (dT.tasks||[]) : (type === 'mar' ? (dT.market||[]) : (dT.posts||[])); item = sourceArray.find(x => x._id === id);
+            }
         }
         if(!item) return alert("Item data unavailable.");
         
@@ -506,6 +507,8 @@
 
         document.getElementById('mod_thumbs').innerHTML = JSON.parse(item.img_url || '[]').map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('');
         
+        const currentUserEmail = user ? user.email : null;
+
         if (type === 'log') {
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem; letter-spacing:-1.5px;">${item.reward} Mission</h2><span class="status-badge" style="background:var(--primary); color:white;">${item.status}</span></div>`;
             let fC = getAddrCoords(item.from_addr); let tC = getAddrCoords(item.to_addr);
@@ -520,9 +523,9 @@
                 </div>`;
             
             let btns = '';
-            if(item.status === 'pending' && item.publisher_id !== user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'assigned')">Accept Mission & Start Helping <i class="fas fa-check-circle"></i></button>`;
-            if(item.status === 'assigned' && item.publisher_id === user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>`;
-            if(item.publisher_id === user.email) btns += `<button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw Task</button>`;
+            if(item.status === 'pending' && item.publisher_id !== currentUserEmail) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'assigned')">Accept Mission & Start Helping <i class="fas fa-check-circle"></i></button>`;
+            if(item.status === 'assigned' && item.publisher_id === currentUserEmail) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>`;
+            if(item.publisher_id === currentUserEmail) btns += `<button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw Task</button>`;
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
         
         } else if (type === 'mar') {
@@ -537,18 +540,18 @@
                 </div>`;
             
             let btns = '';
-            // THE FIX: Calling openPaymentModal without parameter strings!
-            if(item.status === 'available' && item.seller_id !== user.email) {
-                btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="openPaymentModal()">Pay securely to Escrow <i class="fas fa-credit-card"></i></button>`;
+            // THE FIX: Safe Null Checking before rendering the transfer button
+            if(item.status === 'available' && item.seller_id !== currentUserEmail) {
+                btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="initiateSecureTransfer()">Transfer securely to Escrow <i class="fas fa-shield-alt"></i></button>`;
             }
-            if(item.status === 'reserved' && item.buyer_id === user.email) {
+            if(item.status === 'reserved' && item.buyer_id === currentUserEmail) {
                 btns = `<button class="btn" style="background:var(--primary); padding:1.4rem 3rem;" onclick="execFlow('mar', 'completed')">Confirm Receipt & Release Funds <i class="fas fa-handshake"></i></button>
                         <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger);" onclick="execFlow('mar', 'available')">Cancel & Refund</button>`;
             }
-            if(item.status === 'reserved' && item.seller_id === user.email) {
+            if(item.status === 'reserved' && item.seller_id === currentUserEmail) {
                 btns = `<span style="color:var(--muted); font-weight:700;">Waiting for Buyer to confirm receipt...</span>`;
             }
-            if(item.seller_id === user.email && item.status === 'available') {
+            if(item.seller_id === currentUserEmail && item.status === 'available') {
                 btns += `<button class="btn btn-danger" onclick="deleteItem('mar', '${item._id}')">Remove Listing</button>`;
             }
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
@@ -592,6 +595,7 @@
     function cancelReply() { state.activeReplyId = null; document.getElementById('reply_hint').style.display='none'; }
 
     async function postMasterComment() {
+        if (!user) { alert("Please log in to post a comment."); return navigate('login'); }
         const text = document.getElementById('mod_input').value; if(!text) return;
         const apiPath = state.activeType === 'log' ? '/api/task/comment' : (state.activeType === 'mar' ? '/api/market/comment' : '/api/forum/interact');
         const payload = { id: String(Date.now()), user: user.anonymous_name, text, parentId: state.activeReplyId, time: new Date() };
@@ -616,29 +620,36 @@
         try { await fetch(apiPath, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }); loadHall(); } catch(e) { console.error("Comment network trace lost"); }
     }
 
-    function openPaymentModal() {
+    // ======================= THE FIX: ADBLOCK-EVADING TRANSFER MODAL =======================
+    function initiateSecureTransfer() {
+        if (!user) { alert("Please log in to purchase."); return navigate('login'); }
         const item = state.activeItem;
-        if(!item) return alert("System error: Item context lost.");
+        if(!item) { alert("System error: Item context lost."); return; }
 
         state.pendingPayId = item._id;
-        document.getElementById('pay_item_title').innerText = item.title;
-        document.getElementById('pay_item_price').innerText = `$${parseFloat(item.price).toFixed(2)}`;
         
-        const btn = document.getElementById('btn_process_pay');
-        btn.innerHTML = `Pay Securely <i class="fas fa-arrow-right"></i>`;
+        let safePrice = parseFloat(item.price);
+        if (isNaN(safePrice)) safePrice = 0;
+        
+        document.getElementById('val_item_title').innerText = item.title;
+        document.getElementById('val_item_price').innerText = `$${safePrice.toFixed(2)}`;
+        
+        const btn = document.getElementById('btn_process_transfer');
+        btn.innerHTML = `Authorize Escrow Transfer <i class="fas fa-arrow-right"></i>`;
         btn.disabled = false;
         
         document.getElementById('masterModal').style.display = 'none';
-        document.getElementById('paymentModal').style.display = 'flex';
+        document.getElementById('secureVaultModal').style.display = 'flex';
     }
 
-    function processPayment() {
-        const btn = document.getElementById('btn_process_pay');
+    function authorizeTransaction() {
+        if (!user) return alert("User session lost.");
+        const btn = document.getElementById('btn_process_transfer');
         btn.disabled = true;
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing Secure Payment...`;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Securing Transfer...`;
         
         setTimeout(async () => {
-            btn.innerHTML = `<i class="fas fa-check-circle"></i> Payment Authorized`;
+            btn.innerHTML = `<i class="fas fa-check-circle"></i> Identity Verified`;
             btn.style.background = 'var(--success)';
             
             try {
@@ -649,17 +660,15 @@
                 const data = await res.json();
                 
                 setTimeout(() => {
-                    document.getElementById('paymentModal').style.display = 'none';
+                    document.getElementById('secureVaultModal').style.display = 'none';
                     btn.style.background = 'var(--primary-gradient)'; 
                     
                     if(data.msg === 'INSUFFICIENT_FUNDS') {
-                        alert("Virtual Bank declined: Insufficient wallet balance.");
+                        alert("Transaction declined: Insufficient wallet balance.");
                     } else if (data.success) {
-                        alert("✅ Payment Successful!\n\nFunds are secured in Platform Escrow.\nThe item has been moved to your 'Reserved' Dashboard.");
-                        
-                        switchTab('prof', 'market');
+                        alert("✅ Transfer Authorized!\n\nFunds are secured in Platform Escrow.\nThe item has been moved to your 'Reserved' Dashboard.");
+                        switchProf('kb_mar');
                         navigate('profile');
-                        
                         setTimeout(() => {
                             const targetCol = document.getElementById('wrap_mar_prog');
                             if (targetCol) {
@@ -671,14 +680,15 @@
                     }
                 }, 800);
             } catch(e) {
-                alert("Network error processing payment.");
-                document.getElementById('paymentModal').style.display = 'none';
+                alert("Network error processing transfer.");
+                document.getElementById('secureVaultModal').style.display = 'none';
                 btn.style.background = 'var(--primary-gradient)'; 
             }
         }, 1500);
     }
 
     async function execFlow(type, status) {
+        if (!user) { alert("Please log in."); return navigate('login'); }
         let actText = status === 'assigned' ? 'Accept Mission' : (status === 'completed' ? 'Confirm Delivery/Receipt' : 'Update Status');
         if(!confirm(`Confirm: ${actText}?`)) return;
         
@@ -692,7 +702,7 @@
                 alert(`✅ Success!\n\nThe item has been updated on your Dashboard.`);
                 document.getElementById('masterModal').style.display = 'none'; 
                 
-                switchTab('prof', type === 'log' ? 'logistics' : 'market');
+                switchProf(`kb_${type}`);
                 navigate('profile');
                 
                 setTimeout(() => {
@@ -709,6 +719,7 @@
     }
 
     async function deleteItem(type, id) {
+        if(!user) return;
         if(!confirm("Permanently withdraw from network?")) return;
         const api = type === 'log' ? '/api/task/delete' : '/api/market/delete';
         await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, email:user.email}) });
@@ -716,12 +727,14 @@
     }
 
     async function interactForum(id, action) {
+        if(!user) return alert("Please log in to like posts.");
         await fetch('/api/forum/interact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({post_id:id, action, email:user.email}) });
         loadHall(); 
     }
 
     // ======================= 6. MULTI-KANBAN PROFILE =======================
     async function loadProfileData() {
+        if (!user) return;
         try {
             const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json(); const u = d.user;
             
