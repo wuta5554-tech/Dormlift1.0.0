@@ -1,7 +1,7 @@
 {
   "name": "dormlift-pro",
-  "version": "1.0.0",
-  "description": "The Campus Super App Core Server",
+  "version": "12.2.0",
+  "description": "DormLift Pro - Campus Super App Master Node (Finance & Logistics Edition)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,10 +12,13 @@
     "cloudinary": "^2.0.3",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "mongoose": "^8.0.0",
+    "mongoose": "^8.2.0",
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
     "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "author": "DormLift Team",
   "license": "ISC"
