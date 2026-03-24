@@ -1,8 +1,8 @@
 /**
- * DormLift Pro - Super App Master Node (V12.11 Pure Restoration)
- * -------------------------------------------------------------
- * 严格 1:1 复刻你提供的 V12.1 稳定版代码。
- * 仅在 Market Workflow 中植入 PIN 码逻辑，不改动任何路由优先级。
+ * DormLift Pro - Super App Master Node (V12.15 Reference-First Edition)
+ * --------------------------------------------------------------------
+ * 严格基于用户提供的 V12.1 参考代码进行 1:1 复刻。
+ * 仅在 Market Workflow 植入 PIN 码逻辑。
  */
 
 const express = require('express');
@@ -12,24 +12,24 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const bcrypt = require('bcryptjs');
-const path = require('path'); // 仅用于确保路径兼容
+const path = require('path'); 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 // ==========================================
-// 1. Environment & Database (严格原版)
+// 1. Environment & Database Connection
 // ==========================================
 const MONGO_URI = process.env.MONGO_URI;
 const GAS_URL = process.env.GAS_URL;
 
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ DormLift V12.11: Restoration Complete. Map logic is now 1:1 with V12.1'))
+    .then(() => console.log('✅ DormLift Super App DB Connected (V12.15 Reference Engine)'))
     .catch(err => console.error('❌ DB Connection Error:', err));
 
 // ==========================================
-// 2. Database Schemas (严格原版)
+// 2. Database Schemas (严格还原参考代码)
 // ==========================================
 const User = mongoose.model('User', new mongoose.Schema({
     student_id: { type: String, required: true, unique: true }, 
@@ -45,7 +45,7 @@ const User = mongoose.model('User', new mongoose.Schema({
     task_count: { type: Number, default: 0 },
     medal_points: { type: Number, default: 0 },
     point_history: { type: Array, default: [] },
-    wallet_balance: { type: Number, default: 1000 },
+    wallet_balance: { type: Number, default: 1000 }, 
     created_at: { type: Date, default: Date.now }
 }));
 
@@ -78,7 +78,7 @@ const MarketItem = mongoose.model('MarketItem', new mongoose.Schema({
     location: { type: String, required: true },
     img_url: { type: String, default: "[]" },
     status: { type: String, enum: ['available', 'reserved', 'completed'], default: 'available' },
-    locked_at: { type: Date, default: null },
+    locked_at: { type: Date, default: null }, 
     comments: { type: Array, default: [] },
     created_at: { type: Date, default: Date.now }
 }));
@@ -100,7 +100,7 @@ const VerifyCode = mongoose.model('VerifyCode', new mongoose.Schema({
 }));
 
 // ==========================================
-// 3. Daemons & Cloudinary (严格原版)
+// 3. Auto-Release Daemon
 // ==========================================
 setInterval(async () => {
     try {
@@ -108,12 +108,14 @@ setInterval(async () => {
         const expiredItems = await MarketItem.find({ status: 'reserved', locked_at: { $lte: sevenDaysAgo } });
         for (let item of expiredItems) {
             await User.findOneAndUpdate({ email: item.seller_id }, { $inc: { wallet_balance: item.price } });
-            item.status = 'completed';
-            await item.save();
+            item.status = 'completed'; await item.save();
         }
     } catch (e) { console.error(e); }
 }, 1000 * 60 * 60);
 
+// ==========================================
+// 4. Cloudinary Configuration
+// ==========================================
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_NAME, api_key: process.env.CLOUDINARY_KEY, api_secret: process.env.CLOUDINARY_SECRET });
 const storage = new CloudinaryStorage({ cloudinary, params: { folder: 'dormlift_superapp', allowed_formats: ['jpg', 'png', 'jpeg', 'mp4'] } });
 const upload = multer({ storage });
@@ -123,15 +125,14 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 // ==========================================
-// 4. APIs (此处严格复刻 V12.1 的所有接口和逻辑)
+// 5. Authentication APIs (严格还原)
 // ==========================================
-
-// --- Auth ---
 app.post('/api/auth/send-code', async (req, res) => {
-    const { email } = req.body; const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const { email } = req.body; 
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     try {
         await VerifyCode.findOneAndUpdate({ email }, { code, expire_at: new Date(Date.now() + 5 * 60000) }, { upsert: true });
-        await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: email, subject: "DormLift Code", html: `<b>${code}</b>` }) });
+        await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: email, subject: "DormLift Access Code", html: `<h2>${code}</h2>` }) });
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
@@ -157,18 +158,31 @@ app.post('/api/auth/login', async (req, res) => {
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// --- Logistics (地图数据源) ---
-app.get('/api/task/all', async (req, res) => {
-    const list = await Task.find({ status: 'pending', helper_id: null }).sort({ created_at: -1 }); 
-    res.json({ success: true, list });
+app.get('/api/user/detail/:email', async (req, res) => {
+    const user = await User.findOne({ email: req.params.email }, { password: 0 }); 
+    res.json({ success: true, user });
 });
 
+// ==========================================
+// 6. Logistics APIs (严格还原 1:1 数据结构)
+// ==========================================
 app.post('/api/task/create', upload.array('images', 5), async (req, res) => {
     try {
         let pts = req.body.task_scale === 'Large' ? 5 : (req.body.task_scale === 'Medium' ? 3 : 1);
         await new Task({ ...req.body, medal_points: pts, img_url: JSON.stringify(req.files ? req.files.map(f => f.path) : []) }).save();
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
+});
+
+app.get('/api/task/all', async (req, res) => {
+    // 这里是地图渲染的生命线，绝对保持参考代码格式
+    const list = await Task.find({ status: 'pending', helper_id: null }).sort({ created_at: -1 }); 
+    res.json({ success: true, list });
+});
+
+app.post('/api/task/comment', async (req, res) => {
+    try { await Task.findByIdAndUpdate(req.body.task_id, { $push: { comments: req.body.comment } }); res.json({ success: true }); }
+    catch (e) { res.status(500).json({ success: false }); }
 });
 
 app.post('/api/task/workflow', async (req, res) => {
@@ -187,7 +201,20 @@ app.post('/api/task/workflow', async (req, res) => {
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// --- Market (唯一植入 PIN 逻辑处) ---
+app.post('/api/task/delete', async (req, res) => {
+    await Task.findByIdAndDelete(req.body.task_id); res.json({ success: true });
+});
+
+// ==========================================
+// 7. Market APIs (仅加入 PIN 码通知逻辑)
+// ==========================================
+app.post('/api/market/create', upload.array('images', 5), async (req, res) => {
+    try {
+        await new MarketItem({ ...req.body, img_url: JSON.stringify(req.files ? req.files.map(f => f.path) : []) }).save();
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ success: false }); }
+});
+
 app.get('/api/market/all', async (req, res) => {
     const list = await MarketItem.find({ status: 'available' }).sort({ created_at: -1 }); 
     res.json({ success: true, list });
@@ -198,27 +225,34 @@ app.post('/api/market/workflow', async (req, res) => {
         const { item_id, status, buyer_id } = req.body;
         const item = await MarketItem.findById(item_id);
         let updates = { status };
+
         if (status === 'reserved' && buyer_id) {
             const buyer = await User.findOne({ email: buyer_id });
             if (buyer.wallet_balance < item.price) return res.status(400).json({ success: false, msg: "INSUFFICIENT_FUNDS" });
             await User.findOneAndUpdate({ email: buyer_id }, { $inc: { wallet_balance: -item.price } });
             updates.buyer_id = buyer_id; updates.locked_at = new Date(); 
-            // 植入 PIN 逻辑
+            
+            // 【植入：生成并发送 PIN 码】
             const pin = String(parseInt(item_id.substring(item_id.length - 4), 16) % 10000).padStart(4, '0');
-            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: buyer_id, subject: "DormLift PIN", html: `<h3>PIN: ${pin}</h3>` }) }).catch(e => console.log(e));
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: buyer_id, subject: "DormLift Handover PIN", html: `<h3>Your PIN: ${pin}</h3>` }) }).catch(e => console.log(e));
         }
+
         if (status === 'completed' && item.status === 'reserved') {
             await User.findOneAndUpdate({ email: item.seller_id }, { $inc: { wallet_balance: item.price } });
         }
+
         if (status === 'available' && item.status === 'reserved') {
             if (item.buyer_id) await User.findOneAndUpdate({ email: item.buyer_id }, { $inc: { wallet_balance: item.price } });
             updates.buyer_id = null; updates.locked_at = null;
         }
+
         await MarketItem.findByIdAndUpdate(item_id, { $set: updates }); res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// --- Forum (Discover) ---
+// ==========================================
+// 8. Forum APIs (严格还原)
+// ==========================================
 app.get('/api/forum/all', async (req, res) => {
     const list = await ForumPost.find().sort({ created_at: -1 }); res.json({ success: true, list });
 });
@@ -241,7 +275,9 @@ app.post('/api/forum/interact', async (req, res) => {
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// --- Dashboard & Tools ---
+// ==========================================
+// 9. Dashboard & Utilities
+// ==========================================
 app.post('/api/user/dashboard', async (req, res) => {
     try {
         const { email } = req.body;
@@ -257,4 +293,7 @@ app.post('/api/dev/nuke', async (req, res) => {
     res.json({ success: true });
 });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 DormLift V12.11 Pure Restoration Active on ${PORT}`));
+// SPA 刷新兜底 (解决 Cannot GET)
+app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
+
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 DormLift V12.15 Reference-First Active on ${PORT}`));
