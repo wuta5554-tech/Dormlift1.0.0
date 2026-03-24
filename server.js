@@ -1,5 +1,5 @@
 // ============================================================================
-// DORM LIFT PRO - ULTIMATE PRODUCTION SERVER (V27.0 RAILWAY VARIABLES EDITION)
+// DORM LIFT PRO - ULTIMATE PRODUCTION SERVER (V28.0 FULL STACK + RAILWAY ENV)
 // ============================================================================
 
 const express = require('express');
@@ -10,14 +10,17 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const cloudinary = require('cloudinary').v2;
 const streamifier = require('streamifier');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// 【修复核心】：告诉 Express 把当前文件夹里的 index.html 作为静态网页开放出去
+app.use(express.static(path.join(__dirname)));
+
 // ======================= 1. 云端图床配置 (Cloudinary) =======================
-// 完美对接您 Railway 里的环境变量
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
     api_key: process.env.CLOUDINARY_KEY,
@@ -26,7 +29,6 @@ cloudinary.config({
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// 真实的 Cloudinary 流式上传功能
 const uploadToCloudinary = async (files) => {
     if (!files || files.length === 0) return [];
     const urls = [];
@@ -44,8 +46,6 @@ const uploadToCloudinary = async (files) => {
 };
 
 // ======================= 2. 真实邮件发送系统 (SMTP) =======================
-// 完美对接您的 SMTP_EMAIL 和 SMTP_PASSWORD
-// 自动适配 163 邮箱或通用 SMTP 端口
 const smtpHost = (process.env.SMTP_EMAIL || '').includes('@gmail.com') ? 'smtp.gmail.com' : 'smtp.163.com';
 
 const transporter = nodemailer.createTransport({
@@ -61,11 +61,11 @@ const transporter = nodemailer.createTransport({
 const notifier = {
     sendEmail: (to, subject, html) => {
         if (!process.env.SMTP_EMAIL) {
-            console.log(`[Notifier] ⚠️ Railway 环境变量 SMTP_EMAIL 未设置！无法发送至 ${to}`);
+            console.log(`[Notifier] ⚠️ SMTP_EMAIL 未设置，无法发信至: ${to}`);
             return;
         }
         transporter.sendMail({ from: `"DormLift Hub" <${process.env.SMTP_EMAIL}>`, to, subject, html })
-            .then(() => console.log(`[Notifier] 📧 Async Email Sent to: ${to}`))
+            .then(() => console.log(`[Notifier] 📧 Email sent to: ${to}`))
             .catch(err => console.error(`[Notifier] ❌ Error sending to ${to}:`, err.message));
     }
 };
@@ -74,9 +74,8 @@ const notifier = {
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017'; 
 let db;
 
-MongoClient.connect(MONGO_URI, { useUnifiedTopology: true })
+MongoClient.connect(MONGO_URI)
     .then(client => { 
-        // 提取 URI 中的数据库名，如果没有则默认 dormlift_pro
         const dbNameMatch = MONGO_URI.match(/\/([^\/?]+)(\?|$)/);
         const dbName = dbNameMatch ? dbNameMatch[1] : 'dormlift_pro';
         db = client.db(dbName); 
@@ -84,14 +83,11 @@ MongoClient.connect(MONGO_URI, { useUnifiedTopology: true })
     })
     .catch(err => console.error("❌ DB Connection Error:", err));
 
-// 内存中临时存储验证码
 const verificationCodes = {};
 
 // ======================= 4. 身份认证与 8888 金钥匙 =======================
 app.post('/api/auth/send-code', (req, res) => {
     const { email } = req.body;
-    
-    // 生成真实的 6位 随机验证码
     const realCode = Math.floor(100000 + Math.random() * 900000).toString();
     verificationCodes[email] = realCode; 
 
@@ -103,7 +99,7 @@ app.post('/api/auth/register', async (req, res) => {
     try {
         const { student_id, anonymous_name, first_name, given_name, email, password, phone, gender, code } = req.body;
         
-        // 🔑 终极金钥匙逻辑：只要输入 8888，或者真实的验证码，统统放行！
+        // 🔑 8888 万能后门 or 真实验证码
         if (code !== '8888' && code !== verificationCodes[email]) {
             return res.status(400).json({ success: false, msg: "Invalid Code" });
         }
@@ -156,7 +152,6 @@ app.get('/api/market/all', async (req, res) => {
 
 app.post('/api/market/create', upload.array('images', 5), async (req, res) => {
     try {
-        // 真实长传到您的 Cloudinary
         const imgUrls = await uploadToCloudinary(req.files);
         const item = { ...req.body, img_url: JSON.stringify(imgUrls), status: 'available', comments: [], created_at: new Date(), updated_at: new Date() };
         await db.collection('market').insertOne(item);
@@ -175,24 +170,20 @@ app.post('/api/market/workflow', async (req, res) => {
             const handoverPin = parseInt(item_id.substring(item_id.length - 4), 16) % 10000;
             const formattedPin = String(handoverPin).padStart(4, '0');
 
-            // 扣除余额放入 Escrow
             const buyer = await db.collection('users').findOne({ email: buyer_id });
             if (buyer.wallet_balance < parseFloat(item.price)) return res.status(400).json({ success: false, msg: 'INSUFFICIENT_FUNDS' });
             
             await db.collection('users').updateOne({ email: buyer_id }, { $inc: { wallet_balance: -parseFloat(item.price) } });
             await db.collection('market').updateOne({ _id: new ObjectId(item_id) }, { $set: { status: 'reserved', buyer_id, updated_at: new Date() } });
 
-            // 发送真实的邮件通知
             notifier.sendEmail(buyer_id, '🔒 DormLift: Your Secure Handover PIN', `<h3>Payment Secured in Escrow!</h3><p>Your Handover PIN is: <b style="font-size:24px; color:#4f46e5;">${formattedPin}</b></p><p>DO NOT share this PIN until you inspect the item in person.</p>`);
             notifier.sendEmail(item.seller_id, '🎉 DormLift: Your item was reserved!', `<h3>Action Required: Arrange Meetup</h3><p>Funds are secured in Escrow. Please login to arrange a meetup and ask the buyer for their 4-digit PIN to release the funds.</p>`);
 
         } else if (status === 'completed') {
-            // 卖家验证了买家的 PIN 码，放款！
             await db.collection('users').updateOne({ email: item.seller_id }, { $inc: { wallet_balance: parseFloat(item.price) } });
             await db.collection('market').updateOne({ _id: new ObjectId(item_id) }, { $set: { status: 'completed', updated_at: new Date() } });
             notifier.sendEmail(item.seller_id, '💰 Funds Released!', `<p>The buyer has confirmed receipt. $${item.price} has been added to your DormLift wallet.</p>`);
         } else if (status === 'available') {
-            // 取消订单退款
             if(item.buyer_id) await db.collection('users').updateOne({ email: item.buyer_id }, { $inc: { wallet_balance: parseFloat(item.price) } });
             await db.collection('market').updateOne({ _id: new ObjectId(item_id) }, { $set: { status: 'available', buyer_id: null, updated_at: new Date() } });
         }
@@ -297,7 +288,13 @@ app.post('/api/dev/nuke', async (req, res) => {
     res.json({ success: true, msg: "GLOBAL WIPE COMPLETED" });
 });
 
-const PORT = process.env.PORT || 3000;
+// ======================= 9. 前端页面路由防丢 =======================
+// 如果用户在浏览器刷新，找不到 API 路径时，强制导向 index.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`🚀 DormLift Server running on port ${PORT}`);
 });
