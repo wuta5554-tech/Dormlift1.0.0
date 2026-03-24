@@ -1,12 +1,11 @@
 {
   "name": "dormlift-pro",
-  "version": "12.2.1",
-  "description": "DormLift Pro - Fixed Dependency Edition",
+  "version": "12.2.2",
+  "description": "DormLift Pro - High Speed Build Edition",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "install": "npm install --legacy-peer-deps"
+    "dev": "node server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -17,6 +16,9 @@
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
     "node-fetch": "^3.3.2"
+  },
+  "overrides": {
+    "cloudinary": "$cloudinary"
   },
   "engines": {
     "node": ">=18.0.0"
