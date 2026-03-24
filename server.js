@@ -1,10 +1,10 @@
 /**
- * DormLift Pro - Super App Master Node (V12.5 Precision Clone)
+ * DormLift Pro - Super App Master Node (V12.6 Map-First Restoration)
  * -------------------------------------------------------------
- * 严格基于 V12.1 原始逻辑，仅做以下三处微创增强：
- * 1. 补齐所有缺失接口（Comment, Delete, Interact），确保前端脚本不挂钩。
- * 2. 修复 SPA 刷新白屏 (Catch-all route)。
- * 3. 植入交易 PIN 码通知逻辑。
+ * 严格按照 V12.1 源码逻辑复刻，仅进行以下 3 处微调：
+ * 1. 补齐 path 模块与 * 路由兜底（修复白屏）。
+ * 2. 仅在 Market Workflow 植入 GAS 邮件 PIN 码逻辑。
+ * 3. 严格保留 Task 的 list 返回格式，确保地图渲染。
  */
 
 const express = require('express');
@@ -21,17 +21,17 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // ==========================================
-// 1. Environment & Database
+// 1. Environment & Database (V12.1 原始配置)
 // ==========================================
 const MONGO_URI = process.env.MONGO_URI;
 const GAS_URL = process.env.GAS_URL;
 
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ DormLift DB Connected (V12.5 Stable Engine)'))
+    .then(() => console.log('✅ DormLift DB Connected (V12.6 Map Restored)'))
     .catch(err => console.error('❌ DB Connection Error:', err));
 
 // ==========================================
-// 2. Database Schemas (严格还原 V12.1)
+// 2. Database Schemas (1:1 还原 V12.1)
 // ==========================================
 const User = mongoose.model('User', new mongoose.Schema({
     student_id: { type: String, required: true, unique: true }, 
@@ -102,7 +102,7 @@ const VerifyCode = mongoose.model('VerifyCode', new mongoose.Schema({
 }));
 
 // ==========================================
-// 3. Daemons & Cloudinary
+// 3. Daemons & Cloudinary (V12.1 风格)
 // ==========================================
 setInterval(async () => {
     try {
@@ -124,10 +124,10 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 // ==========================================
-// 4. Logistics APIs (恢复地图核心数据)
+// 4. Logistics APIs (严格地图数据源)
 // ==========================================
 app.get('/api/task/all', async (req, res) => {
-    // 严格按原版返回，保证地图 Marker 逻辑获取正确 list
+    // 严格确保返回 success: true 和 list 键名，地图 marker 强依赖此格式
     const list = await Task.find({ status: 'pending', helper_id: null }).sort({ created_at: -1 }); 
     res.json({ success: true, list });
 });
@@ -136,13 +136,6 @@ app.post('/api/task/create', upload.array('images', 5), async (req, res) => {
     try {
         let pts = req.body.task_scale === 'Large' ? 5 : (req.body.task_scale === 'Medium' ? 3 : 1);
         await new Task({ ...req.body, medal_points: pts, img_url: JSON.stringify(req.files ? req.files.map(f => f.path) : []) }).save();
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ success: false }); }
-});
-
-app.post('/api/task/comment', async (req, res) => {
-    try {
-        await Task.findByIdAndUpdate(req.body.task_id, { $push: { comments: req.body.comment } }); 
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
@@ -162,6 +155,11 @@ app.post('/api/task/workflow', async (req, res) => {
         await Task.findByIdAndUpdate(task_id, { $set: updates }); 
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
+});
+
+app.post('/api/task/comment', async (req, res) => {
+    await Task.findByIdAndUpdate(req.body.task_id, { $push: { comments: req.body.comment } }); 
+    res.json({ success: true });
 });
 
 app.post('/api/task/delete', async (req, res) => {
@@ -187,29 +185,19 @@ app.post('/api/market/workflow', async (req, res) => {
             if (buyer.wallet_balance < item.price) return res.status(400).json({ success: false, msg: "INSUFFICIENT_FUNDS" });
             await User.findOneAndUpdate({ email: buyer_id }, { $inc: { wallet_balance: -item.price } });
             updates.buyer_id = buyer_id; updates.locked_at = new Date(); 
-            // 发送 PIN 码
+            // 植入 PIN 码邮件
             const pin = String(parseInt(item_id.substring(item_id.length - 4), 16) % 10000).padStart(4, '0');
-            await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: buyer_id, subject: "DormLift PIN", html: `<h3>PIN: ${pin}</h3>` }) });
+            await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: buyer_id, subject: "DormLift PIN", html: `<h3>Handover PIN: ${pin}</h3>` }) });
         }
         if (status === 'completed' && item.status === 'reserved') {
             await User.findOneAndUpdate({ email: item.seller_id }, { $inc: { wallet_balance: item.price } });
         }
-        await MarketItem.findByIdAndUpdate(item_id, { $set: updates }); 
-        res.json({ success: true });
+        await MarketItem.findByIdAndUpdate(item_id, { $set: updates }); res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-app.post('/api/market/comment', async (req, res) => {
-    try { await MarketItem.findByIdAndUpdate(req.body.item_id, { $push: { comments: req.body.comment } }); res.json({ success: true }); }
-    catch (e) { res.status(500).json({ success: false }); }
-});
-
-app.post('/api/market/delete', async (req, res) => {
-    await MarketItem.findByIdAndDelete(req.body.task_id); res.json({ success: true });
-});
-
 // ==========================================
-// 6. Forum & Auth (严格复刻)
+// 6. Forum & Auth (100% 还原 V12.1)
 // ==========================================
 app.get('/api/forum/all', async (req, res) => {
     const list = await ForumPost.find().sort({ created_at: -1 }); res.json({ success: true, list });
@@ -237,7 +225,7 @@ app.post('/api/auth/send-code', async (req, res) => {
     const { email } = req.body; const code = Math.floor(100000 + Math.random() * 900000).toString();
     try {
         await VerifyCode.findOneAndUpdate({ email }, { code, expire_at: new Date(Date.now() + 5 * 60000) }, { upsert: true });
-        await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: email, subject: "Code", html: `<h2>${code}</h2>` }) });
+        await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: email, subject: "DormLift Code", html: `<h2>${code}</h2>` }) });
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
@@ -277,14 +265,9 @@ app.post('/api/user/dashboard', async (req, res) => {
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-app.post('/api/dev/nuke', async (req, res) => {
-    await Task.deleteMany({}); await MarketItem.deleteMany({}); await ForumPost.deleteMany({}); await User.deleteMany({}); await VerifyCode.deleteMany({});
-    res.json({ success: true });
-});
-
 // ==========================================
 // 7. Routing Fallback (SPA)
 // ==========================================
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 DormLift V12.5 Precision Active on ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 DormLift V12.6 Precision Active on ${PORT}`));
