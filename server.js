@@ -1,10 +1,11 @@
 /**
- * DormLift Pro - Super App Master Node (V11.4 最终集成版)
+ * DormLift Pro - Super App Master Node (V11.5 终极业务闭环版)
  * -------------------------------------------------------------
- * 包含三大核心生态系统：
- * 1. Peer Logistics (校园互助物流 - 含勋章积分引擎)
- * 2. Flea Market (二手跳蚤市场 - 含 Escrow 担保交易状态机)
+ * 包含三大核心生态系统及高级特性：
+ * 1. Peer Logistics (校园互助物流 - 含勋章积分引擎 & 买后评价归档)
+ * 2. Flea Market (二手跳蚤市场 - 含 Escrow 提货码核销 & 7天自动放款)
  * 3. Campus Buzz (校园八卦社区 - 含点赞与盖楼评论机制)
+ * 4. Global Mailer (基于 GAS 的全局异步邮件通知引擎)
  * -------------------------------------------------------------
  */
 
@@ -26,7 +27,7 @@ const MONGO_URI = process.env.MONGO_URI;
 const GAS_URL = process.env.GAS_URL;
 
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ DormLift Super App DB Connected (V11.4)'))
+    .then(() => console.log('✅ DormLift Super App DB Connected (V11.5)'))
     .catch(err => console.error('❌ DB Connection Error:', err));
 
 // ==========================================
@@ -35,7 +36,6 @@ mongoose.connect(MONGO_URI)
 function sendEmailNotification(toEmail, subject, htmlContent) {
     if (!GAS_URL) return console.warn("未配置 GAS_URL，跳过邮件发送");
     
-    // 使用 Node 18 原生 fetch 发送，不加 await 避免阻塞前端请求
     fetch(GAS_URL, {
         method: 'POST',
         headers: {
@@ -68,12 +68,14 @@ const User = mongoose.model('User', new mongoose.Schema({
     task_count: { type: Number, default: 0 },
     medal_points: { type: Number, default: 0 },
     point_history: { type: Array, default: [] },
+    reviews: { type: Array, default: [] }, // 存储收到的信用评价
     created_at: { type: Date, default: Date.now }
 }));
 
 // [Schema 2] Task: Logistics Engine
 const Task = mongoose.model('Task', new mongoose.Schema({
     publisher_id: { type: String, required: true },
+    publisher_name: { type: String, default: 'UoA Peer' }, // 发布者昵称
     helper_id: { type: String, default: null },
     move_date: { type: String, required: true },
     move_time: { type: String, default: '' },
@@ -94,6 +96,7 @@ const Task = mongoose.model('Task', new mongoose.Schema({
 // [Schema 3] MarketItem: Flea Market with Escrow Trading
 const MarketItem = mongoose.model('MarketItem', new mongoose.Schema({
     seller_id: { type: String, required: true },
+    seller_name: { type: String, default: 'UoA Seller' }, // 卖家昵称
     buyer_id: { type: String, default: null },
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -101,7 +104,9 @@ const MarketItem = mongoose.model('MarketItem', new mongoose.Schema({
     price: { type: Number, required: true },
     location: { type: String, required: true },
     img_url: { type: String, default: "[]" },
-    status: { type: String, enum: ['available', 'reserved', 'completed'], default: 'available' },
+    status: { type: String, enum: ['available', 'reserved', 'completed', 'reviewed'], default: 'available' },
+    escrow_code: { type: String, default: null }, // 提货核销码
+    reserved_at: { type: Date, default: null },   // 资金锁定时间（用于7天倒计时）
     comments: { type: Array, default: [] },
     created_at: { type: Date, default: Date.now }
 }));
@@ -154,7 +159,6 @@ app.post('/api/auth/send-code', async (req, res) => {
     try {
         await VerifyCode.findOneAndUpdate({ email }, { code, expire_at }, { upsert: true });
         
-        // 调用我们封装的发送助手
         sendEmailNotification(
             email,
             "DormLift Super App Security Code",
@@ -205,6 +209,44 @@ app.get('/api/user/detail/:email', async (req, res) => {
     res.json({ success: true, user });
 });
 
+// 提交评价并更新信用均分 (Closed-loop Quality Control)
+app.post('/api/user/rate', async (req, res) => {
+    try {
+        const { target_email, score, text, item_id, type, reviewer_name } = req.body;
+        const targetUser = await User.findOne({ email: target_email });
+        if (!targetUser) return res.status(404).json({ success: false });
+
+        const currentTotal = targetUser.rating_avg * targetUser.task_count;
+        const newCount = targetUser.task_count + 1;
+        const newAvg = (currentTotal + Number(score)) / newCount;
+
+        await User.findOneAndUpdate({ email: target_email }, {
+            rating_avg: newAvg,
+            task_count: newCount,
+            $push: { reviews: { reviewer: reviewer_name, score: Number(score), text, date: new Date() } }
+        });
+
+        if (type === 'log') {
+            await Task.findByIdAndUpdate(item_id, { status: 'reviewed' });
+        } else if (type === 'mar') {
+            await MarketItem.findByIdAndUpdate(item_id, { status: 'reviewed' });
+        }
+
+        sendEmailNotification(
+            target_email,
+            "🌟 DormLift 提醒：你收到了一条新评价！",
+            `<div style="font-family:sans-serif; padding:20px; background:#fffbeb; border-radius:12px;">
+                <h2 style="color:#d97706; margin-top:0;">信用分已更新</h2>
+                <p>你的交易伙伴刚刚给你留下了 <b>${score} 星</b> 评价：</p>
+                <blockquote style="border-left:4px solid #d97706; padding-left:15px; background:white; padding:10px;">${text}</blockquote>
+                <p>你的当前信用均分已更新为 <b>${newAvg.toFixed(1)}</b>。</p>
+            </div>`
+        );
+
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ success: false }); }
+});
+
 // ==========================================
 // 5. Logistics Ecosystem APIs (Task)
 // ==========================================
@@ -253,7 +295,6 @@ app.post('/api/task/workflow', async (req, res) => {
         if (updates.status === 'pending') updates.helper_id = null;
         await Task.findByIdAndUpdate(task_id, { $set: updates });
 
-        // 【事件通知】任务被接单时通知发布者
         if (updates.status === 'assigned' && updates.helper_id) {
             sendEmailNotification(
                 task.publisher_id, 
@@ -304,25 +345,66 @@ app.post('/api/market/workflow', async (req, res) => {
         const { item_id, status, buyer_id } = req.body;
         let updates = { status };
         if(buyer_id) updates.buyer_id = buyer_id;
-        // Escrow Cancellation -> Reset buyer
-        if(status === 'available') updates.buyer_id = null; 
         
         await MarketItem.findByIdAndUpdate(item_id, { $set: updates });
-
-        // 【事件通知】物品被预定并进入担保状态时通知卖家
         const item = await MarketItem.findById(item_id);
+
+        // 买家点击预定：生成提货码，开始 7 天倒计时
         if (status === 'reserved' && buyer_id) {
+            const escrowCode = Math.floor(100000 + Math.random() * 900000).toString();
+            await MarketItem.findByIdAndUpdate(item_id, { escrow_code: escrowCode, reserved_at: new Date() });
+
+            sendEmailNotification(
+                buyer_id,
+                "🔒 DormLift 担保交易：你的提货码",
+                `<div style="font-family:sans-serif; padding:20px; background:#f0fdf4; border-radius:12px;">
+                    <h2 style="color:#059669; margin-top:0;">资金已托管，请安全提货</h2>
+                    <p>你预定的商品 <b>${item.title}</b> 已锁定。你的专属提货核销码是：<b style="font-size:24px; color:#dc2626;">${escrowCode}</b></p>
+                    <p>⚠️ 注意：请务必在当面检查物品无误后，再将此码交给卖家。卖家输入此码后，资金才会划转！</p>
+                </div>`
+            );
+
             sendEmailNotification(
                 item.seller_id,
-                "🎉 DormLift 捷报：你的二手商品已被预定！",
+                "🎉 DormLift 捷报：二手商品已被预定！",
                 `<div style="font-family:sans-serif; padding:20px; background:#fffbeb; border-radius:12px;">
-                    <h2 style="color:#d97706; margin-top:0;">Escrow 担保交易已锁定</h2>
-                    <p>好消息！你的商品 <b>${item.title}</b> 已被买家 (ID: ${buyer_id}) 预定。</p>
-                    <p>买家资金已进入平台 Escrow 担保池，请尽快在校园内与买家交接物品。</p>
-                    <p>交接完成后，买家将在后台点击确认收货，资金将立即释放给你！</p>
+                    <h2 style="color:#d97706; margin-top:0;">买家已付款至担保池</h2>
+                    <p>商品 <b>${item.title}</b> 已被锁定。请尽快在校园内与买家交接。</p>
+                    <p>交接时，请向买家索要 <b>6位提货核销码</b> 并在后台输入，资金将立即打入你的账户！</p>
                 </div>`
             );
         }
+
+        // 如果卖家取消订单，清空担保信息
+        if (status === 'available') {
+            await MarketItem.findByIdAndUpdate(item_id, { buyer_id: null, escrow_code: null, reserved_at: null });
+        }
+
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ success: false }); }
+});
+
+// 验证提货码并释放资金 (Escrow Verification)
+app.post('/api/market/verify-escrow', async (req, res) => {
+    try {
+        const { item_id, code, seller_id } = req.body;
+        const item = await MarketItem.findById(item_id);
+        
+        if (!item || item.status !== 'reserved' || item.seller_id !== seller_id) {
+            return res.status(400).json({ success: false, msg: "非法的核销请求" });
+        }
+        
+        if (item.escrow_code !== code) {
+            return res.status(400).json({ success: false, msg: "核销码错误，请与买家确认" });
+        }
+        
+        // 核销成功，释放资金
+        item.status = 'completed';
+        item.escrow_code = null;
+        await item.save();
+
+        sendEmailNotification(seller_id, "💰 资金已入账", `你出售的 ${item.title} 已成功核销，资金已释放至你的账户！`);
+        sendEmailNotification(item.buyer_id, "✅ 交易完成", `你预定的 ${item.title} 已完成提货核销，感谢使用 DormLift 担保交易！可前往后台评价卖家。`);
 
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
@@ -365,9 +447,7 @@ app.post('/api/forum/interact', async (req, res) => {
         } else if(action === 'comment') {
             await ForumPost.findByIdAndUpdate(post_id, { $push: { comments: comment } });
             
-            // 【事件通知】发帖人收到新评论时触发邮件
             const post = await ForumPost.findById(post_id);
-            // 自己回复自己不发通知
             if (post.author_id !== email) {
                 sendEmailNotification(
                     post.author_id,
@@ -412,6 +492,26 @@ app.post('/api/dev/nuke', async (req, res) => {
     res.json({ success: true });
 });
 
+// ==========================================
+// 自动巡检系统：7天未核销，自动释放资金给卖家
+// ==========================================
+setInterval(async () => {
+    try {
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        // 查找状态为 reserved，且锁定时间在7天前的订单
+        const expiredItems = await MarketItem.find({ status: 'reserved', reserved_at: { $lte: sevenDaysAgo } });
+        
+        for (let item of expiredItems) {
+            item.status = 'completed';
+            item.escrow_code = null; 
+            await item.save();
+            
+            sendEmailNotification(item.seller_id, "💰 DormLift 资金自动释放", `由于买家超过 7 天未进行确认，商品 ${item.title} 的资金已由系统自动释放至你的账户！`);
+        }
+        if (expiredItems.length > 0) console.log(`[Escrow Monitor] 自动释放了 ${expiredItems.length} 笔超期交易的资金。`);
+    } catch (e) { console.error("Auto-release cron error:", e); }
+}, 12 * 60 * 60 * 1000); 
+
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 DormLift Super App V11.4 Active on Port ${PORT}`);
+    console.log(`🚀 DormLift Super App V11.5 Active on Port ${PORT}`);
 });
