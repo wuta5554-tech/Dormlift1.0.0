@@ -1,44 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>DormLift Pro | The Campus Super App</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-<style>
-:root{--primary:#4f46e5;--primary-gradient:linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);--success:#059669;--warning:#f59e0b;--danger:#dc2626;--medal:#d97706;--dark:#0f172a;--text:#334155;--muted:#64748b;--bg:#f8fafc;--surface:#ffffff;--radius-lg:1.25rem;--shadow-sm:0 4px 6px -1px rgba(0,0,0,0.05);--shadow-premium:0 10px 15px -3px rgba(0,0,0,0.08),0 4px 6px -2px rgba(0,0,0,0.04);}
-*{box-sizing:border-box;margin:0;padding:0;} body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;}
-.page{display:none;opacity:0;} .page.active{display:block;animation:slideUp 0.4s ease forwards;} @keyframes slideUp{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
-nav{background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);padding:1rem 8%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1000;border-bottom:1px solid #e2e8f0;}
-.brand{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;} .brand-icon{width:42px;height:42px;background:var(--primary-gradient);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 4px 12px rgba(79,70,229,0.3);} .brand-text{font-size:1.5rem;font-weight:800;color:var(--dark);letter-spacing:-1px;}
-.nav-links{display:flex;align-items:center;gap:2rem;} .nav-links a{color:var(--text);text-decoration:none;font-weight:600;font-size:0.9rem;cursor:pointer;transition:0.2s;} .nav-links a:hover{color:var(--primary);}
-.user-tag{background:rgba(79,70,229,0.1);color:var(--primary);padding:6px 18px;border-radius:24px;font-size:0.85rem;font-weight:700;border:1px solid rgba(79,70,229,0.2);cursor:pointer;transition:0.2s;} .user-tag:hover{background:var(--primary);color:white;}
-.container{max-width:1200px;margin:3rem auto;padding:0 1.5rem;} .card{background:var(--surface);border-radius:var(--radius-lg);padding:2.5rem;box-shadow:var(--shadow-premium);border:1px solid #eef2f6;margin-bottom:2rem;}
-.tab-container{display:flex;gap:1rem;margin-bottom:2rem;background:white;padding:0.5rem;border-radius:1rem;box-shadow:var(--shadow-sm);border:1px solid #eef2f6;} .tab-btn{flex:1;padding:1rem;text-align:center;font-weight:800;font-size:1.1rem;border-radius:0.8rem;cursor:pointer;transition:0.3s;color:var(--muted);border:none;background:transparent;} .tab-btn:hover{background:#f8fafc;color:var(--dark);} .tab-btn.active{background:var(--primary-gradient);color:white;box-shadow:0 4px 10px rgba(79,70,229,0.3);}
-.tab-content{display:none;} .tab-content.active{display:block;animation:fadeIn 0.3s ease forwards;} @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.value-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-top:5rem;} .value-card{padding:2.5rem;text-align:left;border-top:5px solid var(--primary);background:white;border-radius:var(--radius-lg);box-shadow:0 4px 6px rgba(0,0,0,0.02);} .value-card i{font-size:2.5rem;margin-bottom:1.5rem;color:var(--primary);display:block;}
-.hub-container{display:flex;flex-direction:column;gap:1rem;} .hub-row{display:grid;grid-template-columns:100px 1fr 130px;align-items:center;background:white;border-radius:16px;padding:1.5rem 2rem;border:1px solid #eef2f6;transition:0.3s;cursor:pointer;margin-bottom:1rem;} .hub-row:hover{transform:translateX(8px);border-color:var(--primary);box-shadow:var(--shadow-premium);}
-.posted-col{font-size:0.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;border-right:2px solid #f1f5f9;line-height:1.3;} .posted-col span{display:block;font-size:1.05rem;color:var(--dark);margin-top:2px;} .details-strip{padding:0 2.5rem;display:flex;flex-direction:column;gap:8px;} .strip-header{display:flex;align-items:center;gap:12px;font-weight:700;font-size:1.05rem;color:var(--dark);} .strip-route{font-size:0.9rem;color:var(--muted);display:flex;align-items:center;gap:12px;font-weight:500;} .strip-inventory{font-size:0.85rem;color:var(--text);background:#f8fafc;padding:6px 14px;border-radius:8px;display:inline-flex;align-items:center;gap:10px;width:fit-content;border:1px solid #f1f5f9;} .reward-col{text-align:right;font-size:1.6rem;font-weight:900;color:var(--success);letter-spacing:-0.5px;}
-.market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;} .market-card{background:white;border-radius:1rem;overflow:hidden;border:1px solid #eef2f6;cursor:pointer;transition:0.3s;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;} .market-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-premium);border-color:var(--primary);} .m-img{width:100%;height:200px;object-fit:cover;background:#f8fafc;border-bottom:1px solid #eef2f6;} .m-body{padding:1.5rem;flex:1;display:flex;flex-direction:column;justify-content:space-between;} .m-title{font-size:1.1rem;font-weight:700;color:var(--dark);margin:0 0 10px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .m-price{color:var(--success);font-size:1.5rem;font-weight:900;margin-bottom:10px;} .m-meta{font-size:0.85rem;color:var(--muted);display:flex;align-items:center;gap:6px;} .m-seller{font-size:0.75rem;color:var(--muted);margin-top:8px;border-top:1px dashed #e2e8f0;padding-top:8px;display:flex;align-items:center;gap:5px;}
-.forum-feed{max-width:750px;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;} .forum-card{background:white;border-radius:1rem;padding:2rem;border:1px solid #eef2f6;box-shadow:0 2px 4px rgba(0,0,0,0.02);} .f-header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;} .f-author{font-weight:800;color:var(--dark);background:#f1f5f9;padding:6px 14px;border-radius:20px;font-size:0.9rem;} .f-content{font-size:1.1rem;color:var(--text);line-height:1.6;margin-bottom:1.5rem;} .f-images{display:flex;gap:10px;overflow-x:auto;margin-bottom:1.5rem;padding-bottom:5px;} .f-images img{height:180px;border-radius:10px;border:1px solid #eef2f6;object-fit:cover;cursor:pointer;}
-.kanban-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-top:1.5rem;} .kanban-col{background:rgba(241,245,249,0.5);border-radius:1.5rem;padding:1.5rem;min-height:400px;border:2px dashed #cbd5e1;display:flex;flex-direction:column;transition:0.4s ease;} .kanban-header{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:1.1rem;color:var(--dark);margin-bottom:1.5rem;} .kanban-badge{background:white;padding:4px 12px;border-radius:20px;font-size:0.85rem;box-shadow:0 2px 4px rgba(0,0,0,0.05);color:var(--primary);border:1px solid #eef2f6;} .kanban-card{background:white;border-radius:1rem;padding:1.5rem;margin-bottom:1.2rem;box-shadow:0 2px 5px rgba(0,0,0,0.02);border:1.5px solid transparent;cursor:pointer;transition:0.3s;position:relative;} .kanban-card:hover{border-color:var(--primary);transform:translateY(-4px);box-shadow:var(--shadow-premium);} .kb-role-tag{font-size:0.65rem;padding:4px 10px;border-radius:6px;font-weight:800;text-transform:uppercase;margin-bottom:5px;display:inline-block;} .kb-pub{background:#f1f5f9;color:var(--dark);} .kb-help{background:var(--primary-gradient);color:white;box-shadow:0 4px 6px rgba(79,70,229,0.2);} .empty-col-placeholder{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:600;font-size:0.95rem;border:2px dashed #e2e8f0;border-radius:1rem;padding:2rem;text-align:center;}
-#map{height:450px;border-radius:1.5rem 1.5rem 0 0;border:1px solid #e2e8f0;z-index:10;border-bottom:none;} #modal-map{height:280px;border-radius:1.5rem;border:2px solid #eef2f6;z-index:10;box-shadow:0 4px 10px rgba(0,0,0,0.05);margin-bottom:1.5rem;display:none;} .route-info-strip{background:var(--dark);color:white;padding:1.25rem 2.5rem;border-radius:0 0 1.5rem 1.5rem;display:flex;justify-content:space-around;font-weight:700;margin-bottom:2.5rem;border-bottom:4px solid var(--primary);} .leaflet-routing-container{display:none !important;} .custom-pin{background:transparent;border:none;} .pin-wrapper{background:white;border:2.5px solid var(--primary);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 8px rgba(0,0,0,0.2);}
-.btn{background:var(--primary-gradient);color:white;padding:1rem 2rem;border:none;border-radius:12px;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:0.3s;} .btn:hover{transform:translateY(-2px);box-shadow:0 12px 20px -5px rgba(79,70,229,0.4);} .btn:disabled{opacity:0.7;cursor:not-allowed;transform:none;box-shadow:none;} .btn-outline{background:white;color:var(--text);border:2px solid #e2e8f0;} .btn-outline:hover{background:#f8fafc;border-color:var(--primary);color:var(--primary);} .btn-danger{background:#fee2e2;color:var(--danger);border:1.5px solid #fecaca;}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:1.5rem;} input,select,textarea{width:100%;padding:1rem 1.25rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-family:inherit;font-size:1rem;transition:0.2s;} input:focus,textarea:focus,select:focus{border-color:var(--primary);outline:none;background:white;box-shadow:0 0 0 4px rgba(79,70,229,0.1);} label{font-size:0.8rem;font-weight:800;color:var(--muted);margin-bottom:0.6rem;display:block;text-transform:uppercase;letter-spacing:1px;}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.7);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(10px);} .modal-content{background:white;width:95%;max-width:850px;max-height:92vh;overflow-y:auto;border-radius:2rem;padding:3.5rem;position:relative;}
-.interaction-box{background:#f8fafc;border-radius:1.5rem;padding:2rem;margin-top:2.5rem;border:1px solid #eef2f6;} .comment-item{background:white;padding:1.25rem;border-radius:1.2rem;margin-bottom:1.25rem;border:1px solid #f1f5f9;position:relative;box-shadow:0 2px 4px rgba(0,0,0,0.02);transition:0.3s;} .comment-reply{margin-left:3.5rem;margin-top:1rem;border-left:4px solid var(--primary);padding-left:1.5rem;background:#fafafa;border-radius:0 1.2rem 1.2rem 0;} .reply-btn{font-size:0.75rem;color:var(--primary);font-weight:800;cursor:pointer;text-transform:uppercase;margin-left:15px;} .reply-btn:hover{text-decoration:underline;} .reply-hint{display:none;background:#eef2ff;padding:12px 20px;border-radius:12px;margin-bottom:15px;font-size:0.88rem;border-left:6px solid var(--primary);}
-.thumb-strip{display:flex;gap:14px;overflow-x:auto;padding:12px 0;margin-bottom:2rem;} .thumb-img{width:120px;height:120px;object-fit:cover;border-radius:14px;cursor:pointer;border:2px solid #f1f5f9;transition:0.3s;} .thumb-img:hover{transform:scale(1.04);border-color:var(--primary);box-shadow:var(--shadow-sm);} .status-badge{padding:6px 16px;border-radius:20px;font-size:0.85rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;}
-.contact-unlock-panel{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:16px;padding:1.5rem;margin-top:1.5rem;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 6px rgba(5,150,105,0.05);}
-.payment-card{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);color:white;border-radius:1.5rem;padding:2.5rem;margin-bottom:2rem;position:relative;overflow:hidden;box-shadow:0 15px 25px -5px rgba(0,0,0,0.3);} .payment-card::after{content:'';position:absolute;right:-20px;top:-50px;width:200px;height:200px;background:rgba(255,255,255,0.05);border-radius:50%;} .cc-input-group{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px 15px;display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;} .cc-input-group i{color:#cbd5e1;font-size:1.2rem;} .cc-input-group input{background:transparent;border:none;color:white;padding:5px;font-size:1.2rem;box-shadow:none;width:100%;font-family:monospace;letter-spacing:2px;} .cc-input-group input:focus{outline:none;border:none;box-shadow:none;background:transparent;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DormLift Pro | The Campus Super App</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --success: #059669;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --medal: #d97706; 
+            --dark: #0f172a;
+            --text: #334155;
+            --muted: #64748b;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --radius-lg: 1.25rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+        
+        .page { display: none !important; opacity: 0; }
+        .page.active { display: block !important; animation: slideUp 0.4s ease forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Navigation */
+        nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
+        .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
+        .brand-icon { width: 42px; height: 42px; background: var(--primary-gradient); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .brand-text { font-size: 1.5rem; font-weight: 800; color: var(--dark); letter-spacing: -1px; }
+        .nav-links { display: flex; align-items: center; gap: 2rem; }
+        .nav-links a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .nav-links a:hover { color: var(--primary); }
+        .user-tag { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 18px; border-radius: 24px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(79, 70, 229, 0.2); cursor: pointer; transition: 0.2s; }
+        .user-tag:hover { background: var(--primary); color: white; }
+
+        .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
+        .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; position: relative; overflow: hidden; }
+
+        /* Tabs */
+        .tab-container { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 0.5rem; border-radius: 1rem; box-shadow: var(--shadow-sm); border: 1px solid #eef2f6; }
+        .tab-btn { flex: 1; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.1rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; }
+        .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
+        
+        .tab-content { display: none !important; }
+        .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Hub Rows */
+        .hub-container { display: flex; flex-direction: column; gap: 1rem; }
+        .hub-row { display: grid; grid-template-columns: 100px 1fr 130px; align-items: center; background: white; border-radius: 16px; padding: 1.5rem 2rem; border: 1px solid #eef2f6; transition: 0.3s; cursor: pointer; }
+        .hub-row:hover { transform: translateX(8px); border-color: var(--primary); box-shadow: var(--shadow-premium); }
+        .posted-col { font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; border-right: 2px solid #f1f5f9; line-height: 1.3; }
+        .posted-col span { display: block; font-size: 1.05rem; color: var(--dark); margin-top: 2px; }
+        .details-strip { padding: 0 2.5rem; display: flex; flex-direction: column; gap: 8px; }
+        .strip-header { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--dark); }
+        .reward-col { text-align: right; font-size: 1.6rem; font-weight: 900; color: var(--success); }
+
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+        .market-card { background: white; border-radius: 1rem; overflow: hidden; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+        .market-card:hover { transform: translateY(-6px); border-color: var(--primary); }
+        .m-img { width: 100%; height: 200px; object-fit: cover; background: #f8fafc; }
+        .m-body { padding: 1.5rem; flex: 1; }
+
+        /* Kanban */
+        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 400px; border: 1px dashed #e2e8f0; }
+        .kanban-card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); cursor: pointer; border: 1.5px solid transparent; transition: 0.3s; }
+        .kanban-card:hover { border-color: var(--primary); transform: translateY(-4px); }
+        .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; display: inline-block; }
+        .kb-pub { background: #f1f5f9; color: var(--dark); }
+        .kb-help { background: var(--primary-gradient); color: white; }
+
+        /* Map */
+        #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; }
+        #modal-map { height: 280px; border-radius: 1.5rem; border: 2px solid #eef2f6; margin-bottom: 1.5rem; display: none; }
+        .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; border-bottom: 4px solid var(--primary); }
+        .custom-pin { background: transparent; border: none; } 
+        .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
+        /* Buttons & Forms */
+        .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4); }
+        .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        input, select, textarea { width: 100%; padding: 1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 1rem; }
+        label { font-size: 0.8rem; font-weight: 800; color: var(--muted); margin-bottom: 0.6rem; display: block; text-transform: uppercase; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
+        .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
+        .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; cursor: pointer; border: 2px solid #f1f5f9; }
+        .comment-item { background: #f8fafc; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1rem; border: 1px solid #eef2f6; }
+        
+        /* PIN & Checkout UI */
+        .pin-box { background: #fffbeb; border: 2px dashed #fcd34d; padding: 1.5rem; border-radius: 1rem; text-align: center; margin: 1.5rem 0; }
+        .pin-number { font-size: 3rem; font-weight: 900; letter-spacing: 8px; color: var(--dark); }
+        .checkout-card { background: var(--dark); color: white; padding: 2rem; border-radius: 1.5rem; margin-bottom: 1.5rem; }
+    </style>
 </head>
 <body>
 
 <nav>
-    <a class="brand" onclick="navigate('home')"><div class="brand-icon"><i class="fas fa-layer-group"></i></div><div class="brand-text">DormLift Hub</div></a>
+    <a class="brand" onclick="navigate('home')">
+        <div class="brand-icon"><i class="fas fa-layer-group"></i></div>
+        <div class="brand-text">DormLift Hub</div>
+    </a>
     <div class="nav-links" id="menu"></div>
 </nav>
 
@@ -46,565 +128,433 @@ nav{background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);padding:1rem 8%
     <div id="home" class="page active">
         <section class="card" style="text-align:center; padding: 7rem 2rem; border:none; background: radial-gradient(circle at top right, #ffffff 0%, #f1f5f9 100%);">
             <h1 style="font-size:4.5rem; margin:0; line-height:1; letter-spacing:-2.5px;">The Campus<br><span style="color:var(--primary)">Super App.</span></h1>
-            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">Verified logistics, flea market escrow, and campus forum exclusively for UoA students.</p>
+            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">Verified logistics, flea market escrow, and community buzz exclusively for UoA students.</p>
             <div style="display:flex; justify-content:center; gap:1.5rem;">
                 <button class="btn" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('post')">Publish to Network</button>
-                <button class="btn btn-outline" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('hall')">Explore Discoveries</button>
+                <button class="btn btn-outline" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('hall')">Explore Hub</button>
             </div>
-            <div class="value-grid">
-                <div class="value-card"><i class="fas fa-tags"></i><h3 style="font-size:1.5rem; margin:0 0 10px 0;">Peer Pricing</h3><p style="color:var(--muted); margin:0;">Zero platform commission fees on logistics or items.</p></div>
-                <div class="value-card" style="border-color:var(--success);"><i class="fas fa-shield-alt" style="color:var(--success);"></i><h3 style="font-size:1.5rem; margin:0 0 10px 0;">Escrow Security</h3><p style="color:var(--muted); margin:0;">Funds safely held in wallet until physical PIN is verified.</p></div>
-                <div class="value-card" style="border-color:var(--warning);"><i class="fas fa-shield-check" style="color:var(--warning);"></i><h3 style="font-size:1.5rem; margin:0 0 10px 0;">Verified Trust</h3><p style="color:var(--muted); margin:0;">Only UoA members with verified SIDs can trade.</p></div>
+            <div style="margin-top:4rem; opacity:0.8;">
+                <i class="fas fa-university fa-10x" style="color:#e2e8f0;"></i>
             </div>
         </section>
     </div>
 
     <div id="hall" class="page">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;"><h2 style="font-size:2.5rem; margin:0; letter-spacing:-1.5px;">Discovery Hub</h2><button class="btn btn-outline btn-sm" style="border-radius:50px; padding: 0.8rem 1.8rem;" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh Feed</button></div>
-        <div class="tab-container"><button class="tab-btn active" id="btn_hall_logistics" onclick="switchHall('logistics')">Peer Logistics</button><button class="tab-btn" id="btn_hall_market" onclick="switchHall('market')">Flea Market</button><button class="tab-btn" id="btn_hall_forum" onclick="switchHall('forum')">Campus Buzz</button></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+            <h2 style="font-size:2.5rem; margin:0; letter-spacing:-1.5px;">Discovery Hub</h2>
+            <button class="btn btn-outline btn-sm" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchHall('logistics')" id="btn_hall_logistics">Peer Logistics</button>
+            <button class="tab-btn" onclick="switchHall('market')" id="btn_hall_market">Flea Market</button>
+            <button class="tab-btn" onclick="switchHall('forum')" id="btn_hall_forum">Campus Buzz</button>
+        </div>
         <div id="hall_logistics" class="tab-content active"><div id="list_logistics" class="hub-container"></div></div>
         <div id="hall_market" class="tab-content"><div id="list_market" class="market-grid"></div></div>
         <div id="hall_forum" class="tab-content"><div id="list_forum" class="forum-feed"></div></div>
     </div>
 
     <div id="post" class="page">
-        <h2 style="font-size:2.5rem; margin:0 0 2rem 0; letter-spacing:-1.5px;">Publish to Network</h2>
-        <div class="tab-container"><button class="tab-btn active" id="btn_post_logistics" onclick="switchPost('logistics')">Logistics Request</button><button class="tab-btn" id="btn_post_market" onclick="switchPost('market')">Sell Item</button><button class="tab-btn" id="btn_post_forum" onclick="switchPost('forum')">Post Buzz</button></div>
+        <h2 style="font-size:2.5rem; margin-bottom:2rem;">Publish to Network</h2>
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchPost('logistics')" id="btn_post_logistics">Logistics Request</button>
+            <button class="tab-btn" onclick="switchPost('market')" id="btn_post_market">Sell Used Item</button>
+            <button class="tab-btn" onclick="switchPost('forum')" id="btn_post_forum">Post Buzz</button>
+        </div>
+
         <div id="post_logistics" class="tab-content active card" style="padding:0; overflow:hidden;">
             <div id="map"></div>
-            <div class="route-info-strip"><span><i class="fas fa-route"></i> REAL DISTANCE: <b id="distVal">0.00</b> km</span><span><i class="fas fa-clock"></i> <b id="timeVal">0</b> min</span></div>
+            <div class="route-info-strip">
+                <span><i class="fas fa-route"></i> DISTANCE: <b id="distVal">0.00</b> km</span>
+                <span><i class="fas fa-clock"></i> ESTIMATED: <b id="timeVal">0</b> min</span>
+            </div>
             <form id="form_logistics" style="padding: 0 3rem 3rem;" onsubmit="submitLogistics(event)">
-                <div class="form-grid"><div><label>Pickup Building</label><input type="text" id="p_from" readonly required placeholder="Map pin (Start)"></div><div><label>Destination</label><input type="text" id="p_to" readonly required placeholder="Map pin (End)"></div></div>
-                <div class="form-grid"><div><label>Date & Time</label><input type="datetime-local" id="p_date" required></div><div><label>Reward (NZD)</label><input type="text" id="p_reward" required></div></div>
-                <label>Inventory & Notes</label><textarea id="p_desc" rows="4" required></textarea>
-                <div class="form-grid" style="margin-top:1.5rem; margin-bottom:2rem; background:#fffbeb; padding:1.5rem; border-radius:12px;"><div><label style="color:var(--medal);">Task Scale</label><select id="p_scale"><option value="Small">Small Task (1 Pt)</option><option value="Medium">Medium Task (3 Pts)</option><option value="Large">Large Task (5 Pts)</option></select></div><div style="display:flex; align-items:center; padding-top:1.5rem;"><input type="checkbox" id="p_elevator" style="margin-right:12px; transform:scale(1.2);"><label style="margin:0; text-transform:none;">Elevator Available</label></div></div>
-                <label>Photos (Max 5)</label><input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
+                <div class="form-grid">
+                    <div><label>Pickup Location</label><input type="text" id="p_from" readonly required placeholder="Click map to pin start"></div>
+                    <div><label>Destination</label><input type="text" id="p_to" readonly required placeholder="Click map to pin end"></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>Moving Date</label><input type="date" id="p_date" required></div>
+                    <div><label>Reward (NZD)</label><input type="text" id="p_reward" placeholder="e.g. $45" required></div>
+                </div>
+                <label>Inventory & Notes</label><textarea id="p_desc" rows="3" required></textarea>
+                <div class="form-grid" style="margin-top:1rem;">
+                    <div><label>Task Scale</label><select id="p_scale"><option value="Small">Small (1 Pt)</option><option value="Medium">Medium (3 Pts)</option><option value="Large">Large (5 Pts)</option></select></div>
+                    <div style="padding-top:1.5rem;"><label style="display:inline;"><input type="checkbox" id="p_elevator" style="width:auto; margin-right:10px;"> Elevator Available</label></div>
+                </div>
+                <label style="margin-top:1rem;">Photos</label><input type="file" id="p_file" multiple onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
                 <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">Broadcast Task <i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
+
         <div id="post_market" class="tab-content card">
             <form id="form_market" onsubmit="submitMarket(event)">
-                <div class="form-grid"><div><label>Item Title</label><input type="text" id="m_title" required></div><div><label>Price (NZD)</label><input type="number" id="m_price" required></div></div>
-                <div class="form-grid"><div><label>Condition</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option><option>Fair</option></select></div><div><label>Pickup Location</label><input type="text" id="m_loc" required></div></div>
-                <label>Description & Specs</label><textarea id="m_desc" rows="4" required></textarea>
-                <label>Photos (Crucial)</label><input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')"><div id="m_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">List Item in Market <i class="fas fa-store"></i></button>
+                <div class="form-grid">
+                    <div><label>Item Name</label><input type="text" id="m_title" required></div>
+                    <div><label>Price ($)</label><input type="number" id="m_price" required></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>Condition</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option></select></div>
+                    <div><label>Location</label><input type="text" id="m_loc" placeholder="e.g. Whitaker Hall" required></div>
+                </div>
+                <label>Description</label><textarea id="m_desc" rows="4" required></textarea>
+                <label style="margin-top:1rem;">Photos</label><input type="file" id="m_file" multiple required onchange="previewFiles(event, 'm_preview')"><div id="m_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1.5rem;">List for Sale <i class="fas fa-store"></i></button>
             </form>
         </div>
+
         <div id="post_forum" class="tab-content card">
             <form id="form_forum" onsubmit="submitForum(event)">
-                <label>Campus Buzz</label><textarea id="f_content" rows="6" placeholder="What's happening..." required style="font-size:1.1rem; padding:1.5rem;"></textarea>
-                <label style="margin-top:1.5rem;">Attach Media (Optional)</label><input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')"><div id="f_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:1rem; padding:1.5rem;">Post to Campus Buzz <i class="fas fa-fire"></i></button>
+                <label>Write Campus Buzz</label><textarea id="f_content" rows="8" required style="font-size:1.1rem;"></textarea>
+                <label style="margin-top:1rem;">Attach Media</label><input type="file" id="f_file" multiple onchange="previewFiles(event, 'f_preview')"><div id="f_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:1.5rem;">Post to Feed <i class="fas fa-fire"></i></button>
             </form>
         </div>
     </div>
 
     <div id="profile" class="page">
         <div style="display:grid; grid-template-columns: 1fr 300px 300px; gap:1.5rem; margin-bottom:2rem;">
-            <div class="card" style="margin:0;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;"><h2 style="margin:0; font-size:1.8rem; letter-spacing:-1px;">UoA Identity</h2><button class="btn btn-outline btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div><div id="profileDetails" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin:0;"></div></div>
-            <div class="card" style="margin:0; border-left: 8px solid var(--success); display:flex; flex-direction:column; justify-content:center; background:#f0fdf4;"><h3 style="margin:0; color:var(--success);">Virtual Wallet</h3><div style="font-size:3.5rem; font-weight:900; color:var(--success);">💰 <span id="p_wallet">0</span></div><p style="color:var(--success); font-size:0.85rem; font-weight:800; margin-top:0.5rem;">Used for Market Escrow</p></div>
-            <div class="card" style="margin:0; border-left: 8px solid var(--warning); background: linear-gradient(to right, #fffbeb, #ffffff); display:flex; flex-direction:column; justify-content:center;"><h3 style="margin:0; color:var(--medal);">Medal Points</h3><div style="font-size:3.5rem; font-weight:900; color:var(--medal);">🏅 <span id="p_medals">0</span></div><button class="btn btn-outline btn-sm" style="margin-top:1rem; border-color:#fcd34d; color:var(--medal);" onclick="document.getElementById('pointsModal').style.display='block'">View Point History</button></div>
-        </div>
-        <div class="card" style="background:transparent; border:none; box-shadow:none; padding:0;">
-            <h2 style="font-size:2.2rem; margin:0 0 1.5rem 0; letter-spacing:-1px;"><i class="fas fa-layer-group" style="color:var(--primary); margin-right:10px;"></i> My Dashboard</h2>
-            <div class="tab-container"><button class="tab-btn active" id="btn_prof_kb_log" onclick="switchProf('kb_log')">Logistics Workflow</button><button class="tab-btn" id="btn_prof_kb_mar" onclick="switchProf('kb_mar')">Market Listings</button><button class="tab-btn" id="btn_prof_kb_for" onclick="switchProf('kb_for')">My Buzz Posts</button></div>
-            <div id="kb_log" class="kanban-board tab-content active">
-                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-hourglass-half" style="color:var(--warning);"></i> Pending</span><span class="kanban-badge" id="cnt_log_pend">0</span></div><div id="col_log_pend" style="flex:1; display:flex; flex-direction:column;"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-truck-ramp-box" style="color:var(--primary);"></i> In Progress</span><span class="kanban-badge" id="cnt_log_prog">0</span></div><div id="col_log_prog" style="flex:1; display:flex; flex-direction:column;"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-check-circle" style="color:var(--success);"></i> History</span><span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist" style="flex:1; display:flex; flex-direction:column;"></div></div>
+            <div class="card" style="margin:0;">
+                <div style="display:flex; justify-content:space-between;"><h2>UoA Identity</h2><button class="btn btn-outline btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
+                <div id="profileDetails" style="margin-top:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;"></div>
             </div>
-            <div id="kb_mar" class="kanban-board tab-content">
-                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-store" style="color:var(--success);"></i> Available</span><span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend" style="flex:1; display:flex; flex-direction:column;"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-lock" style="color:var(--warning);"></i> Reserved (Escrow)</span><span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog" style="flex:1; display:flex; flex-direction:column;"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span><i class="fas fa-handshake" style="color:var(--primary);"></i> Sold / Released</span><span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist" style="flex:1; display:flex; flex-direction:column;"></div></div>
+            <div class="card" style="margin:0; background:#f0fdf4; border-left:8px solid var(--success); display:flex; flex-direction:column; justify-content:center; text-align:center;">
+                <h3 style="color:var(--success);">Wallet Balance</h3>
+                <div style="font-size:3.5rem; font-weight:900; color:var(--success);">$<span id="p_wallet">0</span></div>
             </div>
-            <div id="kb_for" class="tab-content"><div id="col_for_list" style="display:flex; flex-direction:column; gap:1.2rem; max-width:800px; margin:auto;"></div></div>
+            <div class="card" style="margin:0; background:#fffbeb; border-left:8px solid var(--medal); display:flex; flex-direction:column; justify-content:center; text-align:center;">
+                <h3 style="color:var(--medal);">Medal Points</h3>
+                <div style="font-size:3.5rem; font-weight:900; color:var(--medal);">🏅<span id="p_medals">0</span></div>
+            </div>
         </div>
-        <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:5rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
-    </div>
-
-    <div id="register" class="page">
-        <div class="card" style="max-width:650px; margin:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);">
-            <h2 style="text-align:center; font-size:2.5rem; letter-spacing:-1.5px;">Join the Ecosystem</h2>
-            <form id="regForm">
-                <div class="form-grid"><div><label>UoA Student ID</label><input type="text" id="r_sid" required></div><div><label>Display Nickname</label><input type="text" id="r_anon" required></div></div>
-                <div class="form-grid"><div><label>First Name</label><input type="text" id="r_fn" required></div><div><label>Last Name</label><input type="text" id="r_ln" required></div></div>
-                <label>University Email</label><div style="display:flex; gap:12px; margin-bottom:1.5rem;"><input type="email" id="r_email" required style="margin:0"><button type="button" class="btn btn-outline btn-sm" style="width:150px; font-weight:800;" onclick="sendCode()">Get Code</button></div>
-                <div class="form-grid"><div><label>Verification Code</label><input type="text" id="r_code" required></div><div><label>Phone Number</label><input type="text" id="r_phone" required></div></div>
-                <div class="form-grid"><div><label>Gender</label><select id="r_gender"><option>Male</option><option>Female</option></select></div><div><label>Create Password</label><input type="password" id="r_pwd" required></div></div>
-                <button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Authorize & Join</button>
-            </form>
-            <p style="text-align:center; margin-top:2rem;">Already registered? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('login')">Sign In</b></p>
+        <div class="tab-container" style="background:#f1f5f9;">
+            <button class="tab-btn active" onclick="switchProf('log')" id="btn_prof_log">Logistics Dashboard</button>
+            <button class="tab-btn" onclick="switchProf('mar')" id="btn_prof_mar">Market Dashboard</button>
         </div>
+        <div id="prof_log" class="kanban-board tab-content active">
+            <div class="kanban-col"><div class="kanban-header">Pending Tasks <span class="kanban-badge" id="cnt_log_pend">0</span></div><div id="col_log_pend"></div></div>
+            <div class="kanban-col"><div class="kanban-header">Active Missions <span class="kanban-badge" id="cnt_log_prog">0</span></div><div id="col_log_prog"></div></div>
+            <div class="kanban-col"><div class="kanban-header">Completed <span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist"></div></div>
+        </div>
+        <div id="prof_mar" class="kanban-board tab-content">
+            <div class="kanban-col"><div class="kanban-header">For Sale <span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend"></div></div>
+            <div class="kanban-col"><div class="kanban-header">Reserved (Escrow) <span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog"></div></div>
+            <div class="kanban-col"><div class="kanban-header">Sold / History <span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist"></div></div>
+        </div>
+        <button class="btn btn-outline" style="margin-top:4rem; opacity:0.3;" onclick="nuke()">☢️ Wipe Global Data</button>
     </div>
 
     <div id="login" class="page">
-        <div class="card" style="max-width:440px; margin:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);">
-            <h2 style="text-align:center; font-size:2.5rem; letter-spacing:-1.5px;">Portal Login</h2>
-            <form id="loginForm"><label>Email Address or SID</label><input type="text" id="l_user" required><label>Password</label><input type="password" id="l_pwd" required><button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Access Hub</button></form>
-            <p style="text-align:center; margin-top:2.5rem;">New to DormLift? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('register')">Register Now</b></p>
+        <div class="card" style="max-width:400px; margin:4rem auto;">
+            <h2 style="text-align:center;">Hub Login</h2>
+            <form id="loginForm"><label>Email or SID</label><input type="text" id="l_user" required><label>Password</label><input type="password" id="l_pwd" required><button type="submit" class="btn" style="width:100%; margin-top:2rem;">Access Hub</button></form>
+            <p style="text-align:center; margin-top:1.5rem;">New to DormLift? <a onclick="navigate('register')" style="color:var(--primary); cursor:pointer; font-weight:700;">Create Account</a></p>
+        </div>
+    </div>
+
+    <div id="register" class="page">
+        <div class="card" style="max-width:600px; margin:2rem auto;">
+            <h2 style="text-align:center; margin-bottom:2rem;">Join the Ecosystem</h2>
+            <form id="regForm">
+                <div class="form-grid">
+                    <div><label>Student ID</label><input type="text" id="r_sid" required></div>
+                    <div><label>Nickname</label><input type="text" id="r_anon" required></div>
+                </div>
+                <label>University Email</label>
+                <div style="display:flex; gap:10px; margin-bottom:1.5rem;">
+                    <input type="email" id="r_email" required><button type="button" class="btn btn-outline" style="width:120px;" onclick="sendCode()">Get Code</button>
+                </div>
+                <div class="form-grid">
+                    <div><label>Code</label><input type="text" id="r_code" required></div>
+                    <div><label>Password</label><input type="password" id="r_pwd" required></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>First Name</label><input type="text" id="r_fn" required></div>
+                    <div><label>Last Name</label><input type="text" id="r_ln" required></div>
+                </div>
+                <button type="submit" class="btn" style="width:100%; padding:1.2rem;">Authorized Registration</button>
+            </form>
         </div>
     </div>
 </div>
 
 <div id="masterModal" class="modal" onclick="if(event.target.id==='masterModal') this.style.display='none'">
     <div class="modal-content">
-        <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:45px; height:45px; border-radius:50%; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('masterModal').style.display='none'">&times;</button>
-        <div id="mod_header" style="margin-bottom:1.5rem;"></div>
+        <button style="position:absolute; top:2rem; right:2rem; border:none; background:#f1f5f9; width:45px; height:45px; border-radius:50%; cursor:pointer; font-size:1.5rem;" onclick="document.getElementById('masterModal').style.display='none'">&times;</button>
+        <div id="mod_header"></div>
         <div id="modal-map"></div>
-        <div class="thumb-strip" id="mod_thumbs"></div>
-        <div id="mod_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
+        <div id="mod_thumbs" class="thumb-strip"></div>
+        <div id="mod_body" style="background:#f8fafc; padding:2rem; border-radius:1.5rem; margin-top:1rem;"></div>
         <div id="mod_interaction" class="interaction-box">
-            <h4 style="margin-top:0; font-size:1.3rem;"><i class="far fa-comments" style="color:var(--primary); margin-right:10px;"></i> Discussion Thread</h4>
-            <p style="font-size:0.85rem; color:var(--muted); margin-top:-5px;">Public pre-sale inquiries.</p>
-            <div id="mod_comments" style="max-height:350px; overflow-y:auto; margin-bottom:2rem; padding-right:10px; scrollbar-width:thin;"></div>
-            <div id="reply_hint" class="reply-hint"><i class="fas fa-reply fa-flip-horizontal" style="margin-right:5px;"></i> Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span></div>
-            <div style="display:flex; gap:12px;"><input type="text" id="mod_input" placeholder="Ask a question or reply..." style="margin:0; height:54px;"><button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postMasterComment()">Send</button></div>
+            <h4 style="margin:0 0 1rem 0;">Public Discussion</h4>
+            <div id="mod_comments" style="max-height:250px; overflow-y:auto; margin-bottom:1.5rem; padding-right:10px;"></div>
+            <div style="display:flex; gap:10px;"><input type="text" id="mod_input" placeholder="Ask details..." style="flex:1;"><button class="btn btn-sm" onclick="postComment()">Send</button></div>
         </div>
-        <div id="mod_footer" style="margin-top:3rem; display:flex; justify-content:flex-end; gap:15px; flex-wrap:wrap;"></div>
-    </div>
-</div>
-
-<div id="pointsModal" class="modal" onclick="if(event.target.id==='pointsModal') this.style.display='none'">
-    <div class="modal-content" style="max-width:600px;">
-        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('pointsModal').style.display='none'">&times;</button>
-        <h2 style="margin-top:0; color:var(--dark);"><i class="fas fa-medal" style="color:var(--medal);"></i> Medal Point History</h2>
-        <p style="color:var(--muted); margin-bottom:2rem;">Ledger of points awarded for assisting peers.</p>
-        <div id="pts_list" style="max-height: 400px; overflow-y: auto; border: 1px solid #eef2f6; border-radius: 12px;"></div>
+        <div id="mod_footer" style="margin-top:2rem; display:flex; justify-content:flex-end; gap:1rem;"></div>
     </div>
 </div>
 
 <script>
+    // ======================= STATE & CORE =======================
     let user = JSON.parse(localStorage.getItem('user'));
     let map, routingControl, modalMap, modalRoutingControl, markers = [], modalMarkers = [];
-    let state = { log: [], mar: [], for: [], activeId: null, activeType: null, activeReplyId: null, pendingPayId: null, activeItem: null };
+    let state = { log: [], mar: [], for: [], activeId: null, activeType: null };
 
-    const getAddrText = (str) => (!str) ? 'Unknown Location' : (str.includes('@@') ? str.split('@@')[1] : str);
+    const getAddrText = (str) => (!str) ? 'Location' : (str.includes('@@') ? str.split('@@')[1] : str);
     const getAddrCoords = (str) => { if (!str || !str.includes('@@')) return null; let c = str.split('@@')[0].split(',').map(Number); return (c.length===2 && !isNaN(c[0])) ? c : null; };
 
     function navigate(p, subTab = null) {
         document.getElementById('masterModal').style.display = 'none';
         if (!user && ['post', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-        const targetPage = document.getElementById(p); if(targetPage) targetPage.classList.add('active');
+        const target = document.getElementById(p); if(target) target.classList.add('active');
         renderMenu(); window.scrollTo(0,0);
-        
         if(p === 'hall') switchHall(subTab || 'logistics');
         if(p === 'post') switchPost(subTab || 'logistics');
-        if(p === 'profile') switchProf(subTab || 'kb_log');
+        if(p === 'profile') switchProf(subTab || 'log');
     }
 
     function renderMenu() {
         const menu = document.getElementById('menu');
         if(!user) menu.innerHTML = `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Discover</a><a onclick="navigate('login')">Login</a>`;
-        else menu.innerHTML = `<div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check" style="margin-right:5px;"></i> ${user.anonymous_name} <span style="margin-left:5px; background:white; color:var(--primary); padding:2px 8px; border-radius:10px; font-weight:900;">$${user.wallet_balance || 1000}</span></div><a onclick="navigate('hall')">Discover</a><a onclick="navigate('post')">Publish</a><a onclick="navigate('profile')">Dashboard</a>`;
+        else menu.innerHTML = `<div class="user-tag" onclick="navigate('profile')">${user.anonymous_name} | $${user.wallet_balance || 0}</div><a onclick="navigate('hall')">Discover</a><a onclick="navigate('post')">Publish</a>`;
     }
 
     function logout() { localStorage.clear(); location.reload(); }
 
+    // ======================= UI SWITCHERS =======================
     function switchHall(tab) {
         ['logistics', 'market', 'forum'].forEach(t => {
             const btn = document.getElementById(`btn_hall_${t}`); const content = document.getElementById(`hall_${t}`);
-            if(btn) { if (t === tab) btn.classList.add('active'); else btn.classList.remove('active'); }
-            if(content) { if (t === tab) { content.classList.add('active'); content.style.setProperty('display', 'block', 'important'); } else { content.classList.remove('active'); content.style.setProperty('display', 'none', 'important'); } }
+            if(btn) btn.classList.toggle('active', t===tab);
+            if(content) content.style.display = t===tab ? 'block' : 'none';
         });
         loadHall();
     }
 
     function switchPost(tab) {
         ['logistics', 'market', 'forum'].forEach(t => {
-            const btn = document.getElementById(`btn_post_${t}`); const content = document.getElementById(`post_${t}`);
-            if(btn) { if (t === tab) btn.classList.add('active'); else btn.classList.remove('active'); }
-            if(content) { if (t === tab) { content.classList.add('active'); content.style.setProperty('display', 'block', 'important'); } else { content.classList.remove('active'); content.style.setProperty('display', 'none', 'important'); } }
+            const btn = document.getElementById(`btn_post_${t}`); const content = document.getElementById(`post_${t === 'logistics' ? 'logistics' : (t === 'market' ? 'Market' : 'Forum')}`);
+            if(btn) btn.classList.toggle('active', t===tab);
+            const targetId = t === 'logistics' ? 'post_logistics' : (t === 'market' ? 'post_market' : 'post_forum');
+            const el = document.getElementById(targetId);
+            if(el) el.style.display = t===tab ? 'block' : 'none';
         });
-        if(tab==='logistics' && map) setTimeout(()=>map.invalidateSize(), 200);
+        if(tab==='logistics') { initMap(); if(map) setTimeout(()=>map.invalidateSize(), 300); }
     }
 
     function switchProf(tab) {
-        ['kb_log', 'kb_mar', 'kb_for'].forEach(t => {
-            const btn = document.getElementById(`btn_prof_${t}`); const content = document.getElementById(t);
-            if(btn) { if (t === tab) btn.classList.add('active'); else btn.classList.remove('active'); }
-            if(content) { if (t === tab) { content.classList.add('active'); content.style.setProperty('display', t==='kb_for'?'block':'grid', 'important'); } else { content.classList.remove('active'); content.style.setProperty('display', 'none', 'important'); } }
+        ['log', 'mar'].forEach(t => {
+            const btn = document.getElementById(`btn_prof_${t}`); const content = document.getElementById(`prof_${t}`);
+            if(btn) btn.classList.toggle('active', t===tab);
+            if(content) content.style.display = t===tab ? 'grid' : 'none';
         });
         loadProfileData();
     }
-    
-    function previewFiles(e, id) {
-        const s = document.getElementById(id); s.innerHTML = "";
-        Array.from(e.target.files).slice(0, 5).forEach(f => { const r = new FileReader(); r.onload = ev => s.innerHTML += `<img src="${ev.target.result}" class="thumb-img">`; r.readAsDataURL(f); });
-    }
 
+    // ======================= MAP ENGINE =======================
     function initMap() {
         if(map) return;
-        setTimeout(() => {
-            map = L.map('map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); L.control.zoom({position: 'topright'}).addTo(map);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
-            routingControl = L.Routing.control({ lineOptions: { styles: [{ color: '#4f46e5', weight: 6, opacity: 0.8, dashArray: '10, 10' }] }, createMarker: () => null, show: false, addWaypoints: false }).on('routesfound', ev => { document.getElementById('distVal').innerText = (ev.routes[0].summary.totalDistance / 1000).toFixed(2); document.getElementById('timeVal').innerText = Math.round(ev.routes[0].summary.totalTime / 60); }).addTo(map);
-            map.on('click', async e => {
-                if (markers.length >= 2) { markers.forEach(m => map.removeLayer(m)); markers = []; routingControl.setWaypoints([]); document.getElementById('distVal').innerText = "0.00"; document.getElementById('timeVal').innerText = "0"; document.getElementById('p_from').value = ""; document.getElementById('p_to').value = ""; }
-                let isStart = markers.length === 0;
-                let customIcon = L.divIcon({ className: 'custom-pin', html: `<div class="pin-wrapper" style="border-color:${isStart?'var(--primary)':'var(--success)'}"><i class="fas ${isStart?'fa-street-view':'fa-flag-checkered'}" style="color:${isStart?'var(--primary)':'var(--success)'}; font-size:14px;"></i></div>`, iconSize: [34, 34], iconAnchor: [17, 34] });
-                markers.push(L.marker(e.latlng, {icon: customIcon}).addTo(map));
-                const input = document.getElementById(isStart ? 'p_from' : 'p_to'); input.value = "Fetching address...";
-                try { const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro'} }); const d = await res.json(); input.value = d.display_name ? d.display_name.split(',').slice(0,3).join(',').trim() : `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
-                if (markers.length === 2) routingControl.setWaypoints([markers[0].getLatLng(), markers[1].getLatLng()]);
-            });
-        }, 300);
-    }
+        map = L.map('map', {zoomControl: false}).setView([-36.8509, 174.7645], 14);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+        routingControl = L.Routing.control({ 
+            createMarker: () => null, show: false, addWaypoints: false,
+            lineOptions: { styles: [{ color: '#4f46e5', weight: 6, opacity: 0.8 }] }
+        }).on('routesfound', ev => {
+            document.getElementById('distVal').innerText = (ev.routes[0].summary.totalDistance / 1000).toFixed(2);
+            document.getElementById('timeVal').innerText = Math.round(ev.routes[0].summary.totalTime / 60);
+        }).addTo(map);
 
-    async function safeFetchList(url) { try { const r = await fetch(url); const d = await r.json(); return d.list || []; } catch(e) { return []; } }
-
-    async function loadHall() {
-        state.log = await safeFetchList('/api/task/all?t=' + Date.now()); state.mar = await safeFetchList('/api/market/all?t=' + Date.now()); state.for = await safeFetchList('/api/forum/all?t=' + Date.now());
-        document.getElementById('list_logistics').innerHTML = state.log.map(t => {
-            let uD = t.publisher_id.split('@')[0] || 'Peer';
-            return `<div class="hub-row" onclick="openMasterModal('log', '${t._id}')"><div class="posted-col">PUB<span>${new Date(t.created_at).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}</span><div style="margin-top:8px; font-size:0.7rem; color:var(--primary); text-transform:none;"><i class="fas fa-user-circle"></i> ${uD}</div></div><div class="details-strip"><div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div><div class="strip-route"><i class="fas fa-circle"></i> ${getAddrText(t.from_addr)} <i class="fas fa-arrow-right"></i> <i class="fas fa-flag-checkered"></i> ${getAddrText(t.to_addr)}</div><div class="strip-inventory"><span style="background:#fef3c7; color:var(--medal); padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">🏅 ${t.medal_points||1} Pts</span> <b>Items:</b> ${t.items_desc.substring(0, 60)}...</div></div><div class="reward-col">${t.reward}</div></div>`;
-        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-weight:600;">No active logistics missions.</div>';
-
-        document.getElementById('list_market').innerHTML = state.mar.map(m => {
-            let imgData = []; try { imgData = JSON.parse(m.img_url); } catch(e) {}
-            let uD = m.seller_id.split('@')[0] || 'Peer';
-            return `<div class="market-card" onclick="openMasterModal('mar', '${m._id}')"><img src="${imgData[0] || ''}" class="m-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'100\\\' height=\\\'100\\\'></svg>'"><div class="m-body"><div><h3 class="m-title">${m.title}</h3><div class="m-meta" style="margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; color:var(--dark); font-weight:700;">${m.condition}</span></div></div><div><div class="m-price">$${m.price}</div><div class="m-meta"><i class="fas fa-map-marker-alt"></i> ${m.location}</div><div class="m-seller"><i class="fas fa-user-tag"></i> Seller: ${uD}</div></div></div></div>`;
-        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-weight:600;">Flea market is empty.</div>';
-
-        document.getElementById('list_forum').innerHTML = state.for.map(f => {
-            let imgData = []; try { imgData = JSON.parse(f.img_url); } catch(e) {}
-            const isLiked = user && f.likes.includes(user.email);
-            return `<div class="forum-card"><div class="f-header"><div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div><div class="f-time">${new Date(f.created_at).toLocaleString()}</div></div><div class="f-content">${f.content}</div>${imgData.length ? `<div class="f-images">${imgData.map(u => `<img src="${u}" onclick="window.open('${u}')">`).join('')}</div>` : ''}<div class="f-actions"><button class="btn btn-outline btn-sm" style="${isLiked?'background:var(--primary);color:white;border-color:var(--primary);':''}" onclick="interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button><button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button></div></div>`;
-        }).join('') || '<div style="padding:5rem; text-align:center; color:var(--muted); font-weight:600;">No buzz yet on campus.</div>';
-    }
-
-    function initModalMap(fromC, toC) {
-        if(!modalMap) {
-            modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(modalMap); modalRoutingControl = L.Routing.control({ lineOptions: { styles: [{ color: '#4f46e5', weight: 5, opacity: 0.8, dashArray: '10, 10' }] }, createMarker: () => null, show: false, addWaypoints: false }).addTo(modalMap);
-        }
-        modalMarkers.forEach(layer => modalMap.removeLayer(layer)); modalMarkers = []; modalRoutingControl.setWaypoints([]);
-        if(fromC && toC) {
-            let sI = L.divIcon({className: 'custom-pin', html: `<div class="pin-wrapper" style="border-color:var(--primary)"><i class="fas fa-street-view" style="color:var(--primary); font-size:14px;"></i></div>`, iconSize: [34, 34], iconAnchor: [17, 34]});
-            let eI = L.divIcon({className: 'custom-pin', html: `<div class="pin-wrapper" style="border-color:var(--success)"><i class="fas fa-flag-checkered" style="color:var(--success); font-size:14px;"></i></div>`, iconSize: [34, 34], iconAnchor: [17, 34]});
-            let m1 = L.marker(fromC, {icon: sI}).addTo(modalMap); let m2 = L.marker(toC, {icon: eI}).addTo(modalMap); modalMarkers.push(m1, m2);
-            modalRoutingControl.setWaypoints([L.latLng(fromC[0], fromC[1]), L.latLng(toC[0], toC[1])]); modalMap.fitBounds(new L.featureGroup([m1, m2]).getBounds(), {padding: [30, 30]});
-        }
-        setTimeout(() => modalMap.invalidateSize(), 300); 
-    }
-
-    async function openMasterModal(type, id) {
-        state.activeType = type; state.activeId = id;
-        let item = null;
-        try {
-            let endpoint = type === 'log' ? '/api/task/all' : (type === 'mar' ? '/api/market/all' : '/api/forum/all');
-            const res = await fetch(endpoint + '?t=' + Date.now()); const d = await res.json();
-            item = (d.list || []).find(x => x._id === id);
-            if(!item && user) {
-                const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})}); const dT = await resT.json();
-                const sourceArray = type === 'log' ? (dT.tasks||[]) : (type === 'mar' ? (dT.market||[]) : (dT.posts||[])); item = sourceArray.find(x => x._id === id);
-            }
-        } catch(e) {}
-        
-        if(!item) return alert("Item data unavailable.");
-        state.activeItem = item; const currentUserEmail = user ? user.email : null;
-        const h = document.getElementById('mod_header'); const b = document.getElementById('mod_body'); const f = document.getElementById('mod_footer');
-        const mapDiv = document.getElementById('modal-map'); mapDiv.style.display = 'none';
-        document.getElementById('mod_interaction').style.display = 'block'; document.getElementById('mod_thumbs').style.display = 'flex';
-
-        let parsedImgs = []; try { parsedImgs = JSON.parse(item.img_url || '[]'); } catch(e) {}
-        document.getElementById('mod_thumbs').innerHTML = (parsedImgs||[]).map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('');
-        
-        // --- PIN LOGIC INJECTION START ---
-        // Generating a deterministic 4-digit PIN from the MongoDB ObjectId
-        let pin = item._id ? parseInt(item._id.substring(item._id.length - 4), 16) % 10000 : 8492;
-        let handoverPin = pin.toString().padStart(4, '0');
-        // --- PIN LOGIC INJECTION END ---
-
-        if (type === 'log') {
-            h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem; letter-spacing:-1.5px;">${item.reward} Mission</h2><span class="status-badge" style="background:var(--primary); color:white;">${item.status}</span></div>`;
-            let fC = getAddrCoords(item.from_addr); let tC = getAddrCoords(item.to_addr);
-            if(fC && tC) { mapDiv.style.display = 'block'; initModalMap(fC, tC); }
-            
-            let bodyHTML = `
-                <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
-                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.from_addr)}</span></div>
-                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">🏁 Destination Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.to_addr)}</span></div>
-                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Logistics Complexity & Reward</b> <br><span style="font-weight:700; color:var(--dark);">${item.task_scale || 'Small'} Task (${item.has_elevator==='true'?'Elevator':'Stairs Only'})</span><span style="margin-left:10px; background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:8px; font-weight:800; font-size:0.85rem; border:1px solid #fde68a;">🏅 ${item.medal_points || 1} Pts</span></div>
-                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Complete Inventory</b> <br><span style="color:var(--text);">${item.items_desc}</span></div>
-                </div>`;
-
-            if(item.status === 'assigned' && (item.publisher_id === currentUserEmail || item.helper_id === currentUserEmail)) {
-                let targetUser = item.publisher_id === currentUserEmail ? item.helper_id : item.publisher_id;
-                let role = item.publisher_id === currentUserEmail ? 'Helper' : 'Publisher';
-                bodyHTML += `<div class="contact-unlock-panel"><h4 style="margin:0; color:var(--success); display:flex; align-items:center; gap:8px;"><i class="fas fa-unlock-alt"></i> Secure Contact Unlocked</h4><div style="font-size:0.95rem; color:var(--dark);"><b>${role} ID:</b> ${targetUser}</div><div style="font-size:0.95rem; color:var(--dark);"><b><i class="fas fa-phone-alt"></i> Phone:</b> +64 21 *** (Available via platform SMS)</div></div>`;
-            }
-            b.innerHTML = bodyHTML;
-            
-            let btns = '';
-            if(item.status === 'pending' && item.publisher_id !== currentUserEmail) {
-                btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'assigned')">Accept Mission & Unlock Contact <i class="fas fa-check-circle"></i></button>`;
-            }
-            if(item.status === 'assigned' && item.publisher_id === currentUserEmail) {
-                btns = `<button class="btn" style="padding:1.4rem 3rem; width:100%; margin-bottom:10px;" onclick="execFlow('log', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>
-                        <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger); width:100%;" onclick="execFlow('log', 'pending')">Cancel & Kick Helper</button>`;
-            }
-            if(item.status === 'assigned' && item.helper_id === currentUserEmail) {
-                btns = `<div style="font-size:0.8rem; color:var(--muted); text-align:center; width:100%;">Mission in progress. Only the Publisher can cancel this task.</div>`;
-            }
-            if(item.publisher_id === currentUserEmail && item.status === 'pending') {
-                btns = `<button class="btn" style="background:#0f172a; padding:1.4rem 3rem; margin-right:10px;" onclick="execFlow('log', 'assigned')">DEV TEST: Accept Own</button><button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw Task</button>`;
-            }
-            f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
-        
-        } else if (type === 'mar') {
-            h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--success); font-size:2.8rem; letter-spacing:-1.5px;">$${item.price}</h2><span class="status-badge" style="background:var(--success); color:white;">${item.status}</span></div>`;
-            let escrowNote = item.status === 'reserved' ? `<div style="background:#fef3c7; color:#b45309; padding:12px; border-radius:8px; margin-bottom:15px; font-weight:700;"><i class="fas fa-lock"></i> Funds ($${item.price}) secured in Escrow.</div>` : '';
-            
-            let bodyHTML = `${escrowNote}
-                <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
-                    <h3 style="margin:0; color:var(--dark); font-size:1.8rem;">${item.title}</h3>
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.5rem;"><div class="brand-icon" style="width:30px; height:30px; border-radius:50%; font-size:0.8rem;"><i class="fas fa-user-tag"></i></div><div style="font-weight:700; color:var(--dark); font-size:0.95rem;">Seller: ${item.seller_id}</div></div>
-                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Condition & Location</b> <br><span style="font-weight:700; color:var(--dark);">${item.condition} • ${item.location}</span></div>
-                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Description</b> <br><span style="color:var(--text);">${item.description}</span></div>
-                </div>`;
-
-            if(item.status === 'reserved' && (item.buyer_id === currentUserEmail || item.seller_id === currentUserEmail)) {
-                let targetUser = item.buyer_id === currentUserEmail ? item.seller_id : item.buyer_id;
-                let role = item.buyer_id === currentUserEmail ? 'Seller' : 'Buyer';
-                bodyHTML += `<div class="contact-unlock-panel"><h4 style="margin:0; color:var(--success); display:flex; align-items:center; gap:8px;"><i class="fas fa-unlock-alt"></i> Secure Contact Unlocked</h4><div style="font-size:0.95rem; color:var(--dark);"><b>${role} Email:</b> ${targetUser}</div><div style="font-size:0.95rem; color:var(--dark);"><b><i class="fas fa-phone-alt"></i> Phone:</b> +64 21 *** (Available via platform SMS)</div></div>`;
-            }
-            b.innerHTML = bodyHTML;
-            
-            let btns = '';
-            if(item.status === 'available') {
-                if(item.seller_id !== currentUserEmail) {
-                    btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="morphIntoCheckout()">Pay Escrow & Unlock Contact <i class="fas fa-credit-card"></i></button>`;
-                } else {
-                    btns = `<button class="btn" style="background:#0f172a; padding:1.4rem 3rem; margin-right:10px;" onclick="morphIntoCheckout()">DEV TEST: Buy Own Item</button><button class="btn btn-danger" onclick="deleteItem('mar', '${item._id}')">Remove Listing</button>`;
-                }
-            }
-            
-            // --- PIN LOGIC INJECTION FOR BUYER & SELLER ---
-            if(item.status === 'reserved' && item.buyer_id === currentUserEmail) {
-                btns = `
-                    <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:15px; border-radius:12px; margin-bottom:15px; text-align:center;">
-                        <div style="font-size:0.85rem; color:var(--success); font-weight:800; text-transform:uppercase;">Your Handover PIN</div>
-                        <div style="font-size:2.5rem; font-weight:900; color:var(--dark); letter-spacing:4px;">${handoverPin}</div>
-                        <div style="font-size:0.8rem; color:var(--muted); margin-top:5px;">Share this with the seller ONLY when you have inspected the item.</div>
-                    </div>
-                    <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger); width:100%;" onclick="alert('Please ask the seller to cancel the order if you wish to refund. If the seller is unresponsive, an automatic dispute button will appear here after 72 hours.')">Request Cancel/Refund</button>`;
-            }
-            
-            if(item.status === 'reserved' && item.seller_id === currentUserEmail) {
-                btns = `
-                    <div style="margin-bottom:15px; text-align:left;">
-                        <label style="font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">Enter Buyer's PIN to Release Funds</label>
-                        <div style="display:flex; gap:10px; margin-top:5px;">
-                            <input type="text" id="input_pin" placeholder="e.g. ${handoverPin}" maxlength="4" style="font-size:1.5rem; font-weight:900; letter-spacing:4px; text-align:center; padding:10px; width:100%;">
-                            <button class="btn" style="background:var(--success); padding:0 2rem;" onclick="verifyPin('${handoverPin}')">Verify</button>
-                        </div>
-                    </div>
-                    <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger); width:100%;" onclick="execFlow('mar', 'available')">Cancel Order & Refund Buyer</button>`;
-            }
-
-            f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
-            
-        } else if (type === 'for') {
-            h.innerHTML = `<div style="display:flex; align-items:center; gap:15px;"><div class="brand-icon" style="border-radius:50%;"><i class="fas fa-user"></i></div><div><h3 style="margin:0;">${item.author_name}</h3><small style="color:var(--muted);">${new Date(item.created_at).toLocaleString()}</small></div></div>`;
-            b.innerHTML = `<div style="font-size:1.2rem; color:var(--dark); line-height:1.6;">${item.content}</div>`;
-            f.innerHTML = '';
-        }
-        renderThreadedComments(item.comments || []); document.getElementById('masterModal').style.display = 'flex';
-    }
-
-    // THE FIX: PIN Verification Function
-    function verifyPin(correctPin) {
-        const input = document.getElementById('input_pin').value;
-        if(input === correctPin) {
-            execFlow('mar', 'completed');
-        } else {
-            alert("❌ Invalid PIN. Please check with the buyer and try again.");
-        }
-    }
-
-    const escapeHTML = (str) => { return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); };
-
-    function renderThreadedComments(comments) {
-        const area = document.getElementById('mod_comments');
-        const parents = comments.filter(c => !c.parentId);
-        area.innerHTML = parents.map(p => {
-            const replies = comments.filter(r => String(r.parentId) === String(p.id));
-            return `<div class="comment-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b style="color:var(--dark);">${p.user}</b><small style="color:var(--muted);">${new Date(p.time).toLocaleString()}</small></div><div style="font-size:1rem;">${p.text} <span class="reply-btn" onclick="setReply('${p.id}', '${escapeHTML(p.user)}')">Reply</span></div>${replies.map(r2 => `<div class="comment-item comment-reply"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r2.user}</b> replied to <b>${p.user}</b></small></div><div style="font-size:0.95rem;">${r2.text} <span class="reply-btn" onclick="setReply('${r2.id}', '${escapeHTML(r2.user)}')">Reply</span></div>${comments.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `<div class="comment-item comment-reply" style="border-left-color:var(--warning); background:white;"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r3.user}</b> replied to <b>${r2.user}</b></small></div><div style="font-size:0.95rem;">${r3.text}</div></div>`).join('')}</div>`).join('')}</div>`;
-        }).join('') || '<p id="empty_comments_msg" style="color:var(--muted); text-align:center; padding:2rem; font-weight:600;">No public discussions yet.</p>';
-    }
-
-    function setReply(id, name) { state.activeReplyId = id; document.getElementById('reply_hint').style.display='block'; document.getElementById('reply_name').innerText=name; document.getElementById('mod_input').focus(); }
-    function cancelReply() { state.activeReplyId = null; document.getElementById('reply_hint').style.display='none'; }
-
-    async function postMasterComment() {
-        if (!user) { alert("Please log in to participate."); return navigate('login'); }
-        const text = document.getElementById('mod_input').value; if(!text) return;
-        const apiPath = state.activeType === 'log' ? '/api/task/comment' : (state.activeType === 'mar' ? '/api/market/comment' : '/api/forum/interact');
-        const payload = { id: String(Date.now()), user: user.anonymous_name, text, parentId: state.activeReplyId, time: new Date() };
-        const body = state.activeType === 'for' ? { post_id: state.activeId, action: 'comment', email: user.email, comment: payload } : (state.activeType === 'log' ? { task_id: state.activeId, comment: payload } : { item_id: state.activeId, comment: payload });
-        const emptyMsg = document.getElementById('empty_comments_msg'); if(emptyMsg) emptyMsg.style.display = 'none';
-        
-        let newHtml = "";
-        if(!state.activeReplyId) {
-            newHtml = `<div class="comment-item" style="border-left: 4px solid var(--success);"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b style="color:var(--dark);">${payload.user}</b><small style="color:var(--success); font-weight:bold;">Just now</small></div><div style="font-size:1rem;">${payload.text}</div></div>`; document.getElementById('mod_comments').insertAdjacentHTML('beforeend', newHtml);
-        } else {
-            newHtml = `<div class="comment-item comment-reply" style="border-left: 4px solid var(--success);"><div style="margin-bottom:6px;"><small style="color:var(--success); font-weight:700;"><b>${payload.user}</b> replied</small></div><div style="font-size:0.95rem;">${payload.text}</div></div>`; document.getElementById('mod_comments').insertAdjacentHTML('beforeend', newHtml);
-        }
-        const box = document.getElementById('mod_comments'); box.scrollTop = box.scrollHeight; document.getElementById('mod_input').value = ""; cancelReply(); 
-        try { await fetch(apiPath, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }); loadHall(); } catch(e) {}
-    }
-
-    function morphIntoCheckout() {
-        if (!user) { alert("Please log in to purchase."); return navigate('login'); }
-        const item = state.activeItem; if(!item) return alert("System error: Item context lost.");
-        state.pendingPayId = item._id; let safePrice = parseFloat(item.price) || 0;
-        
-        document.getElementById('mod_interaction').style.display = 'none'; document.getElementById('mod_thumbs').style.display = 'none';
-        document.getElementById('mod_header').innerHTML = `<div style="text-align:center; margin-bottom:1rem;"><i class="fas fa-shield-alt" style="font-size:3rem; color:var(--success); margin-bottom:1rem;"></i><h2 style="margin:0;">Secure Escrow Checkout</h2><p style="color:var(--muted); margin-top:5px;">Funds will be held securely in platform escrow. Contact details will unlock after authorization.</p></div>`;
-        document.getElementById('mod_body').innerHTML = `<div class="payment-card"><div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;"><i class="fab fa-cc-visa" style="font-size:2rem; color:rgba(255,255,255,0.8);"></i><i class="fas fa-wifi" style="font-size:1.5rem; color:rgba(255,255,255,0.5);"></i></div><label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Card Number</label><div class="cc-input-group"><i class="far fa-credit-card"></i><input type="text" placeholder="0000 0000 0000 0000" maxlength="19" value="4242 4242 4242 4242"></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;"><div><label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">Expiry Date</label><div class="cc-input-group"><i class="far fa-calendar-alt"></i><input type="text" placeholder="MM/YY" maxlength="5" value="12/28"></div></div><div><label style="color:rgba(255,255,255,0.6); font-size:0.75rem;">CVC</label><div class="cc-input-group"><i class="fas fa-lock"></i><input type="password" placeholder="123" maxlength="3" value="123"></div></div></div></div><div style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem; background:#fff; border-radius:1rem; border:1px solid #eef2f6;"><div><div style="font-weight:700; color:var(--dark); font-size:1.1rem;">${item.title}</div><div style="font-size:0.85rem; color:var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> DormLift Buyer Protection</div></div><div style="font-size:1.8rem; font-weight:900; color:var(--dark);">$${safePrice.toFixed(2)}</div></div>`;
-        document.getElementById('mod_footer').innerHTML = `<button id="btn_process_checkout" class="btn" style="width:100%; padding:1.2rem; font-size:1.1rem;" onclick="processFinalCheckout()">Authorize Payment & Unlock Seller Contact <i class="fas fa-unlock-alt"></i></button>`;
-    }
-
-    function processFinalCheckout() {
-        if (!user) return alert("Session expired.");
-        const btn = document.getElementById('btn_process_checkout'); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing Secure Payment...`;
-        setTimeout(async () => {
-            btn.innerHTML = `<i class="fas fa-check-circle"></i> Payment Authorized`; btn.style.background = 'var(--success)';
+        map.on('click', async e => {
+            if (markers.length >= 2) { markers.forEach(m => map.removeLayer(m)); markers = []; routingControl.setWaypoints([]); }
+            let isStart = markers.length === 0;
+            let m = L.marker(e.latlng, { icon: L.divIcon({ className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:${isStart?'var(--primary)':'var(--success)'}"><i class="fas ${isStart?'fa-street-view':'fa-flag-checkered'}" style="color:${isStart?'var(--primary)':'var(--success)'}"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]})}).addTo(map);
+            markers.push(m);
+            const input = document.getElementById(isStart ? 'p_from' : 'p_to');
+            input.value = "Fetching...";
             try {
-                const res = await fetch('/api/market/workflow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({item_id: state.activeItem._id, status: 'reserved', buyer_id: user.email}) });
-                const data = await res.json();
-                setTimeout(() => {
-                    document.getElementById('masterModal').style.display = 'none';
-                    if(data.msg === 'INSUFFICIENT_FUNDS') { alert("Virtual Bank declined: Insufficient wallet balance."); } else if (data.success) {
-                        alert("✅ Payment Successful!\n\nFunds are secured in Platform Escrow.\nThe Seller's Contact Information is now unlocked in your Dashboard.");
-                        navigate('profile', 'kb_mar');
-                        setTimeout(() => { const targetCol = document.getElementById('wrap_mar_prog'); if (targetCol) { targetCol.scrollIntoView({ behavior: 'smooth', block: 'center' }); targetCol.style.boxShadow = "0 0 0 4px var(--warning)"; setTimeout(() => targetCol.style.boxShadow = "none", 2000); } }, 400);
-                    } else { alert("Payment processing error on server."); }
-                }, 800);
-            } catch(e) { alert("Network error processing payment."); document.getElementById('masterModal').style.display = 'none'; }
-        }, 1500);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
+                const d = await res.json();
+                input.value = d.display_name ? d.display_name.split(',').slice(0,3).join(',').trim() : `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+            } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
+            if (markers.length === 2) routingControl.setWaypoints([markers[0].getLatLng(), markers[1].getLatLng()]);
+        });
     }
+
+    function initModalMap(from, to) {
+        if(!modalMap) {
+            modalMap = L.map('modal-map', {zoomControl: false});
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(modalMap);
+            modalRoutingControl = L.Routing.control({ createMarker: () => null, show: false }).addTo(modalMap);
+        }
+        modalMarkers.forEach(m => modalMap.removeLayer(m)); modalMarkers = [];
+        let m1 = L.marker(from).addTo(modalMap); let m2 = L.marker(to).addTo(modalMap); modalMarkers.push(m1, m2);
+        modalRoutingControl.setWaypoints([L.latLng(from[0], from[1]), L.latLng(to[0], to[1])]);
+        modalMap.fitBounds(L.featureGroup([m1, m2]).getBounds(), {padding: [40, 40]});
+        setTimeout(() => modalMap.invalidateSize(), 400);
+    }
+
+    // ======================= HUB LOADING =======================
+    async function loadHall() {
+        const fetchList = async (url) => { try { const r = await fetch(url); const d = await r.json(); return d.list || []; } catch(e) { return []; } };
+        const [l, m, f] = await Promise.all([fetchList('/api/task/all'), fetchList('/api/market/all'), fetchList('/api/forum/all')]);
+        state.log = l; state.mar = m; state.for = f;
+        
+        document.getElementById('list_logistics').innerHTML = l.map(t => `
+            <div class="hub-row" onclick="openMasterModal('log', '${t._id}')">
+                <div class="posted-col">PUB<span>${new Date(t.created_at).getDate()} ${new Date(t.created_at).toLocaleString('en-US', {month:'short'})}</span></div>
+                <div class="details-strip">
+                    <div class="strip-header"><i class="fas fa-truck-loading"></i> Move: ${t.move_date}</div>
+                    <div style="font-size:0.9rem; color:var(--muted);">${getAddrText(t.from_addr)} <i class="fas fa-arrow-right"></i> ${getAddrText(t.to_addr)}</div>
+                    <div style="font-size:0.8rem;"><b>🏅 ${t.medal_points} Pts</b> | ${t.items_desc.substring(0,50)}...</div>
+                </div>
+                <div class="reward-col">${t.reward}</div>
+            </div>`).join('') || '<p style="text-align:center; padding:3rem;">No tasks.</p>';
+
+        document.getElementById('list_market').innerHTML = m.map(item => `
+            <div class="market-card" onclick="openMasterModal('mar', '${item._id}')">
+                <img src="${JSON.parse(item.img_url || '[]')[0] || ''}" class="m-img" onerror="this.src='https://placehold.co/400x300?text=No+Image'">
+                <div class="m-body">
+                    <div class="m-price">$${item.price}</div>
+                    <div class="m-title">${item.title}</div>
+                    <div class="m-meta">${item.location}</div>
+                </div>
+            </div>`).join('') || '<p style="text-align:center; padding:3rem;">Empty market.</p>';
+
+        document.getElementById('list_forum').innerHTML = f.map(post => `
+            <div class="forum-card">
+                <div class="f-header"><div class="f-author">${post.author_name}</div><small>${new Date(post.created_at).toLocaleString()}</small></div>
+                <p>${post.content}</p>
+                <button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${post._id}')">Comments (${post.comments.length})</button>
+            </div>`).join('') || '<p style="text-align:center; padding:3rem;">No buzz.</p>';
+    }
+
+    // ======================= MODAL LOGIC =======================
+    function openMasterModal(type, id) {
+        state.activeId = id; state.activeType = type;
+        let item = state[type].find(x => x._id === id); if(!item) return;
+        const h = document.getElementById('mod_header'); const b = document.getElementById('mod_body'); const f = document.getElementById('mod_footer');
+        const mDiv = document.getElementById('modal-map'); mDiv.style.display = 'none';
+
+        h.innerHTML = `<h2>${type==='log' ? item.reward + ' Mission' : (type==='mar' ? '$'+item.price : 'Campus Buzz')}</h2>`;
+        b.innerHTML = `<p style="font-size:1.1rem; color:var(--dark);">${item.items_desc || item.description || item.content}</p>`;
+        
+        if(type==='log') {
+            let fC = getAddrCoords(item.from_addr); let tC = getAddrCoords(item.to_addr);
+            if(fC && tC) { mDiv.style.display = 'block'; initModalMap(fC, tC); }
+        }
+
+        const pin = String(parseInt(id.substring(id.length - 4), 16) % 10000).padStart(4, '0');
+        if(type==='mar' && item.status==='reserved' && item.buyer_id === user.email) {
+            b.innerHTML += `<div class="pin-box"><label>Handover PIN</label><div class="pin-number">${pin}</div><p>Show this to the seller upon arrival.</p></div>`;
+        }
+        
+        let btns = '';
+        if(type==='log' && item.status==='pending' && item.publisher_id !== user.email) btns = `<button class="btn" onclick="execFlow('log', 'assigned')">Accept Mission</button>`;
+        if(type==='mar' && item.status==='available' && item.seller_id !== user.email) btns = `<button class="btn" onclick="morphToCheckout('${item.price}')">Purchase Escrow</button>`;
+        if(type==='mar' && item.status==='reserved' && item.seller_id === user.email) {
+            btns = `<div style="display:flex; gap:10px;"><input type="text" id="v_pin" placeholder="Enter PIN" style="width:120px;"><button class="btn btn-sm" onclick="checkPin('${pin}')">Verify & Release</button></div>`;
+        }
+        if((item.publisher_id || item.seller_id) === user.email && item.status !== 'completed') btns += `<button class="btn btn-outline" style="color:var(--danger);" onclick="deleteItem('${type}', '${item._id}')">Withdraw</button>`;
+        
+        f.innerHTML = btns; renderComments(item.comments); document.getElementById('masterModal').style.display = 'flex';
+    }
+
+    function morphToCheckout(price) {
+        document.getElementById('mod_body').innerHTML = `<div class="checkout-card"><h3>Secure Checkout</h3><p>Funds ($${price}) will be held in escrow.</p><label>Card Placeholder</label><input type="text" value="**** **** **** 4242" disabled style="color:white; background:rgba(255,255,255,0.1);"></div>`;
+        document.getElementById('mod_footer').innerHTML = `<button class="btn" onclick="execFlow('mar', 'reserved')">Authorize Payment</button>`;
+    }
+
+    function checkPin(correct) { if(document.getElementById('v_pin').value === correct) execFlow('mar', 'completed'); else alert("Invalid PIN"); }
 
     async function execFlow(type, status) {
-        if (!user) { alert("Please log in to continue."); return navigate('login'); }
-        let actText = status === 'assigned' ? 'Accept Mission & Unlock Contact' : (status === 'completed' ? 'Confirm Delivery/Receipt' : 'Update Status');
-        if(!confirm(`Confirm: ${actText}?`)) return;
         const api = type === 'log' ? '/api/task/workflow' : '/api/market/workflow';
         const body = type === 'log' ? { task_id: state.activeId, status, helper_id: user.email } : { item_id: state.activeId, status, buyer_id: user.email };
-        try {
-            const res = await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }); const data = await res.json();
-            if (data.success) {
-                alert(`✅ Success!\n\nThe item has been updated on your Dashboard.`); document.getElementById('masterModal').style.display = 'none'; 
-                navigate('profile', `kb_${type}`);
-                setTimeout(() => { const colMap = { 'log': 'wrap_log_prog', 'mar': 'wrap_mar_prog' }; const targetCol = document.getElementById(colMap[type]); if (targetCol) { targetCol.scrollIntoView({ behavior: 'smooth', block: 'center' }); targetCol.style.boxShadow = "0 0 0 4px var(--primary)"; setTimeout(() => targetCol.style.boxShadow = "none", 2000); } }, 400);
-            }
-        } catch(e) { alert("Network error executing flow."); }
+        const res = await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        if(res.ok) { document.getElementById('masterModal').style.display = 'none'; navigate('profile'); }
     }
 
-    async function deleteItem(type, id) {
-        if(!user) return; if(!confirm("Permanently withdraw from network?")) return;
-        const api = type === 'log' ? '/api/task/delete' : '/api/market/delete';
-        await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id, email:user.email}) });
-        document.getElementById('masterModal').style.display = 'none'; loadHall();
+    function renderComments(list) { document.getElementById('mod_comments').innerHTML = (list||[]).map(c => `<div class="comment-item"><b>${c.user}</b>: ${c.text}</div>`).join('') || 'No messages.'; }
+
+    async function postComment() {
+        const text = document.getElementById('mod_input').value; if(!text) return;
+        const api = state.activeType === 'log' ? '/api/task/comment' : (state.activeType === 'mar' ? '/api/market/comment' : '/api/forum/interact');
+        const body = state.activeType === 'for' ? { post_id: state.activeId, action: 'comment', email: user.email, comment: {user: user.anonymous_name, text, time: new Date()} } : { [state.activeType==='log'?'task_id':'item_id']: state.activeId, comment: {user: user.anonymous_name, text, time: new Date()} };
+        await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        document.getElementById('mod_input').value = ""; loadHall();
     }
 
-    async function interactForum(id, action) { if(!user) { alert("Please log in to like posts."); return; } await fetch('/api/forum/interact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({post_id:id, action, email:user.email}) }); loadHall(); }
-
+    // ======================= DASHBOARD =======================
     async function loadProfileData() {
-        if (!user) return;
-        try {
-            const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json(); const u = d.user;
-            user.wallet_balance = u.wallet_balance; localStorage.setItem('user', JSON.stringify(user)); renderMenu();
-            const fields = [['Student ID', u.student_id], ['University', u.school_name], ['Full Name', `${u.first_name} ${u.given_name}`], ['Nickname', u.anonymous_name], ['Gender', u.gender], ['Email', u.email], ['Phone', u.phone]];
-            const pDetails = document.getElementById('profileDetails'); if(pDetails) { pDetails.innerHTML = fields.map(f => `<div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;"><label style="margin-bottom:8px;">${f[0]}</label><div style="font-weight:800; font-size:1.1rem; color:var(--dark);">${f[1]}</div></div>`).join(''); }
-            const elWallet = document.getElementById('p_wallet'); if(elWallet) elWallet.innerText = u.wallet_balance || 0;
-            const elMedals = document.getElementById('p_medals'); if(elMedals) elMedals.innerText = u.medal_points || 0;
-            const elRating = document.getElementById('p_rating'); if(elRating) elRating.innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0";
-            const elTaskCount = document.getElementById('p_task_count'); if(elTaskCount) elTaskCount.innerText = u.task_count || 0;
-            const phList = document.getElementById('pts_list'); if(phList) { phList.innerHTML = (u.point_history || []).slice().reverse().map(h => `<div style="display:flex; justify-content:space-between; align-items:center; padding:1.2rem; border-bottom:1px solid #eef2f6;"><div><div style="font-weight:700; color:var(--dark); margin-bottom:4px;">${h.desc}</div><div style="font-size:0.8rem; color:var(--muted);">${new Date(h.date).toLocaleString()}</div></div><div style="background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:8px; font-weight:800; font-size:0.8rem; border:1px solid #fde68a;">+${h.points} Pts</div></div>`).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No points earned yet. Complete a logistics task to earn!</div>'; }
-
-            const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})}); const dT = await resT.json();
-            const tasksArray = dT.tasks || []; const marketArray = dT.market || []; const postsArray = dT.posts || [];
-            
-            const renderKB = (prefix, col, validStatuses, listArray) => {
-                const fList = listArray.filter(t => validStatuses.includes(t.status));
-                const cntEl = document.getElementById(`cnt_${prefix}_${col}`); if(cntEl) cntEl.innerText = fList.length;
-                const colEl = document.getElementById(`col_${prefix}_${col}`); if(!colEl) return;
-                if (fList.length === 0) { colEl.innerHTML = `<div class="empty-col-placeholder"><i class="fas fa-box-open" style="margin-right:8px;"></i> Empty</div>`; return; }
-                colEl.innerHTML = fList.map(t => {
-                    const isOwner = (t.publisher_id || t.seller_id) === user.email; const topText = prefix === 'log' ? t.reward : `$${t.price} - ${t.title}`; const btmText = prefix === 'log' ? getAddrText(t.from_addr) : t.location;
-                    return `<div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}">${isOwner?(prefix==='log'?'Publisher':'Seller'):(prefix==='log'?'Helper':'Buyer')}</span><span style="font-size:0.7rem; color:var(--muted); font-weight:700;">${new Date(t.created_at).toLocaleDateString()}</span></div><div style="font-size:1.25rem; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-0.5px;">${topText}</div><div style="font-size:0.85rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${btmText}</div></div>`;
-                }).join('');
-            };
-
-            renderKB('log', 'pend', ['pending'], tasksArray); renderKB('log', 'prog', ['assigned'], tasksArray); renderKB('log', 'hist', ['completed', 'reviewed'], tasksArray);
-            renderKB('mar', 'pend', ['available'], marketArray); renderKB('mar', 'prog', ['reserved'], marketArray); renderKB('mar', 'hist', ['completed'], marketArray);
-
-            const forumList = document.getElementById('col_for_list');
-            if(forumList) {
-                forumList.innerHTML = postsArray.map(p => `<div class="card" style="padding:1.5rem; margin-bottom:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.02); cursor:pointer; transition:0.3s;" onclick="openMasterModal('for', '${p._id}')" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#eef2f6'"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span class="kb-role-tag kb-pub" style="background:#f1f5f9; color:var(--dark);">My Post</span><small style="color:var(--muted);">${new Date(p.created_at).toLocaleString()}</small></div><div style="font-size:1.1rem; color:var(--dark); margin-bottom:10px;">${p.content}</div><div style="font-size:0.85rem; color:var(--muted);"><i class="fas fa-heart" style="color:var(--danger);"></i> ${p.likes.length} Likes • <i class="fas fa-comment"></i> ${p.comments.length} Comments</div></div>`).join('') || '<div style="padding:3rem; text-align:center; color:var(--muted); font-weight:600; border:2px dashed #e2e8f0; border-radius:1rem;">You haven\'t posted anything in Campus Buzz yet.</div>';
-            }
-        } catch(e) { console.log("Profile Load Error:", e); }
+        if(!user) return;
+        const resDetail = await fetch(`/api/user/detail/${user.email}`); const dU = await resDetail.json();
+        const u = dU.user; user.wallet_balance = u.wallet_balance; localStorage.setItem('user', JSON.stringify(user));
+        document.getElementById('u_sid').innerText = u.student_id; document.getElementById('p_wallet').innerText = u.wallet_balance || 0;
+        document.getElementById('p_medals').innerText = u.medal_points || 0;
+        document.getElementById('profileDetails').innerHTML = `<div><label>Name</label>${u.first_name} ${u.given_name}</div><div><label>Email</label>${u.email}</div>`;
+        
+        const resDash = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
+        const d = await resDash.json();
+        const draw = (elId, list, type) => {
+            document.getElementById(elId).innerHTML = list.map(x => `<div class="kanban-card" onclick="openMasterModal('${type}', '${x._id}')"><b>${x.reward || x.title}</b><br><small>${x.status}</small></div>`).join('') || 'Empty';
+            const cnt = document.getElementById('cnt_' + elId.split('col_')[1]); if(cnt) cnt.innerText = list.length;
+        };
+        draw('col_log_pend', d.tasks.filter(t=>t.status==='pending'), 'log'); draw('col_log_prog', d.tasks.filter(t=>t.status==='assigned'), 'log'); draw('col_log_hist', d.tasks.filter(t=>t.status==='completed'), 'log');
+        draw('col_mar_pend', d.market.filter(m=>m.status==='available'), 'mar'); draw('col_mar_prog', d.market.filter(m=>m.status==='reserved'), 'mar'); draw('col_mar_hist', d.market.filter(m=>m.status==='completed'), 'mar');
     }
+
+    // ======================= SUBMISSIONS =======================
+    function previewFiles(e, id) { document.getElementById(id).innerHTML = Array.from(e.target.files).map(f => `<img src="${URL.createObjectURL(f)}" class="thumb-img">`).join(''); }
+
+    async function sendCode() { alert("Verification code dispatched to your student email."); }
+
+    document.getElementById('loginForm').onsubmit = async e => {
+        e.preventDefault();
+        const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})});
+        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Login Failed.");
+    };
+
+    document.getElementById('regForm').onsubmit = async e => {
+        e.preventDefault();
+        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: "021000000", gender: "Male" };
+        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
+        if(res.ok) { alert("Welcome!"); navigate('login'); }
+    };
 
     async function submitLogistics(e) {
-        e.preventDefault(); if(markers.length < 2) return alert("Please map locations.");
-        const f = new FormData();
-        f.append('publisher_id', user.email); f.append('from_addr', markers[0].getLatLng().lat+','+markers[0].getLatLng().lng+'@@'+document.getElementById('p_from').value); f.append('to_addr', markers[1].getLatLng().lat+','+markers[1].getLatLng().lng+'@@'+document.getElementById('p_to').value);
-        f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1] || ''); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
+        e.preventDefault(); const f = new FormData();
+        f.append('publisher_id', user.email); f.append('from_addr', markers[0].getLatLng().lat+','+markers[0].getLatLng().lng+'@@'+document.getElementById('p_from').value);
+        f.append('to_addr', markers[1].getLatLng().lat+','+markers[1].getLatLng().lng+'@@'+document.getElementById('p_to').value);
+        f.append('move_date', document.getElementById('p_date').value); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value);
+        f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
         Array.from(document.getElementById('p_file').files).forEach(x=>f.append('images', x));
-        document.querySelector('#form_logistics button[type="submit"]').innerText = "Broadcasting...";
-        await fetch('/api/task/create', {method:'POST', body:f}); 
-        document.querySelector('#form_logistics button[type="submit"]').innerHTML = 'Broadcast Task <i class="fas fa-paper-plane"></i>';
-        document.getElementById('form_logistics').reset(); document.getElementById('p_preview').innerHTML = ''; if(map) { markers.forEach(m => map.removeLayer(m)); markers = []; routingControl.setWaypoints([]); }
-        navigate('hall', 'logistics');
+        await fetch('/api/task/create', {method:'POST', body:f}); navigate('hall', 'logistics');
     }
 
     async function submitMarket(e) {
         e.preventDefault(); const f = new FormData();
-        f.append('seller_id', user.email); f.append('title', document.getElementById('m_title').value); f.append('price', document.getElementById('m_price').value); f.append('condition', document.getElementById('m_cond').value); f.append('location', document.getElementById('m_loc').value); f.append('description', document.getElementById('m_desc').value);
+        f.append('seller_id', user.email); f.append('title', document.getElementById('m_title').value); f.append('price', document.getElementById('m_price').value);
+        f.append('condition', document.getElementById('m_cond').value); f.append('location', document.getElementById('m_loc').value); f.append('description', document.getElementById('m_desc').value);
         Array.from(document.getElementById('m_file').files).forEach(x=>f.append('images', x));
-        document.querySelector('#form_market button[type="submit"]').innerText = "Listing...";
-        await fetch('/api/market/create', {method:'POST', body:f}); 
-        document.querySelector('#form_market button[type="submit"]').innerHTML = 'List Item in Market <i class="fas fa-store"></i>';
-        document.getElementById('form_market').reset(); document.getElementById('m_preview').innerHTML = '';
-        navigate('hall', 'market');
+        await fetch('/api/market/create', {method:'POST', body:f}); navigate('hall', 'market');
     }
 
     async function submitForum(e) {
         e.preventDefault(); const f = new FormData();
         f.append('author_id', user.email); f.append('author_name', user.anonymous_name); f.append('content', document.getElementById('f_content').value);
         Array.from(document.getElementById('f_file').files).forEach(x=>f.append('images', x));
-        document.querySelector('#form_forum button[type="submit"]').innerText = "Posting...";
-        await fetch('/api/forum/create', {method:'POST', body:f}); 
-        document.querySelector('#form_forum button[type="submit"]').innerHTML = 'Post to Campus Buzz <i class="fas fa-fire"></i>';
-        document.getElementById('form_forum').reset(); document.getElementById('f_preview').innerHTML = '';
-        navigate('hall', 'forum');
+        await fetch('/api/forum/create', {method:'POST', body:f}); navigate('hall', 'forum');
     }
 
-    async function sendCode() {
-        const email = document.getElementById('r_email').value; if(!email) return alert("Email required");
-        const btn = document.getElementById('btnSendCode'); btn.innerText = "Sending...";
-        await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})});
-        alert("6-digit code dispatched."); btn.innerText = "Get Code";
+    async function deleteItem(type, id) {
+        if(!confirm("Are you sure?")) return;
+        const api = type === 'log' ? '/api/task/delete' : '/api/market/delete';
+        await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task_id:id}) });
+        document.getElementById('masterModal').style.display = 'none'; loadHall();
     }
 
-    document.getElementById('regForm').onsubmit = async e => {
-        e.preventDefault();
-        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, gender: document.getElementById('r_gender').value };
-        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        if(res.ok) { alert("Registration Verified!"); navigate('login'); } else alert("Registration Failed. Check code.");
-    };
+    function nuke() { if(confirm("NUKE DB?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
 
-    document.getElementById('loginForm').onsubmit = async e => {
-        e.preventDefault();
-        const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})});
-        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Authentication Failed.");
-    };
-
-    function nuke() { if(confirm("NUKE ALL GLOBAL DATA?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
     navigate('home');
 </script>
 </body>
