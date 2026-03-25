@@ -790,53 +790,58 @@ function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_
 
     // ======================= KANBAN PROFILE =======================
 async function loadProfileData() {
+    // 1. 安全檢查：確保 user 對象存在
     if (!user || !user.email) return navigate('login');
+    
+    // 強制轉為小写，防止大小寫不匹配導致的數據丟失
+    const safeEmail = user.email.toLowerCase();
 
     try {
-        // 1. 获取用户详情 (纠正反引号与路径)
-        const res = await fetch(`/api/user/detail/${encodeURIComponent(user.email)}`); 
+        // 2. 獲取用戶詳情 (UoA Identity)
+        const res = await fetch(`/api/user/detail/${encodeURIComponent(safeEmail)}`); 
         const d = await res.json(); 
-        const u = d.user || {};
-        
-        const profBox = document.getElementById('profileDetails');
-      if (profBox) {
-    profBox.innerHTML = [
-        // 你的 JSON 里确实没有 student_id，只有 _id
-        ['ID', u.student_id || (u._id ? u._id.slice(-6) : 'Pending')], 
-        // 关键：把 first_name 改成 full_name
-        ['Name', u.full_name || 'Anonymous'], 
-        ['Nick', u.anonymous_name || 'Anonymous'], 
-        ['Email', u.email || '1@163.com']
-    ].map(f => `
-        <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #eef2f6;">
-            <label style="margin-bottom:5px; font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">${f[0]}</label>
-            <div style="font-weight:800; font-size:1rem;">${f[1]}</div>
-        </div>
-    `).join('');
-}
+        const u = d.user || {}; 
 
-        if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0"; 
+        const profBox = document.getElementById('profileDetails');
+        if (profBox) {
+            profBox.innerHTML = [
+                // 根據你提供的 JSON，數據庫裡可能沒有 student_id，這裡做個回退顯示 _id 後六位
+                ['Student ID', u.student_id || (u._id ? u._id.slice(-6).toUpperCase() : 'Pending')], 
+                ['Full Name', u.full_name || 'Anonymous'], 
+                ['Nickname', u.anonymous_name || 'Anonymous'], 
+                ['User Email', u.email || safeEmail]
+            ].map(f => `
+                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6; display:flex; flex-direction:column; gap:5px;">
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">${f[0]}</label>
+                    <div style="font-weight:900; font-size:1.1rem; color:var(--dark);">${f[1]}</div>
+                </div>
+            `).join('');
+        }
+
+        // 3. 渲染積分與評分 (根據你的數據，這裡應該能顯示 13 和 5.0)
+        if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = (u.rating_avg || 5.0).toFixed(1); 
         if(document.getElementById('p_medals')) document.getElementById('p_medals').innerText = u.medal_points || 0;
 
-        // 2. 获取 Dashboard 数据
+        // 4. 獲取 Dashboard 聚合數據
         const resT = await fetch('/api/user/dashboard', { 
             method:'POST', 
             headers:{'Content-Type':'application/json'}, 
-            body:JSON.stringify({email: user.email})
+            body:JSON.stringify({ email: safeEmail })
         }); 
         const dT = await resT.json();
 
-        // 增强版看板渲染器 (业务字段兼容：加入 author_id 判断)
-        const renderKB = (prefix, col, validStatuses, listArray = [], isTeam=false, isFlat=false) => {
+        // 看板渲染器 (加入 isOwner 兼容)
+        const renderKB = (prefix, col, validStatuses, listArray = [], isFlat=false) => {
             const elCnt = document.getElementById(`cnt_${prefix}_${col}`);
             const elCol = document.getElementById(`col_${prefix}_${col}`);
             if (!elCnt || !elCol) return; 
 
             const fList = (listArray || []).filter(t => validStatuses.includes(t.status));
             elCnt.innerText = fList.length;
+            
             elCol.innerHTML = fList.map(t => {
-                // 核心兼容：同时检查 publisher_id, seller_id, initiator_id 和 author_id
-                const isOwner = (t.publisher_id || t.seller_id || t.initiator_id || t.author_id) === user.email;
+                // 核心兼容：識別所有業務模塊的發布者 ID
+                const isOwner = (t.publisher_id || t.seller_id || t.initiator_id || t.author_id) === safeEmail;
                 let title = t.title || "No Title";
                 if(prefix === 'log') title = t.reward || "No Reward";
                 if(isFlat) title = `$${t.rent_price || 0} - ${t.room_type || 'Room'}`;
@@ -844,47 +849,54 @@ async function loadProfileData() {
                 return `
                     <div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
                         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                            <span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}">${isOwner?'Owner':'Joined'}</span>
+                            <span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}" style="background:${isOwner?'#e0e7ff':'#f1f5f9'}; color:${isOwner?'#4f46e5':'#64748b'};">${isOwner?'Owner':'Joined'}</span>
                             <span style="font-size:0.7rem; color:var(--muted);">${new Date(t.created_at).toLocaleDateString()}</span>
                         </div>
                         <div style="font-weight:900; margin-bottom:5px; font-size:1.1rem;">${title}</div>
                         <div style="font-size:0.8rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 ${t.location || 'Auckland'}</div>
                     </div>
                 `;
-            }).join('') || '<div style="font-size:0.75rem; color:#ccc; padding:10px; text-align:center;">No records</div>';
+            }).join('') || '<div style="font-size:0.75rem; color:#ccc; padding:15px; text-align:center;">No records</div>';
         };
 
-        // 渲染前四个板块
+        // 按順序執行渲染 (即使前面模塊數據為空，也不會阻塞後面執行)
         renderKB('log', 'pend', ['pending'], dT.tasks); 
         renderKB('log', 'prog', ['assigned'], dT.tasks); 
         renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks);
+        
         renderKB('mar', 'pend', ['available'], dT.market); 
         renderKB('mar', 'prog', ['reserved'], dT.market); 
         renderKB('mar', 'hist', ['completed', 'reviewed'], dT.market);
-        renderKB('fl', 'open', ['open'], dT.flatting, false, true); 
-        renderKB('fl', 'closed', ['closed'], dT.flatting, false, true);
-        renderKB('tu', 'gather', ['gathering'], dT.teamups, true); 
-        renderKB('tu', 'comp', ['completed', 'failed'], dT.teamups, true);
+        
+        renderKB('fl', 'open', ['open'], dT.flatting, true); 
+        renderKB('fl', 'closed', ['closed'], dT.flatting, true);
+        
+        renderKB('tu', 'gather', ['gathering'], dT.teamups); 
+        renderKB('tu', 'comp', ['completed', 'failed'], dT.teamups);
 
-        // 3. 补全 My Buzz 模块渲染
+        // 5. 補全 My Buzz 模塊渲染
         const bzCol = document.getElementById('col_bz_all');
         const bzCnt = document.getElementById('cnt_bz_all');
         if (bzCol && bzCnt) {
             const posts = dT.posts || [];
             bzCnt.innerText = posts.length;
             bzCol.innerHTML = posts.map(f => `
-                <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; width:100%; text-align:left;">
+                <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; width:100%; text-align:left; box-shadow:none;">
                     <div style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">${new Date(f.created_at).toLocaleString()}</div>
-                    <div style="font-size:0.95rem; margin-bottom:10px;">${f.content || ''}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f8fafc; padding-top:8px;">
+                    <div style="font-size:0.95rem; margin-bottom:10px; font-weight:500;">${f.content || ''}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f8fafc; padding-top:10px;">
                         <span style="font-size:0.8rem; color:var(--muted);"><i class="fas fa-heart"></i> ${f.likes?.length || 0}</span>
-                        <button class="btn-sm" style="color:var(--danger); background:none; border:none; cursor:pointer;" onclick="event.stopPropagation(); deleteBuzz('${f._id}')">Delete</button>
+                        <button class="btn-sm" style="color:var(--danger); background:none; border:none; cursor:pointer; font-weight:800;" onclick="event.stopPropagation(); deleteBuzz('${f._id}')">Delete</button>
                     </div>
                 </div>
-            `).join('') || '<p style="text-align:center; padding:1rem; color:#ccc;">No posts yet.</p>';
+            `).join('') || '<p style="text-align:center; padding:2rem; color:#ccc;">No posts yet.</p>';
         }
 
-    } catch(e) { console.error("Profile Load Error:", e); }
+    } catch(e) { 
+        console.error("Dashboard Crash:", e); 
+        // 彈窗提示是哪個字段報錯了
+        // alert("渲染錯誤：" + e.message); 
+    }
 }
     // ======================= POSTING ENGINES =======================
     async function submitLogistics(e) {
