@@ -1,10 +1,9 @@
 /**
- * DormLift Pro - Super App Master Node (V12.16 Reference-Absolute Edition)
- * -----------------------------------------------------------------------
- * 严格按照用户提供的 V12.1 源码逻辑复刻。
- * 1. 移除所有冗余的“自作聪明”路由。
- * 2. 保持 Task/Market/Forum 的 1:1 数据接口。
- * 3. 修正 Cloudinary 的存储配置。
+ * DormLift Pro - Super App Master Node (V12.17 Restoration Edition)
+ * ------------------------------------------------------------------
+ * 核心基准：完全复刻 V11.3 稳定版逻辑。
+ * 修复目标：解决地图渲染冲突，确保 Discover 数据流不断。
+ * 增强：交易 PIN 码生成与 SPA 路由保护。
  */
 
 const express = require('express');
@@ -14,23 +13,24 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const bcrypt = require('bcryptjs');
+const path = require('path'); 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 // ==========================================
-// 1. Environment & Database
+// 1. Environment & Database (V11.3 原始配置)
 // ==========================================
 const MONGO_URI = process.env.MONGO_URI;
 const GAS_URL = process.env.GAS_URL;
 
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ DormLift V12.16 Connected (Reference Logic Synchronized)'))
+    .then(() => console.log('✅ DormLift V12.17 (Restoration-First) DB Connected'))
     .catch(err => console.error('❌ DB Connection Error:', err));
 
 // ==========================================
-// 2. Database Schemas (1:1 还原参考代码)
+// 2. Database Schemas (1:1 复刻 V11.3)
 // ==========================================
 const User = mongoose.model('User', new mongoose.Schema({
     student_id: { type: String, required: true, unique: true }, 
@@ -79,7 +79,6 @@ const MarketItem = mongoose.model('MarketItem', new mongoose.Schema({
     location: { type: String, required: true },
     img_url: { type: String, default: "[]" },
     status: { type: String, enum: ['available', 'reserved', 'completed'], default: 'available' },
-    locked_at: { type: Date, default: null }, 
     comments: { type: Array, default: [] },
     created_at: { type: Date, default: Date.now }
 }));
@@ -101,29 +100,18 @@ const VerifyCode = mongoose.model('VerifyCode', new mongoose.Schema({
 }));
 
 // ==========================================
-// 3. Auto-Release Daemon & Cloudinary
+// 3. Middlewares & Cloudinary
 // ==========================================
-setInterval(async () => {
-    try {
-        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); 
-        const expiredItems = await MarketItem.find({ status: 'reserved', locked_at: { $lte: sevenDaysAgo } });
-        for (let item of expiredItems) {
-            await User.findOneAndUpdate({ email: item.seller_id }, { $inc: { wallet_balance: item.price } });
-            item.status = 'completed'; await item.save();
-        }
-    } catch (e) { console.error(e); }
-}, 1000 * 60 * 60);
-
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_NAME, api_key: process.env.CLOUDINARY_KEY, api_secret: process.env.CLOUDINARY_SECRET });
 const storage = new CloudinaryStorage({ cloudinary, params: { folder: 'dormlift_superapp', allowed_formats: ['jpg', 'png', 'jpeg', 'mp4'] } });
 const upload = multer({ storage });
 
 app.use(cors()); 
 app.use(express.json()); 
-app.use(express.static(__dirname));
+app.use(express.static(__dirname)); // 静态资源置顶，确保 map.js 正常加载
 
 // ==========================================
-// 4. APIs (完全保留参考代码逻辑)
+// 4. APIs (完全对齐 V11.3 字段逻辑)
 // ==========================================
 
 // --- Auth ---
@@ -131,7 +119,7 @@ app.post('/api/auth/send-code', async (req, res) => {
     const { email } = req.body; const code = Math.floor(100000 + Math.random() * 900000).toString();
     try {
         await VerifyCode.findOneAndUpdate({ email }, { code, expire_at: new Date(Date.now() + 5 * 60000) }, { upsert: true });
-        await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: email, subject: "DormLift Code", html: `<h2>${code}</h2>` }) });
+        await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: email, subject: "DormLift Access Code", html: `<h2>${code}</h2>` }) });
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
@@ -157,16 +145,10 @@ app.post('/api/auth/login', async (req, res) => {
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-app.get('/api/user/detail/:email', async (req, res) => {
-    const user = await User.findOne({ email: req.params.email }, { password: 0 }); 
-    res.json({ success: true, user });
-});
-
-// --- Logistics (地图数据核心) ---
+// --- Logistics (地图渲染生命线) ---
 app.get('/api/task/all', async (req, res) => {
-    // 严格按参考代码返回 success 和 list
     const list = await Task.find({ status: 'pending', helper_id: null }).sort({ created_at: -1 }); 
-    res.json({ success: true, list });
+    res.json({ success: true, list }); // 严格返回 list 键，确保地图脚本遍历成功
 });
 
 app.post('/api/task/create', upload.array('images', 5), async (req, res) => {
@@ -185,7 +167,7 @@ app.post('/api/task/workflow', async (req, res) => {
             let destText = task.to_addr.includes('@@') ? task.to_addr.split('@@')[1] : task.to_addr;
             await User.findOneAndUpdate({ email: task.helper_id }, { 
                 $inc: { medal_points: task.medal_points },
-                $push: { point_history: { desc: `Logistics: ${destText.substring(0, 30)}`, points: task.medal_points, date: new Date() } }
+                $push: { point_history: { desc: `Logistics Help: ${destText.substring(0, 30)}`, points: task.medal_points, date: new Date() } }
             });
         }
         if (updates.status === 'pending') updates.helper_id = null;
@@ -204,29 +186,23 @@ app.post('/api/market/workflow', async (req, res) => {
         const { item_id, status, buyer_id } = req.body;
         const item = await MarketItem.findById(item_id);
         let updates = { status };
-        if (status === 'reserved' && buyer_id) {
-            const buyer = await User.findOne({ email: buyer_id });
-            if (buyer.wallet_balance < item.price) return res.status(400).json({ success: false });
-            await User.findOneAndUpdate({ email: buyer_id }, { $inc: { wallet_balance: -item.price } });
-            updates.buyer_id = buyer_id; updates.locked_at = new Date(); 
-            // 植入 PIN 逻辑
+        if(buyer_id) updates.buyer_id = buyer_id;
+        if(status === 'available') updates.buyer_id = null;
+
+        // 仅植入：当状态变为 reserved 时发送 PIN 码通知
+        if(status === 'reserved' && buyer_id) {
             const pin = String(parseInt(item_id.substring(item_id.length - 4), 16) % 10000).padStart(4, '0');
-            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: buyer_id, subject: "DormLift PIN", html: `<h3>PIN: ${pin}</h3>` }) }).catch(e=>console.log(e));
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ to: buyer_id, subject: "DormLift Handover PIN", html: `<h3>Your PIN: ${pin}</h3>` }) }).catch(e=>console.log(e));
         }
-        if (status === 'completed' && item.status === 'reserved') {
-            await User.findOneAndUpdate({ email: item.seller_id }, { $inc: { wallet_balance: item.price } });
-        }
-        if (status === 'available' && item.status === 'reserved') {
-            if (item.buyer_id) await User.findOneAndUpdate({ email: item.buyer_id }, { $inc: { wallet_balance: item.price } });
-            updates.buyer_id = null; updates.locked_at = null;
-        }
+
         await MarketItem.findByIdAndUpdate(item_id, { $set: updates }); res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
 // --- Forum (Discover) ---
 app.get('/api/forum/all', async (req, res) => {
-    const list = await ForumPost.find().sort({ created_at: -1 }); res.json({ success: true, list });
+    const list = await ForumPost.find().sort({ created_at: -1 }); 
+    res.json({ success: true, list });
 });
 
 app.post('/api/forum/create', upload.array('images', 5), async (req, res) => {
@@ -247,9 +223,7 @@ app.post('/api/user/dashboard', async (req, res) => {
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-app.post('/api/dev/nuke', async (req, res) => {
-    await Task.deleteMany({}); await MarketItem.deleteMany({}); await ForumPost.deleteMany({}); await User.deleteMany({}); await VerifyCode.deleteMany({});
-    res.json({ success: true });
-});
+// --- Global Fallback (解决 Railway 刷新白屏) ---
+app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 DormLift V12.16 Final Restoration Active on ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 DormLift Restoration Engine V12.17 Active on ${PORT}`));
