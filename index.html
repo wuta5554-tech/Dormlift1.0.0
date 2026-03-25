@@ -849,6 +849,14 @@
                     <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">EMAIL</label>
                     <div style="font-weight:900; font-size:0.95rem; word-break:break-all;">${u.email || safeEmail}</div>
                 </div>
+                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">PHONE</label>
+    <div style="font-weight:900; font-size:1.1rem;">${u.phone || 'Not Set'}</div>
+</div>
+<div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">SCHOOL</label>
+    <div style="font-weight:900; font-size:1.1rem;">${u.school_name || 'Not Set'}</div>
+</div>
             `;
         }
 
