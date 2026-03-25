@@ -1,9 +1,12 @@
 /**
- * DormLift Pro - Super App Master Node (V13.5 全业务闭环版)
+ * DormLift Pro - Super App Master Node (V13.6 终极全业务版)
  * -------------------------------------------------------------
- * 包含 5 大核心模块：
- * 1. Logistics (物流) | 2. Market (交易) | 3. Flatting (租房) 
- * 4. Team-Up (组队)  | 5. Share Buzz (社交动态)
+ * 1. Peer Logistics (校园互助物流 - 含勋章积分系统)
+ * 2. Flea Market (二手市场 - 含 Escrow 核销码机制)
+ * 3. Flatting (校园租房 - 含地图坐标与 UoA 身份验证)
+ * 4. Team-Up (组队拼单 - 含信用门槛与成团判定)
+ * 5. Share Buzz (校园动态 - 包含社交互动与点赞)
+ * 6. Global Cron (自动释放资金与组局到期判定)
  * -------------------------------------------------------------
  */
 
@@ -19,29 +22,30 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // ==========================================
-// 1. 数据库与邮件引擎配置
+// 1. 环境配置与数据库连接
 // ==========================================
 const MONGO_URI = process.env.MONGO_URI;
 const GAS_URL = process.env.GAS_URL;
 
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ DormLift Super App DB Connected (V13.5)'))
+    .then(() => console.log('✅ DormLift Super App DB Connected (V13.6)'))
     .catch(err => console.error('❌ DB Connection Error:', err));
 
+// 全局邮件通知助手
 function sendEmailNotification(toEmail, subject, htmlContent) {
     if (!GAS_URL) return;
     fetch(GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to: toEmail, subject, html: htmlContent })
-    }).catch(err => console.error("Email Error:", err));
+    }).catch(err => console.error("Mail Error:", err));
 }
 
 // ==========================================
-// 2. 数据模型定义
+// 2. 核心数据模型定义 (5 大业务板块)
 // ==========================================
 
-// [1] 用户模型 (含积分与评价)
+// [用户模型]
 const User = mongoose.model('User', new mongoose.Schema({
     student_id: { type: String, required: true, unique: true }, 
     anonymous_name: { type: String, required: true },
@@ -57,7 +61,7 @@ const User = mongoose.model('User', new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 }));
 
-// [2] 物流模型
+// [1. 物流任务 - Logistics]
 const Task = mongoose.model('Task', new mongoose.Schema({
     publisher_id: String, publisher_name: String, helper_id: String,
     move_date: String, move_time: String, from_addr: String, to_addr: String,
@@ -68,7 +72,7 @@ const Task = mongoose.model('Task', new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 }));
 
-// [3] 二手市场模型
+// [2. 二手市场 - Market]
 const MarketItem = mongoose.model('MarketItem', new mongoose.Schema({
     seller_id: String, seller_name: String, buyer_id: String,
     title: String, description: String, condition: String, price: Number, location: String,
@@ -79,7 +83,7 @@ const MarketItem = mongoose.model('MarketItem', new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 }));
 
-// [4] 租房模型
+// [3. 校园租房 - Flatting]
 const Flatting = mongoose.model('Flatting', new mongoose.Schema({
     publisher_id: String, publisher_name: String,
     title: String, rent_price: Number, room_type: String, bathroom_type: String,
@@ -91,7 +95,7 @@ const Flatting = mongoose.model('Flatting', new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 }));
 
-// [5] 组队模型
+// [4. 校园组队 - Team-Up]
 const TeamUp = mongoose.model('TeamUp', new mongoose.Schema({
     initiator_id: String, initiator_name: String, initiator_rating: { type: Number, default: 5.0 },
     title: String, category: String, min_members: Number, max_members: Number,
@@ -104,11 +108,11 @@ const TeamUp = mongoose.model('TeamUp', new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 }));
 
-// [6] 社区动态模型 (Share Buzz)
+// [5. 社区动态 - Campus Buzz]
 const ForumPost = mongoose.model('ForumPost', new mongoose.Schema({
     author_id: String, author_name: String, content: String,
     img_url: { type: String, default: "[]" },
-    likes: { type: Array, default: [] }, // 存储点赞者的 Email
+    likes: { type: Array, default: [] },
     comments: { type: Array, default: [] },
     created_at: { type: Date, default: Date.now }
 }));
@@ -118,7 +122,7 @@ const VerifyCode = mongoose.model('VerifyCode', new mongoose.Schema({
 }));
 
 // ==========================================
-// 3. 存储与基础配置
+// 3. 存储与多媒体配置
 // ==========================================
 cloudinary.config({ 
     cloud_name: process.env.CLOUDINARY_NAME, 
@@ -134,13 +138,13 @@ const upload = multer({ storage: new CloudinaryStorage({
 app.use(cors()); app.use(express.json()); app.use(express.static(__dirname));
 
 // ==========================================
-// 4. 用户与权限管理
+// 4. 身份验证接口
 // ==========================================
 app.post('/api/auth/send-code', async (req, res) => {
     const { email } = req.body;
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await VerifyCode.findOneAndUpdate({ email }, { code, expire_at: new Date(Date.now() + 5*60000) }, { upsert: true });
-    sendEmailNotification(email, "DormLift Hub Code", `Verification code: <b>${code}</b>`);
+    sendEmailNotification(email, "DormLift Verification", `Code: ${code}`);
     res.json({ success: true });
 });
 
@@ -148,7 +152,7 @@ app.post('/api/auth/register', async (req, res) => {
     const { email, code, password, ...userData } = req.body;
     if (code !== "8888") {
         const v = await VerifyCode.findOne({ email });
-        if (!v || v.code !== code || v.expire_at < new Date()) return res.status(400).json({ success: false });
+        if (!v || v.code !== code) return res.status(400).json({ success: false });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     await new User({ ...userData, email, password: hashedPassword }).save();
@@ -169,10 +173,10 @@ app.get('/api/user/detail/:email', async (req, res) => {
 });
 
 // ==========================================
-// 5. 5 大业务模块接口
+// 5. 业务逻辑接口 (5 大模块)
 // ==========================================
 
-// [A] 物流逻辑 (Logistics)
+// Logistics (物流)
 app.post('/api/task/create', upload.array('images', 5), async (req, res) => {
     const pts = { Small: 1, Medium: 3, Large: 5 }[req.body.task_scale] || 1;
     await new Task({ ...req.body, medal_points: pts, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
@@ -185,14 +189,14 @@ app.post('/api/task/workflow', async (req, res) => {
     if (status === 'completed' && task.status !== 'completed' && task.helper_id) {
         await User.findOneAndUpdate({ email: task.helper_id }, { 
             $inc: { medal_points: task.medal_points },
-            $push: { point_history: { desc: `Help Task: ${task.reward}`, points: task.medal_points, date: new Date() } }
+            $push: { point_history: { desc: `Helper Reward: ${task.reward}`, points: task.medal_points, date: new Date() } }
         });
     }
     await Task.findByIdAndUpdate(task_id, { status, helper_id: status==='pending'?null:helper_id });
     res.json({ success: true });
 });
 
-// [B] 市场逻辑 (Market)
+// Market (市场)
 app.post('/api/market/create', upload.array('images', 5), async (req, res) => {
     await new MarketItem({ ...req.body, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
     res.json({ success: true });
@@ -205,13 +209,20 @@ app.post('/api/market/workflow', async (req, res) => {
     res.json({ success: true });
 });
 
-// [C] 租房逻辑 (Flatting)
+// Flatting (租房)
 app.post('/api/flatting/create', upload.array('images', 5), async (req, res) => {
     await new Flatting({ ...req.body, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
     res.json({ success: true });
 });
 
-// [D] 组队逻辑 (Team-Up)
+app.post('/api/flatting/toggle', async (req, res) => {
+    const item = await Flatting.findById(req.body.id);
+    item.status = item.status === 'open' ? 'closed' : 'open';
+    await item.save();
+    res.json({ success: true });
+});
+
+// Team-Up (组队)
 app.post('/api/teamup/create', upload.array('images', 5), async (req, res) => {
     const u = await User.findOne({ email: req.body.initiator_id });
     await new TeamUp({ ...req.body, initiator_rating: u.rating_avg, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
@@ -222,37 +233,30 @@ app.post('/api/teamup/join', async (req, res) => {
     const { team_id, email, name } = req.body;
     const team = await TeamUp.findById(team_id);
     const u = await User.findOne({ email });
-    if (u.rating_avg < team.min_credit_req) return res.json({ success: false, msg: "Credit score requirement not met." });
+    if (u.rating_avg < team.min_credit_req) return res.json({ success: false, msg: "Credit score too low!" });
     await TeamUp.findByIdAndUpdate(team_id, { $push: { joined_members: { email, name } } });
     res.json({ success: true });
 });
 
-// [E] 社区动态逻辑 (Share Buzz)
+// Campus Buzz (社区)
 app.post('/api/forum/create', upload.array('images', 5), async (req, res) => {
-    try {
-        const urls = req.files ? req.files.map(f => f.path) : [];
-        const newPost = new ForumPost({ ...req.body, img_url: JSON.stringify(urls) });
-        await newPost.save();
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ success: false }); }
+    await new ForumPost({ ...req.body, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
+    res.json({ success: true });
 });
 
 app.post('/api/forum/interact', async (req, res) => {
-    const { post_id, action, email, comment } = req.body;
-    try {
-        if(action === 'like') {
-            const p = await ForumPost.findById(post_id);
-            if(p.likes.includes(email)) await ForumPost.findByIdAndUpdate(post_id, { $pull: { likes: email } });
-            else await ForumPost.findByIdAndUpdate(post_id, { $push: { likes: email } });
-        } else if(action === 'comment') {
-            await ForumPost.findByIdAndUpdate(post_id, { $push: { comments: comment } });
-        }
-        res.json({ success: true });
-    } catch (e) { res.status(500).json({ success: false }); }
+    const { post_id, action, email } = req.body;
+    const p = await ForumPost.findById(post_id);
+    if (action === 'like') {
+        const idx = p.likes.indexOf(email);
+        idx > -1 ? p.likes.splice(idx, 1) : p.likes.push(email);
+    }
+    await p.save();
+    res.json({ success: true });
 });
 
 // ==========================================
-// 6. 全局汇总与仪表盘
+// 6. 聚合仪表盘 API
 // ==========================================
 app.post('/api/user/dashboard', async (req, res) => {
     const { email } = req.body;
@@ -260,36 +264,59 @@ app.post('/api/user/dashboard', async (req, res) => {
         const [tasks, market, posts, flatting, teamups] = await Promise.all([
             Task.find({ $or: [{ publisher_id: email }, { helper_id: email }] }).sort({ created_at: -1 }),
             MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }).sort({ created_at: -1 }),
-            ForumPost.find({ author_id: email }).sort({ created_at: -1 }), // 用户自己的动态
+            ForumPost.find({ author_id: email }).sort({ created_at: -1 }),
             Flatting.find({ publisher_id: email }).sort({ created_at: -1 }),
             TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] }).sort({ created_at: -1 })
         ]);
         res.json({ success: true, tasks, market, posts, flatting, teamups });
-    } catch (e) { res.status(500).json({ success: false, msg: e.message }); }
+    } catch (e) { res.status(500).json({ success: false }); }
 });
 
+// ==========================================
+// 7. 通用获取与评论
+// ==========================================
 app.get('/api/:type/all', async (req, res) => {
     const { type } = req.params;
     let list = [];
-    if (type === 'task') list = await Task.find({ status: 'pending' }).sort({created_at:-1});
-    else if (type === 'market') list = await MarketItem.find({ status: 'available' }).sort({created_at:-1});
-    else if (type === 'flatting') list = await Flatting.find({ status: 'open' }).sort({created_at:-1});
-    else if (type === 'teamup') list = await TeamUp.find({ status: 'gathering' }).sort({created_at:-1});
-    else if (type === 'forum') list = await ForumPost.find().sort({created_at:-1});
+    if (type === 'task') list = await Task.find({ status: 'pending' });
+    else if (type === 'market') list = await MarketItem.find({ status: 'available' });
+    else if (type === 'flatting') list = await Flatting.find({ status: 'open' });
+    else if (type === 'teamup') list = await TeamUp.find({ status: 'gathering' });
+    else if (type === 'forum') list = await ForumPost.find().sort({ created_at: -1 });
     res.json({ success: true, list });
 });
 
-// 通用评论路由
 app.post('/api/shared/comment', async (req, res) => {
     const { type, id, comment } = req.body;
-    const models = { log: Task, mar: MarketItem, flat: Flatting, team: TeamUp, for: ForumPost };
-    await models[type].findByIdAndUpdate(id, { $push: { comments: comment } });
+    const Model = { log: Task, mar: MarketItem, flat: Flatting, team: TeamUp, for: ForumPost }[type];
+    await Model.findByIdAndUpdate(id, { $push: { comments: comment } });
     res.json({ success: true });
 });
+
+// ==========================================
+// 8. 自动巡检系统 (Cron Jobs)
+// ==========================================
+setInterval(async () => {
+    try {
+        // 自动释放资金 (7天)
+        const expiredItems = await MarketItem.find({ 
+            status: 'reserved', 
+            reserved_at: { $lte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } 
+        });
+        for (let item of expiredItems) { item.status = 'completed'; item.escrow_code = null; await item.save(); }
+        
+        // 自动成团判定
+        const expiredTeams = await TeamUp.find({ status: 'gathering', meet_time: { $lte: new Date() } });
+        for (let t of expiredTeams) {
+            t.status = t.joined_members.length >= t.min_members ? 'completed' : 'failed';
+            await t.save();
+        }
+    } catch (e) { console.error("Cron Error:", e); }
+}, 600000); // 每 10 分钟运行一次
 
 app.post('/api/dev/nuke', async (req, res) => {
     await Promise.all([Task.deleteMany({}), MarketItem.deleteMany({}), Flatting.deleteMany({}), TeamUp.deleteMany({}), ForumPost.deleteMany({}), User.deleteMany({})]);
     res.json({ success: true });
 });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 DormLift Master V13.5 Active on Port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Master Server V13.6 listening on ${PORT}`));
