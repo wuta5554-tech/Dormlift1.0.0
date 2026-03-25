@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | The Campus Super App V12.2</title>
+    <title>DormLift Pro | The Campus Super App V12.2 Ultimate</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -51,7 +51,6 @@
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
         .tab-content { display: none !important; } .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* Hub Layouts */
         .hub-container { display: flex; flex-direction: column; gap: 1rem; }
@@ -71,41 +70,30 @@
         .team-progress-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; margin: 12px 0; overflow: hidden; }
         .team-progress-fill { height: 100%; background: linear-gradient(90deg, #ec4899, #f43f5e); transition: width 0.5s ease; }
 
-        .forum-feed { max-width: 750px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
-        .forum-card { background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #eef2f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-
         /* KANBAN & FORMS */
         .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 400px; border: 1px dashed #e2e8f0; }
         .kanban-card { background: white; border-radius: 1rem; padding: 1.2rem; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1.5px solid transparent; cursor: pointer; transition: 0.3s; }
         .kanban-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow-premium); }
-        .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
 
         .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79,70,229,0.4); }
         .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
-        .btn-outline:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
-        .btn-danger { background: #fee2e2; color: var(--danger); border: 1.5px solid #fecaca; }
         
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
         input, select, textarea { width: 100%; padding: 1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: 0.2s; }
-        input:focus, textarea:focus, select:focus { border-color: var(--primary); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79,70,229,0.1); }
 
         /* Maps Setup */
-        .map-container { height: 350px; width: 100%; border-radius: 1.5rem 1.5rem 0 0; z-index: 10; }
+        .map-container { height: 350px; width: 100%; border-radius: 1.5rem 1.5rem 0 0; z-index: 10; border: 1px solid #eef2f6; border-bottom: none; }
         #modal-map { height: 280px; border-radius: 1.5rem; border: 2px solid #eef2f6; z-index: 10; margin-bottom: 1.5rem; display: none; }
         .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; }
-        .custom-pin { background: transparent; border: none; } 
         .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
         /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
-        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; }
-        .comment-reply { margin-left: 3rem; margin-top: 1rem; border-left: 4px solid var(--primary); padding-left: 1.5rem; background: #fafafa; border-radius: 0 1.2rem 1.2rem 0; }
         .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
         .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; cursor: pointer; border: 2px solid #f1f5f9; }
-        .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* --- V12.1 Gen-Z Homepage Styles --- */
         .hero-gradient-text {
@@ -139,20 +127,43 @@
 
 <div class="container">
     <div id="home" class="page active">
-        <section style="position:relative; text-align:center; padding: 7rem 2rem 4rem; border:none; background: #f8fafc; overflow: hidden; border-radius: 40px; margin-bottom: 2rem; border: 1px solid #eef2f6; box-shadow: var(--shadow-sm);">
-            <div class="floating-badge fb-1" style="--r:-6deg;">🔥 Kate Edger 缺一人拼车!</div>
-            <div class="floating-badge fb-2" style="--r:5deg;">🏠 找靠谱 UoA 室友</div>
-            <div class="floating-badge fb-3" style="--r:3deg;">💸 闲置直接换现金</div>
-            <h1 style="font-size: clamp(3.5rem, 6vw, 5.5rem); margin:0; line-height:1.05; letter-spacing:-2.5px; font-weight:900; color:var(--dark); position: relative; z-index: 10;">Your Campus Life,<br><span class="hero-gradient-text">Upgraded.</span></h1>
-            <p style="color:var(--muted); font-size:1.25rem; max-width:600px; margin: 2rem auto 3rem; font-weight:500; position: relative; z-index: 10;">Ditch the messy FB groups. Join the <b>100% verified</b> student network to trade, flat, team-up, and catch the real campus buzz.</p>
-            <div style="display:flex; justify-content:center; gap:1.5rem; position: relative; z-index: 10; flex-wrap: wrap;">
-                <button class="btn" style="padding: 1.2rem 3.5rem; font-size:1.1rem; border-radius: 50px; box-shadow: 0 10px 25px -5px rgba(79,70,229,0.4);" onclick="navigate('post')">🚀 Launch an Action</button>
-                <button class="btn btn-outline" style="padding: 1.2rem 3.5rem; font-size:1.1rem; border-radius: 50px; background: white; border-width: 2px;" onclick="navigate('hall')">👀 Explore the Hub</button>
+        <section style="position:relative; text-align:center; padding: 8rem 2rem 5rem; border:none; background: #ffffff; overflow: hidden; border-radius: 40px; margin-bottom: 2rem; border: 1px solid #eef2f6; box-shadow: var(--shadow-sm);">
+            
+            <div style="position:absolute; top:5%; left:5%; font-weight:900; font-size:4rem; color:#f1f5f9; z-index:1; user-select:none;">你好</div>
+            <div style="position:absolute; top:15%; right:8%; font-weight:900; font-size:3rem; color:#f1f5f9; z-index:1; user-select:none;">Kia Ora</div>
+            <div style="position:absolute; bottom:15%; left:10%; font-weight:900; font-size:3.5rem; color:#f1f5f9; z-index:1; user-select:none;">함께</div>
+            <div style="position:absolute; bottom:10%; right:5%; font-weight:900; font-size:4.5rem; color:#f1f5f9; z-index:1; user-select:none;">結び</div>
+            <div style="position:absolute; top:40%; left:-2%; font-weight:900; font-size:2.5rem; color:#f8fafc; z-index:1; user-select:none; transform: rotate(-90deg);">AOTEAROA</div>
+
+            <div class="floating-badge fb-1" style="--r:-6deg; z-index:20;"><i class="fas fa-bolt"></i> Kate Edger 缺一人拼车!</div>
+            <div class="floating-badge fb-2" style="--r:5deg; z-index:20;"><i class="fas fa-home"></i> 找靠谱 UoA 室友</div>
+            <div class="floating-badge fb-3" style="--r:3deg; z-index:20;"><i class="fas fa-coins"></i> 闲置直接换现金</div>
+
+            <div style="position: relative; z-index: 10;">
+                <h1 style="font-size: clamp(3.5rem, 7vw, 5.8rem); margin:0; line-height:1; letter-spacing:-3px; font-weight:900; color:var(--dark);">Campus Life,<br><span class="hero-gradient-text">Whanaungatanga.</span></h1>
+                <p style="color:var(--muted); font-size:1.35rem; max-width:650px; margin: 2.5rem auto 3.5rem; font-weight:500;">Ditch the messy FB groups. Join the <b>100% verified</b> UoA network to trade, flat, team-up, and catch the real vibes.</p>
+                <div style="display:flex; justify-content:center; gap:1.5rem; flex-wrap: wrap;">
+                    <button class="btn" style="padding: 1.3rem 4.5rem; font-size:1.15rem; border-radius: 50px;" onclick="navigate('post')">🚀 Launch Action</button>
+                    <button class="btn btn-outline" style="padding: 1.3rem 4.5rem; font-size:1.15rem; border-radius: 50px; background: white;" onclick="navigate('hall')">👀 Explore Hub</button>
+                </div>
             </div>
-            <div class="bento-grid">
-                <div class="bento-card" style="background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a;"><div class="bento-icon-wrapper" style="background: white; color: #f59e0b; box-shadow: 0 8px 16px rgba(245,158,11,0.15);">🛍️</div><h3 style="margin:0 0 10px; font-size:1.5rem; color:#92400e; letter-spacing:-0.5px;">Market & Moves</h3><p style="margin:0; color:#b45309; font-weight:500; font-size:0.95rem;">Buy & sell with peers. Get paid to help someone move a fridge across campus.</p></div>
-                <div class="bento-card" style="background: linear-gradient(145deg, #fce7f3 0%, #fbcfe8 100%); border-color: #f9a8d4;"><div class="bento-icon-wrapper" style="background: white; color: #ec4899; box-shadow: 0 8px 16px rgba(236,72,153,0.15);">🥂</div><h3 style="margin:0 0 10px; font-size:1.5rem; color:#9d174d; letter-spacing:-0.5px;">Team-Up & Flat</h3><p style="margin:0; color:#be185d; font-weight:500; font-size:0.95rem;">Find a flatmate you actually like, or squad up for a weekend group buy.</p></div>
-                <div class="bento-card" style="background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0;"><div class="bento-icon-wrapper" style="background: white; color: #10b981; box-shadow: 0 8px 16px rgba(16,185,129,0.15);">🛡️</div><h3 style="margin:0 0 10px; font-size:1.5rem; color:#065f46; letter-spacing:-0.5px;">Verified Trust</h3><p style="margin:0; color:#047857; font-weight:500; font-size:0.95rem;">No scammers. Pure campus vibes powered by strict ID auth and credit scores.</p></div>
+            
+            <div class="bento-grid" style="position:relative; z-index:10;">
+                <div class="bento-card" style="background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a;">
+                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:1.5rem;"><div class="bento-icon-wrapper" style="background: white; color: #f59e0b; margin:0;">🛍️</div><span style="font-weight:900; opacity:0.1; font-size:1.5rem;">こんにちは</span></div>
+                    <h3 style="margin:0 0 10px; font-size:1.6rem; color:#92400e; font-weight:800;">Market & Moves</h3>
+                    <p style="margin:0; color:#b45309; font-weight:500;">Verified peer trading. Get your fridge moved for a coffee's price.</p>
+                </div>
+                <div class="bento-card" style="background: linear-gradient(145deg, #fce7f3 0%, #fbcfe8 100%); border-color: #f9a8d4;">
+                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:1.5rem;"><div class="bento-icon-wrapper" style="background: white; color: #ec4899; margin:0;">🥂</div><span style="font-weight:900; opacity:0.1; font-size:1.5rem;">你好</span></div>
+                    <h3 style="margin:0 0 10px; font-size:1.6rem; color:#9d174d; font-weight:800;">Team-Up & Flat</h3>
+                    <p style="margin:0; color:#be185d; font-weight:500;">Find your tribe. Secure the best student flats in Auckland.</p>
+                </div>
+                <div class="bento-card" style="background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0;">
+                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:1.5rem;"><div class="bento-icon-wrapper" style="background: white; color: #10b981; margin:0;">🛡️</div><span style="font-weight:900; opacity:0.1; font-size:1.5rem;">Manaakitanga</span></div>
+                    <h3 style="margin:0 0 10px; font-size:1.6rem; color:#065f46; font-weight:800;">Verified Trust</h3>
+                    <p style="margin:0; color:#047857; font-weight:500;">SID strictly enforced. Real people, real ratings, real safety.</p>
+                </div>
             </div>
         </section>
     </div>
@@ -160,17 +171,15 @@
     <div id="hall" class="page">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
             <h2 style="font-size:2.5rem; margin:0; letter-spacing:-1.5px;">Discovery Hub</h2>
-            <button class="btn btn-outline btn-sm" style="border-radius:50px; padding: 0.8rem 1.8rem;" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh Feed</button>
+            <button class="btn btn-outline btn-sm" style="border-radius:50px;" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh</button>
         </div>
-        
         <div class="tab-container">
-            <button class="tab-btn active" onclick="switchHall('logistics')" id="btn_hall_logistics"><i class="fas fa-truck-fast"></i> Logistics</button>
-            <button class="tab-btn" onclick="switchHall('market')" id="btn_hall_market"><i class="fas fa-store"></i> Flea Market</button>
-            <button class="tab-btn" onclick="switchHall('flatting')" id="btn_hall_flatting"><i class="fas fa-home"></i> Flatting</button>
-            <button class="tab-btn" onclick="switchHall('teamup')" id="btn_hall_teamup"><i class="fas fa-users"></i> Team-Up</button>
-            <button class="tab-btn" onclick="switchHall('forum')" id="btn_hall_forum"><i class="fas fa-fire"></i> Campus Buzz</button>
+            <button class="tab-btn active" onclick="switchHall('logistics')" id="btn_hall_logistics">Logistics</button>
+            <button class="tab-btn" onclick="switchHall('market')" id="btn_hall_market">Market</button>
+            <button class="tab-btn" onclick="switchHall('flatting')" id="btn_hall_flatting">Flatting</button>
+            <button class="tab-btn" onclick="switchHall('teamup')" id="btn_hall_teamup">Team-Up</button>
+            <button class="tab-btn" onclick="switchHall('forum')" id="btn_hall_forum">Buzz</button>
         </div>
-
         <div id="hall_logistics" class="tab-content active"><div id="list_logistics" class="hub-container"></div></div>
         <div id="hall_market" class="tab-content"><div id="list_market" class="market-grid"></div></div>
         <div id="hall_flatting" class="tab-content"><div id="list_flatting" class="market-grid"></div></div>
@@ -179,203 +188,158 @@
     </div>
 
     <div id="post" class="page">
-        <h2 style="font-size:2.5rem; margin:0 0 2rem 0; letter-spacing:-1.5px;">Publish to Network</h2>
         <div class="tab-container">
             <button class="tab-btn active" onclick="switchPost('logistics')" id="btn_post_logistics">Logistics</button>
             <button class="tab-btn" onclick="switchPost('market')" id="btn_post_market">Sell Item</button>
             <button class="tab-btn" onclick="switchPost('flatting')" id="btn_post_flatting">Flatting</button>
             <button class="tab-btn" onclick="switchPost('teamup')" id="btn_post_teamup">Team-Up</button>
-            <button class="tab-btn" onclick="switchPost('forum')" id="btn_post_forum">Share Buzz</button>
+            <button class="tab-btn" onclick="switchPost('forum')" id="btn_post_forum">Buzz</button>
         </div>
 
         <div id="post_logistics" class="tab-content active card" style="padding:0; overflow:hidden;">
             <div id="map" class="map-container"></div>
-            <div class="route-info-strip"><span><i class="fas fa-route"></i> DIST: <b id="distVal">0.00</b> km</span><span><i class="fas fa-hourglass-half"></i> EST: <b id="timeVal">0</b> min</span></div>
+            <div class="route-info-strip"><span>DIST: <b id="distVal">0.00</b> km</span><span>EST: <b id="timeVal">0</b> min</span></div>
             <form id="form_logistics" style="padding: 0 3rem 3rem;" onsubmit="submitLogistics(event)">
                 <div class="form-grid"><div><label>Pickup</label><input type="text" id="p_from" readonly required></div><div><label>Destination</label><input type="text" id="p_to" readonly required></div></div>
-                <div class="form-grid"><div><label>Date & Time</label><input type="datetime-local" id="p_date" required></div><div><label>Reward (NZD)</label><input type="text" id="p_reward" required></div></div>
-                <label>Inventory & Notes</label><textarea id="p_desc" rows="3" required></textarea>
-                <div class="form-grid" style="margin-top:1rem; background:#fffbeb; padding:1.5rem; border-radius:12px;">
-                    <div><label>Task Scale (Medals)</label><select id="p_scale"><option value="Small">Small (1 Pts)</option><option value="Medium">Medium (3 Pts)</option><option value="Large">Large (5 Pts)</option></select></div>
-                    <div style="display:flex; align-items:center; padding-top:1.5rem;"><input type="checkbox" id="p_elevator" style="width:auto; margin-right:10px;"><label style="margin:0; text-transform:none;">Elevator Available</label></div>
+                <div class="form-grid"><div><label>DateTime</label><input type="datetime-local" id="p_date" required></div><div><label>Reward</label><input type="text" id="p_reward" required></div></div>
+                <textarea id="p_desc" rows="3" placeholder="Inventory & Notes" required></textarea>
+                <div class="form-grid" style="margin-top:1rem;">
+                    <select id="p_scale"><option value="Small">Small (1 Pts)</option><option value="Medium">Medium (3 Pts)</option><option value="Large">Large (5 Pts)</option></select>
+                    <div style="display:flex; align-items:center;"><input type="checkbox" id="p_elevator" style="width:auto; margin-right:10px;"> Elevator Available</div>
                 </div>
-                <label>Photos (Max 5)</label><input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; padding:1.2rem;">Broadcast Logistics Task <i class="fas fa-paper-plane"></i></button>
+                <input type="file" id="p_file" multiple accept="image/*" onchange="previewFiles(event, 'p_preview')"><div id="p_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%;">Broadcast Mission</button>
             </form>
         </div>
 
         <div id="post_market" class="tab-content card">
             <form id="form_market" onsubmit="submitMarket(event)">
-                <div class="form-grid"><div><label>Item Title</label><input type="text" id="m_title" required></div><div><label>Price (NZD)</label><input type="number" id="m_price" required></div></div>
-                <div class="form-grid"><div><label>Condition</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option><option>Fair</option></select></div><div><label>Pickup Location</label><input type="text" id="m_loc" required></div></div>
-                <label>Description</label><textarea id="m_desc" rows="4" required></textarea>
-                <label>Photos</label><input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')"><div id="m_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; padding:1.2rem;">List Item in Market <i class="fas fa-store"></i></button>
+                <div class="form-grid"><div><label>Title</label><input type="text" id="m_title" required></div><div><label>Price</label><input type="number" id="m_price" required></div></div>
+                <div class="form-grid"><div><label>Cond</label><select id="m_cond"><option>Brand New</option><option>Like New</option><option>Good</option></select></div><div><label>Pickup</label><input type="text" id="m_loc" required></div></div>
+                <textarea id="m_desc" rows="4" placeholder="Item description" required></textarea>
+                <input type="file" id="m_file" multiple accept="image/*" required onchange="previewFiles(event, 'm_preview')"><div id="m_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%;">List Item</button>
             </form>
         </div>
 
         <div id="post_flatting" class="tab-content card" style="padding:0; overflow:hidden;">
             <div id="map_flat" class="map-container"></div>
             <div class="route-info-strip" style="background: var(--warning); margin-bottom: 2rem;">
-                <span><i class="fas fa-map-pin"></i> 选定坐标 (Selected): <b id="flat_coord_val">未选择</b></span>
+                <span><i class="fas fa-map-pin"></i> Selected Coord: <b id="flat_coord_val">Not Set</b></span>
             </div>
             <form id="form_flatting" style="padding: 0 3rem 3rem;" onsubmit="submitFlatting(event)">
-                <div class="form-grid">
-                    <div><label>Listing Title</label><input type="text" id="fl_title" placeholder="e.g. Master Room in City" required></div>
-                    <div><label>Rent per week (NZD)</label><input type="number" id="fl_price" required></div>
-                </div>
-                <div class="form-grid">
-                    <div><label>House Layout (格局)</label><input type="text" id="fl_layout" placeholder="e.g. 4 Bed 2 Bath" required></div>
-                    <div><label>Bathroom</label><select id="fl_bath"><option>Ensuite (独立卫浴)</option><option>Shared (与室友共享)</option></select></div>
-                </div>
-                <div class="form-grid">
-                    <div><label>Room Type</label><select id="fl_type"><option>Single Room</option><option>Double Room</option><option>Studio</option><option>Whole House</option></select></div>
-                    <div><label>Available From</label><input type="date" id="fl_date" required></div>
-                </div>
-                <div class="form-grid">
-                    <div><label>Preferences (硬性要求)</label><input type="text" id="fl_pref" placeholder="e.g. No Pets, Girls Only" required></div>
-                    <div><label>Location (Address)</label><input type="text" id="fl_loc" placeholder="Click map to auto-fill or type..." required></div>
-                </div>
-                <label>Additional Details</label><textarea id="fl_desc" rows="3" required></textarea>
-                <label>Photos</label><input type="file" id="fl_file" multiple accept="image/*" required onchange="previewFiles(event, 'fl_preview')"><div id="fl_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; padding:1.2rem; background:var(--warning);">Publish Housing <i class="fas fa-home"></i></button>
+                <div class="form-grid"><div><label>Title</label><input type="text" id="fl_title" required></div><div><label>Rent/w</label><input type="number" id="fl_price" required></div></div>
+                <div class="form-grid"><div><label>Layout</label><input type="text" id="fl_layout" placeholder="e.g. 4 Bed 2 Bath" required></div><div><label>Bath</label><select id="fl_bath"><option>Ensuite</option><option>Shared</option></select></div></div>
+                <div class="form-grid"><div><label>Room</label><select id="fl_type"><option>Single Room</option><option>Double Room</option><option>Studio</option></select></div><div><label>From</label><input type="date" id="fl_date" required></div></div>
+                <div class="form-grid"><div><label>Pref</label><input type="text" id="fl_pref" placeholder="e.g. No Pets" required></div><div><label>Location</label><input type="text" id="fl_loc" placeholder="Click map to auto-fill" required></div></div>
+                <textarea id="fl_desc" rows="3" placeholder="Additional details" required></textarea>
+                <input type="file" id="fl_file" multiple accept="image/*" required onchange="previewFiles(event, 'fl_preview')"><div id="fl_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; background:var(--warning);">Publish Housing</button>
             </form>
         </div>
 
         <div id="post_teamup" class="tab-content card">
             <form id="form_teamup" onsubmit="submitTeamUp(event)">
-                <div class="form-grid">
-                    <div><label>Event / Buy Title</label><input type="text" id="tu_title" placeholder="e.g. Uber to Airport" required></div>
-                    <div><label>Category (活动分类)</label>
-                        <select id="tu_cat" style="border-color:var(--team); color:var(--team); font-weight:700;">
-                            <option value="Carpool">🚗 Carpool (拼车/出行)</option><option value="GroupBuy">🛍️ Group Buy (拼单/团购)</option>
-                            <option value="Sports">🏃‍♂️ Sports (运动/户外)</option><option value="Study">📚 Study (自习/课业)</option><option value="Social">🎮 Social (社交)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-grid">
-                    <div><label>Min Members (成团底线)</label><input type="number" id="tu_min" min="2" required></div>
-                    <div><label>Max Members (人数上限)</label><input type="number" id="tu_max" min="2" required></div>
-                </div>
-                <div class="form-grid">
-                    <div><label>Meeting Time / Deadline</label><input type="datetime-local" id="tu_time" required></div>
-                    <div><label>Location (集合地)</label><input type="text" id="tu_loc" required></div>
-                </div>
-                <div class="form-grid">
-                    <div><label>Est. Cost (预估花费)</label><input type="text" id="tu_cost" placeholder="e.g. $15 或 AA" required></div>
-                    <div><label>Min Credit Required (信用要求)</label>
-                        <select id="tu_credit" style="color:var(--danger); font-weight:800;">
-                            <option value="0">0 (所有人可进)</option><option value="4.0">4.0+ ⭐ (基本靠谱)</option>
-                            <option value="4.5">4.5+ ⭐ (绝对优质)</option><option value="4.8">4.8+ ⭐ (完美信用)</option>
-                        </select>
-                    </div>
-                </div>
-                <label>Description & Requirements</label><textarea id="tu_desc" rows="3" required></textarea>
-                <label>Cover Photo (海报/商品图)</label><input type="file" id="tu_file" multiple accept="image/*" required onchange="previewFiles(event, 'tu_preview')"><div id="tu_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; padding:1.2rem; background:var(--team); margin-top:1rem;">Initiate Team-Up <i class="fas fa-users"></i></button>
+                <div class="form-grid"><div><label>Title</label><input type="text" id="tu_title" required></div><div><label>Cat</label><select id="tu_cat"><option value="Carpool">Carpool</option><option value="GroupBuy">Group Buy</option><option value="Social">Social</option></select></div></div>
+                <div class="form-grid"><div><label>Min Ppl</label><input type="number" id="tu_min" min="2" required></div><div><label>Max Ppl</label><input type="number" id="tu_max" min="2" required></div></div>
+                <div class="form-grid"><div><label>Time</label><input type="datetime-local" id="tu_time" required></div><div><label>Loc</label><input type="text" id="tu_loc" required></div></div>
+                <div class="form-grid"><div><label>Cost</label><input type="text" id="tu_cost" required></div><div><label>Min Credit</label><select id="tu_credit"><option value="0">0</option><option value="4.0">4.0+</option><option value="4.5">4.5+</option></select></div></div>
+                <textarea id="tu_desc" rows="3" placeholder="Plan details" required></textarea>
+                <input type="file" id="tu_file" multiple accept="image/*" required onchange="previewFiles(event, 'tu_preview')"><div id="tu_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%; background:var(--team); margin-top:1rem;">Initiate Team-Up</button>
             </form>
         </div>
 
         <div id="post_forum" class="tab-content card">
             <form id="form_forum" onsubmit="submitForum(event)">
-                <label>What's happening?</label><textarea id="f_content" rows="6" required></textarea>
-                <label style="margin-top:1.5rem;">Attach Media (Optional)</label><input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')"><div id="f_preview" class="thumb-strip"></div>
-                <button type="submit" class="btn" style="width:100%; padding:1.2rem;">Post to Buzz <i class="fas fa-fire"></i></button>
+                <textarea id="f_content" rows="6" placeholder="What's happening?" required></textarea>
+                <input type="file" id="f_file" multiple accept="image/*" onchange="previewFiles(event, 'f_preview')"><div id="f_preview" class="thumb-strip"></div>
+                <button type="submit" class="btn" style="width:100%;">Post to Buzz</button>
             </form>
         </div>
     </div>
 
     <div id="profile" class="page">
         <div style="display:grid; grid-template-columns: 1fr 300px 300px; gap:1.5rem; margin-bottom:2rem;">
-            <div class="card" style="margin:0;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;"><h2 style="margin:0;">UoA Identity</h2><button class="btn btn-outline btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
-                <div id="profileDetails" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin:0;"></div>
-            </div>
-            <div class="card" style="margin:0; border-left: 8px solid #3b82f6;"><h3 style="margin:0;">Credit Score</h3><div style="font-size:3.5rem; font-weight:900;">★ <span id="p_rating">5.0</span></div><button class="btn btn-outline btn-sm" style="margin-top:1rem;" onclick="document.getElementById('reviewsModal').style.display='flex'">View Reviews</button></div>
-            <div class="card" style="margin:0; border-left: 8px solid var(--warning); background: #fffbeb;"><h3 style="margin:0;">Medal Points</h3><div style="font-size:3.5rem; font-weight:900; color:var(--medal);">🏅 <span id="p_medals">0</span></div><button class="btn btn-outline btn-sm" style="margin-top:1rem;" onclick="document.getElementById('pointsModal').style.display='flex'">Point History</button></div>
+            <div class="card" style="margin:0;"><h2 style="margin:0;">UoA Identity</h2><div id="profileDetails" class="form-grid" style="margin-top:1.5rem;"></div><button class="btn btn-outline btn-sm" onclick="logout()" style="margin-top:1rem;">Logout</button></div>
+            <div class="card" style="margin:0; border-left: 8px solid #3b82f6;"><h3>Credit</h3><div style="font-size:3.5rem; font-weight:900;">★ <span id="p_rating">5.0</span></div><button class="btn btn-outline btn-sm" onclick="document.getElementById('reviewsModal').style.display='flex'">Reviews</button></div>
+            <div class="card" style="margin:0; border-left: 8px solid var(--warning); background: #fffbeb;"><h3>Medals</h3><div style="font-size:3.5rem; font-weight:900; color:var(--medal);">🏅 <span id="p_medals">0</span></div><button class="btn btn-outline btn-sm" onclick="document.getElementById('pointsModal').style.display='flex'">History</button></div>
         </div>
-
-        <div class="card" style="padding:0; box-shadow:none; border:none; background:transparent;">
-            <h2 style="font-size:2.2rem; margin:0 0 1.5rem;"><i class="fas fa-layer-group" style="color:var(--primary);"></i> My Dashboard</h2>
-            <div class="tab-container" style="background:#f1f5f9;">
-                <button class="tab-btn active" onclick="switchProf('kb_log')" id="btn_prof_kb_log">Logistics</button>
-                <button class="tab-btn" onclick="switchProf('kb_mar')" id="btn_prof_kb_mar">Market</button>
-                <button class="tab-btn" onclick="switchProf('kb_fl')" id="btn_prof_kb_fl">Housing</button>
-                <button class="tab-btn" onclick="switchProf('kb_tu')" id="btn_prof_kb_tu">Team-Up</button>
-            </div>
-            
-            <div id="kb_log" class="tab-content active kanban-board">
-                <div class="kanban-col"><div class="kanban-header"><span>Pending</span><span class="kanban-badge" id="cnt_log_pend">0</span></div><div id="col_log_pend"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span>In Progress</span><span class="kanban-badge" id="cnt_log_prog">0</span></div><div id="col_log_prog"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span>History</span><span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist"></div></div>
-            </div>
-            <div id="kb_mar" class="tab-content kanban-board">
-                <div class="kanban-col"><div class="kanban-header"><span>Available</span><span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span>Reserved (Pending)</span><span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span>Completed</span><span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist"></div></div>
-            </div>
-            <div id="kb_fl" class="tab-content kanban-board">
-                <div class="kanban-col"><div class="kanban-header"><span>Active Listings</span><span class="kanban-badge" id="cnt_fl_open">0</span></div><div id="col_fl_open"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span>Closed</span><span class="kanban-badge" id="cnt_fl_closed">0</span></div><div id="col_fl_closed"></div></div>
-            </div>
-            <div id="kb_tu" class="tab-content kanban-board">
-                <div class="kanban-col"><div class="kanban-header"><span>Gathering</span><span class="kanban-badge" id="cnt_tu_gather">0</span></div><div id="col_tu_gather"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span>Resolved (Comp/Fail)</span><span class="kanban-badge" id="cnt_tu_comp">0</span></div><div id="col_tu_comp"></div></div>
-            </div>
+        <div class="tab-container" style="background:#f1f5f9;">
+            <button class="tab-btn active" onclick="switchProf('kb_log')" id="btn_prof_kb_log">Logistics</button>
+            <button class="tab-btn" onclick="switchProf('kb_mar')" id="btn_prof_kb_mar">Market</button>
+            <button class="tab-btn" onclick="switchProf('kb_fl')" id="btn_prof_kb_fl">Housing</button>
+            <button class="tab-btn" onclick="switchProf('kb_tu')" id="btn_prof_kb_tu">Team-Up</button>
         </div>
-        <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:5rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
+        <div id="kb_log" class="tab-content active kanban-board">
+            <div class="kanban-col"><div class="kanban-header"><span>Pending</span> <span class="kanban-badge" id="cnt_log_pend">0</span></div><div id="col_log_pend"></div></div>
+            <div class="kanban-col"><div class="kanban-header"><span>Active</span> <span class="kanban-badge" id="cnt_log_prog">0</span></div><div id="col_log_prog"></div></div>
+            <div class="kanban-col"><div class="kanban-header"><span>Done</span> <span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist"></div></div>
+        </div>
+        <div id="kb_mar" class="tab-content kanban-board">
+            <div class="kanban-col"><div class="kanban-header"><span>Selling</span> <span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend"></div></div>
+            <div class="kanban-col"><div class="kanban-header"><span>Reserved</span> <span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog"></div></div>
+            <div class="kanban-col"><div class="kanban-header"><span>Sold</span> <span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist"></div></div>
+        </div>
+        <div id="kb_fl" class="tab-content kanban-board">
+            <div class="kanban-col"><div class="kanban-header"><span>Open</span> <span class="kanban-badge" id="cnt_fl_open">0</span></div><div id="col_fl_open"></div></div>
+            <div class="kanban-col"><div class="kanban-header"><span>Closed</span> <span class="kanban-badge" id="cnt_fl_closed">0</span></div><div id="col_fl_closed"></div></div>
+        </div>
+        <div id="kb_tu" class="tab-content kanban-board">
+            <div class="kanban-col"><div class="kanban-header"><span>Gathering</span> <span class="kanban-badge" id="cnt_tu_gather">0</span></div><div id="col_tu_gather"></div></div>
+            <div class="kanban-col"><div class="kanban-header"><span>Resolved</span> <span class="kanban-badge" id="cnt_tu_comp">0</span></div><div id="col_tu_comp"></div></div>
+        </div>
+        <button class="btn btn-danger btn-sm" style="opacity:0.3; margin-top:4rem;" onclick="nuke()">☢️ Nuke Global Data</button>
     </div>
 
     <div id="register" class="page">
-        <div class="card" style="max-width:650px; margin:auto;">
-            <h2 style="text-align:center;">Join the Ecosystem</h2>
+        <div class="card" style="max-width:600px; margin:auto;">
+            <h2 style="text-align:center;">Join UoA Ecosystem</h2>
             <form id="regForm">
-                <div class="form-grid"><div><label>UoA Student ID</label><input type="text" id="r_sid" required></div><div><label>Display Nickname</label><input type="text" id="r_anon" required></div></div>
+                <div class="form-grid"><div><label>SID</label><input type="text" id="r_sid" required></div><div><label>Nick</label><input type="text" id="r_anon" required></div></div>
                 <div class="form-grid"><div><label>First Name</label><input type="text" id="r_fn" required></div><div><label>Last Name</label><input type="text" id="r_ln" required></div></div>
-                <label>University Email</label><div style="display:flex; gap:12px; margin-bottom:1.5rem;"><input type="email" id="r_email" required><button type="button" class="btn btn-outline" onclick="sendCode()" id="btnSendCode">Get Code</button></div>
-                <div class="form-grid"><div><label>Verification Code</label><input type="text" id="r_code" required></div><div><label>Phone</label><input type="text" id="r_phone" required></div></div>
-                <div style="margin-bottom:1.5rem;"><label>Gender</label><select id="r_gender"><option>Male</option><option>Female</option></select></div>
-                <div class="form-grid"><div><label>Password</label><input type="password" id="r_pwd" required></div><div><label>Confirm Password</label><input type="password" id="r_pwd2" required></div></div>
-                <button type="submit" class="btn" style="width:100%; padding:1.2rem;">Authorize & Join</button>
+                <label>Email</label><div style="display:flex; gap:10px; margin-bottom:1rem;"><input type="email" id="r_email" required><button type="button" class="btn btn-outline" onclick="sendCode()" id="btnSendCode">Get Code</button></div>
+                <div class="form-grid"><div><label>Code</label><input type="text" id="r_code" required></div><div><label>Phone</label><input type="text" id="r_phone" required></div></div>
+                <label>Pwd</label><input type="password" id="r_pwd" required><br><br>
+                <button type="submit" class="btn" style="width:100%;">Authorize</button>
             </form>
-            <p style="text-align:center; margin-top:2rem;">Already registered? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('login')">Sign In</b></p>
+            <p style="text-align:center; margin-top:2rem;">Registered? <b onclick="navigate('login')" style="color:var(--primary); cursor:pointer;">Login</b></p>
         </div>
     </div>
     <div id="login" class="page">
-        <div class="card" style="max-width:440px; margin:auto;">
-            <h2 style="text-align:center;">Portal Login</h2>
-            <form id="loginForm"><label>Email or SID</label><input type="text" id="l_user" required><label>Password</label><input type="password" id="l_pwd" required><button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem;">Access Hub</button></form>
-            <p style="text-align:center; margin-top:2.5rem;">New to DormLift? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('register')">Register Now</b></p>
+        <div class="card" style="max-width:400px; margin:auto;">
+            <h2 style="text-align:center;">Access Hub</h2>
+            <form id="loginForm"><label>Email/SID</label><input type="text" id="l_user" required><label>Pwd</label><input type="password" id="l_pwd" required><br><br><button type="submit" class="btn" style="width:100%;">Login</button></form>
+            <p style="text-align:center; margin-top:2rem;">New? <b onclick="navigate('register')" style="color:var(--primary); cursor:pointer;">Register</b></p>
         </div>
     </div>
 </div>
 
 <div id="masterModal" class="modal" onclick="if(event.target.id==='masterModal') this.style.display='none'">
     <div class="modal-content">
-        <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:45px; height:45px; border-radius:50%; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('masterModal').style.display='none'">&times;</button>
-        <div id="mod_header" style="margin-bottom:1.5rem;"></div>
+        <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:45px; height:45px; border-radius:50%; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('masterModal').style.display='none'">×</button>
+        <div id="mod_header"></div>
         <div id="modal-map"></div>
         <div class="thumb-strip" id="mod_thumbs"></div>
-        <div id="mod_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
-        
-        <div id="mod_interaction" class="interaction-box" style="background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6;">
-            <h4 style="margin-top:0;"><i class="far fa-comments" style="color:var(--primary);"></i> Discussion Thread</h4>
-            <div id="mod_comments" style="max-height:350px; overflow-y:auto; margin-bottom:2rem;"></div>
-            <div id="reply_hint" style="display:none; background:#eef2ff; padding:12px 20px; border-radius:12px; margin-bottom:15px; font-size:0.88rem; border-left:6px solid var(--primary);">Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800;">[Cancel Reply]</span></div>
-            <div style="display:flex; gap:12px;"><input type="text" id="mod_input" placeholder="Ask details..." style="margin:0;"><button class="btn btn-sm" onclick="postMasterComment()">Send</button></div>
+        <div id="mod_body" style="background:#f8fafc; padding:2rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
+        <div id="mod_interaction" style="margin-top:2rem; background:#f8fafc; padding:2rem; border-radius:1.5rem; border:1px solid #eef2f6;">
+            <h4><i class="far fa-comments"></i> Discussion</h4>
+            <div id="mod_comments" style="max-height:300px; overflow-y:auto; margin-bottom:1.5rem;"></div>
+            <div id="reply_hint" style="display:none; background:#eef2ff; padding:10px; border-radius:10px; margin-bottom:10px; font-size:0.8rem;">Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right;">[Cancel Reply]</span></div>
+            <div style="display:flex; gap:10px;"><input type="text" id="mod_input" placeholder="Say something..." style="margin:0;"><button class="btn btn-sm" onclick="postMasterComment()">Send</button></div>
         </div>
-        <div id="mod_footer" style="margin-top:3rem; display:flex; flex-direction:column; gap:15px;"></div>
+        <div id="mod_footer" style="margin-top:2rem; display:flex; flex-direction:column; gap:10px;"></div>
     </div>
 </div>
 
-<div id="pointsModal" class="modal" onclick="if(event.target.id==='pointsModal') this.style.display='none'"><div class="modal-content" style="max-width:600px;"><button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('pointsModal').style.display='none'">&times;</button><h2 style="margin-top:0;">Medal Point History</h2><div id="pts_list" style="max-height: 400px; overflow-y: auto; border: 1px solid #eef2f6; border-radius: 12px;"></div></div></div>
-<div id="reviewsModal" class="modal" onclick="if(event.target.id==='reviewsModal') this.style.display='none'"><div class="modal-content" style="max-width:600px;"><button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('reviewsModal').style.display='none'">&times;</button><h2 style="margin-top:0;">Peer Reviews</h2><div id="rev_list" style="max-height: 400px; overflow-y: auto; border: 1px solid #eef2f6; border-radius: 12px;"></div></div></div>
+<div id="pointsModal" class="modal" onclick="if(event.target.id==='pointsModal') this.style.display='none'"><div class="modal-content" style="max-width:500px;"><h2 style="margin-top:0;">Points</h2><div id="pts_list"></div></div></div>
+<div id="reviewsModal" class="modal" onclick="if(event.target.id==='reviewsModal') this.style.display='none'"><div class="modal-content" style="max-width:500px;"><h2 style="margin-top:0;">Reviews</h2><div id="rev_list"></div></div></div>
 
 <script>
     // ======================= STATE & NAV =======================
     let user = JSON.parse(localStorage.getItem('user'));
     let map, routingControl, modalMap, modalRoutingControl, markers = [], modalMarkers = [];
-    let mapFlat, markerFlat; // 专属 Flatting 地图
+    let mapFlat, markerFlat;
     let state = { log: [], mar: [], flat: [], team: [], for: [], activeId: null, activeType: null, activeReplyId: null };
 
     const getAddrText = str => str ? (str.includes('@@') ? str.split('@@')[1] : str) : 'Unknown';
@@ -388,49 +352,37 @@
         renderMenu(); window.scrollTo(0,0);
         if(p === 'hall') loadHall(); if(p === 'post') initMap(); if(p === 'profile') loadProfileData();
     }
-
     function renderMenu() {
         const menu = document.getElementById('menu');
         menu.innerHTML = user 
-            ? `<div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check"></i> ${user.anonymous_name}</div><a onclick="navigate('hall')">Discover</a><a onclick="navigate('post')">Publish</a><a onclick="navigate('profile')">Dashboard</a>`
+            ? `<div class="user-tag" onclick="navigate('profile')"><i class="fas fa-user-check"></i> ${user.anonymous_name}</div><a onclick="navigate('hall')">Discover</a><a onclick="navigate('post')">Publish</a>`
             : `<a onclick="navigate('home')">Home</a><a onclick="navigate('hall')">Discover</a><a onclick="navigate('login')">Login</a>`;
     }
     function logout() { localStorage.clear(); location.reload(); }
-
     function toggleTabs(prefix, arr, target) {
         arr.forEach(t => {
             const btn = document.getElementById(`btn_${prefix}_${t}`); const content = document.getElementById(`${prefix}_${t}`);
-            if(btn) btn.classList.toggle('active', t===target);
-            if(content) content.classList.toggle('active', t===target);
+            if(btn) btn.classList.toggle('active', t===target); if(content) content.classList.toggle('active', t===target);
         });
     }
     function switchHall(tab) { toggleTabs('hall', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); }
-    function switchPost(tab) { 
-        toggleTabs('post', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); 
-        if(tab==='logistics' && map) setTimeout(()=>map.invalidateSize(),200); 
-        if(tab==='flatting') { initFlatMap(); if(mapFlat) setTimeout(()=>mapFlat.invalidateSize(),200); }
-    }
+    function switchPost(tab) { toggleTabs('post', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); if(tab==='logistics' && map) setTimeout(()=>map.invalidateSize(),300); if(tab==='flatting') initFlatMap(); }
     function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_tu'], tab); }
-    
     function previewFiles(e, id) {
         const s = document.getElementById(id); s.innerHTML = "";
         Array.from(e.target.files).slice(0, 5).forEach(f => { const r = new FileReader(); r.onload = ev => s.innerHTML += `<img src="${ev.target.result}" class="thumb-img">`; r.readAsDataURL(f); });
     }
 
-    // ======================= MAP ENGINE =======================
+    // ======================= MAP ENGINES =======================
     function initMap() {
         if(map) return;
         setTimeout(() => {
-            map = L.map('map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); L.control.zoom({position: 'topright'}).addTo(map);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
-            routingControl = L.Routing.control({ lineOptions:{styles:[{color:'#4f46e5', weight:6, opacity:0.8}]}, createMarker:()=>null, show:false, addWaypoints:false }).on('routesfound', ev => {
-                document.getElementById('distVal').innerText = (ev.routes[0].summary.totalDistance / 1000).toFixed(2); document.getElementById('timeVal').innerText = Math.round(ev.routes[0].summary.totalTime / 60);
-            }).addTo(map);
-
+            map = L.map('map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+            routingControl = L.Routing.control({ lineOptions:{styles:[{color:'#4f46e5', weight:6}]}, createMarker:()=>null, show:false }).addTo(map);
             map.on('click', async e => {
-                if (markers.length >= 2) { markers.forEach(m => map.removeLayer(m)); markers = []; routingControl.setWaypoints([]); document.getElementById('distVal').innerText="0.00"; document.getElementById('p_from').value=""; document.getElementById('p_to').value=""; }
+                if (markers.length >= 2) { markers.forEach(m => map.removeLayer(m)); markers = []; routingControl.setWaypoints([]); }
                 let isStart = markers.length === 0;
-                let cI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:${isStart?'var(--primary)':'var(--success)'}"><i class="fas ${isStart?'fa-street-view':'fa-flag-checkered'}" style="color:${isStart?'var(--primary)':'var(--success)'}; font-size:14px;"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
+                let cI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:${isStart?'var(--primary)':'var(--success)'}"><i class="fas ${isStart?'fa-street-view':'fa-flag-checkered'}" style="color:${isStart?'var(--primary)':'var(--success)'};"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
                 markers.push(L.marker(e.latlng, {icon: cI}).addTo(map));
                 const input = document.getElementById(isStart ? 'p_from' : 'p_to'); input.value = "Fetching...";
                 try { const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`); const d = await res.json(); input.value = d.display_name.split(',').slice(0,3).join(',').trim(); } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
@@ -438,202 +390,99 @@
             });
         }, 300);
     }
-    
-    // V12.2 Flatting 发布专属地图
     function initFlatMap() {
         if(mapFlat) return;
         setTimeout(() => {
-            mapFlat = L.map('map_flat', {zoomControl: false}).setView([-36.8509, 174.7645], 14); 
-            L.control.zoom({position: 'topright'}).addTo(mapFlat);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mapFlat);
-
+            mapFlat = L.map('map_flat', {zoomControl: false}).setView([-36.8509, 174.7645], 14); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mapFlat);
             mapFlat.on('click', async e => {
                 if(markerFlat) mapFlat.removeLayer(markerFlat);
-                let cI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--warning)"><i class="fas fa-home" style="color:var(--warning); font-size:14px;"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
+                let cI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--warning)"><i class="fas fa-home" style="color:var(--warning);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
                 markerFlat = L.marker(e.latlng, {icon: cI}).addTo(mapFlat);
                 document.getElementById('flat_coord_val').innerText = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
-                const input = document.getElementById('fl_loc'); 
-                input.value = "Fetching address...";
-                try { 
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`); 
-                    const d = await res.json(); 
-                    input.value = d.display_name.split(',').slice(0,3).join(',').trim(); 
-                } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
+                document.getElementById('fl_loc').value = "Fetching address...";
+                try { const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`); const d = await res.json(); document.getElementById('fl_loc').value = d.display_name.split(',').slice(0,3).join(',').trim(); } catch { document.getElementById('fl_loc').value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
             });
         }, 300);
     }
-
-    // Modal 展示地图
     function initModalMap(fC, tC) {
-        if(!modalMap) { 
-            modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); 
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(modalMap); 
-            modalRoutingControl = L.Routing.control({ lineOptions:{styles:[{color:'#4f46e5', weight:5}]}, createMarker:()=>null, show:false }).addTo(modalMap); 
-        }
+        if(!modalMap) { modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(modalMap); modalRoutingControl = L.Routing.control({ lineOptions:{styles:[{color:'#4f46e5', weight:5}]}, createMarker:()=>null, show:false }).addTo(modalMap); }
         modalMarkers.forEach(l => modalMap.removeLayer(l)); modalMarkers = []; modalRoutingControl.setWaypoints([]);
-        let sI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--primary)"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
-        
         if(fC && !tC) { 
-            sI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--warning)"><i class="fas fa-home" style="color:var(--warning);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
-            let m1 = L.marker(fC, {icon: sI}).addTo(modalMap); modalMarkers.push(m1); modalMap.setView(fC, 15);
-        } else if(fC && tC) { 
+            let cI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--warning)"><i class="fas fa-home" style="color:var(--warning);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
+            modalMarkers.push(L.marker(fC, {icon: cI}).addTo(modalMap)); modalMap.setView(fC, 15);
+        } else if(fC && tC) {
+            let sI=L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--primary)"><i class="fas fa-street-view" style="color:var(--primary);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
             let eI=L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--success)"><i class="fas fa-flag-checkered" style="color:var(--success);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
-            let m1=L.marker(fC, {icon: sI}).addTo(modalMap); let m2=L.marker(tC, {icon: eI}).addTo(modalMap);
-            modalMarkers.push(m1, m2); modalRoutingControl.setWaypoints([L.latLng(fC[0], fC[1]), L.latLng(tC[0], tC[1])]); modalMap.fitBounds(new L.featureGroup([m1, m2]).getBounds(), {padding: [30, 30]});
+            modalMarkers.push(L.marker(fC, {icon: sI}).addTo(modalMap), L.marker(tC, {icon: eI}).addTo(modalMap));
+            modalRoutingControl.setWaypoints([L.latLng(fC[0], fC[1]), L.latLng(tC[0], tC[1])]); modalMap.fitBounds(new L.featureGroup(modalMarkers).getBounds(), {padding:[30,30]});
         }
-        setTimeout(() => modalMap.invalidateSize(), 300); 
+        setTimeout(() => modalMap.invalidateSize(), 300);
     }
 
     // ======================= HUB LOADING =======================
     async function loadHall() {
         try {
             const [resL, resM, resFl, resTu, resF] = await Promise.all([fetch('/api/task/all'), fetch('/api/market/all'), fetch('/api/flatting/all'), fetch('/api/teamup/all'), fetch('/api/forum/all')]);
-            if (!resL.ok || !resM.ok || !resFl.ok || !resTu.ok || !resF.ok) {
-                const errHtml = '<div style="padding:5rem; text-align:center; color:var(--warning);">Server waking up, please refresh...</div>';
-                ['logistics','market','flatting','teamup','forum'].forEach(x => document.getElementById(`list_${x}`).innerHTML = errHtml); return;
-            }
             state.log = (await resL.json()).list||[]; state.mar = (await resM.json()).list||[]; state.flat = (await resFl.json()).list||[]; state.team = (await resTu.json()).list||[]; state.for = (await resF.json()).list||[];
             
-            // Logistics
-            document.getElementById('list_logistics').innerHTML = state.log.map(t => `<div class="hub-row" onclick="openMasterModal('log', '${t._id}')"><div class="posted-col" title="${t.publisher_name}"><i class="fas fa-user-circle"></i> ${(t.publisher_name||'Peer').substring(0,6)}..<span>${new Date(t.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span></div><div class="details-strip"><div class="strip-header"><i class="far fa-calendar-check"></i> ${t.move_date}</div><div class="strip-route">${getAddrText(t.from_addr)} <i class="fas fa-arrow-right"></i> ${getAddrText(t.to_addr)}</div><div class="strip-inventory"><span style="background:#fef3c7; color:var(--medal); padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">🏅 ${t.medal_points} Pts</span> ${t.items_desc.substring(0,40)}...</div></div><div class="reward-col">${t.reward}</div></div>`).join('') || '<p style="text-align:center; padding:3rem; color:var(--muted);">No logistics tasks.</p>';
-            
-            // Market
-            document.getElementById('list_market').innerHTML = state.mar.map(m => `<div class="market-card" onclick="openMasterModal('mar', '${m._id}')"><img src="${JSON.parse(m.img_url)[0]||''}" class="m-img" onerror="this.style.display='none'"><div class="m-body"><div><h3 class="m-title">${m.title}</h3><div style="font-size:0.8rem; margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; font-weight:700;">${m.condition}</span> <span style="color:var(--muted);"><i class="fas fa-user-circle"></i> ${m.seller_name}</span></div></div><div><div class="m-price">$${m.price}</div><div style="color:var(--muted); font-size:0.85rem;"><i class="fas fa-map-marker-alt"></i> ${m.location}</div></div></div></div>`).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">Market is empty.</p>';
-            
-            // Flatting 
-            document.getElementById('list_flatting').innerHTML = state.flat.map(fl => `<div class="market-card" onclick="openMasterModal('flat', '${fl._id}')" style="border-top:4px solid var(--warning);"><div style="position:relative;"><img src="${JSON.parse(fl.img_url)[0]||''}" class="m-img" style="height:220px;" onerror="this.style.display='none'"><div style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.8); color:white; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:800; backdrop-filter:blur(4px);"><i class="fas fa-shield-check" style="color:#34d399;"></i> UoA Verified</div></div><div class="m-body"><div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:6px; font-weight:800; font-size:0.8rem;">${fl.room_type} | ${fl.bathroom_type}</span><span style="font-size:0.8rem; color:var(--muted); font-weight:700;"><i class="far fa-calendar-alt"></i> ${new Date(fl.available_date).toLocaleDateString()}</span></div><h3 class="m-title" style="font-size:1.2rem;">${fl.title}</h3><div style="font-size:0.85rem; color:var(--muted); margin-bottom:15px;"><i class="fas fa-map-marker-alt"></i> ${fl.location}</div></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="color:var(--dark); font-size:1.6rem; font-weight:900;">$${fl.rent_price}<span style="font-size:0.9rem; color:var(--muted);"> /pw</span></div><div style="font-size:0.8rem; color:var(--muted);"><i class="fas fa-user-circle"></i> ${fl.publisher_name}</div></div></div></div>`).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">No housing listings.</p>';
-            
-            // Team-Up 
-            const catDict = {'Carpool':'🚗 拼车', 'GroupBuy':'🛍️ 团购', 'Sports':'🏃‍♂️ 运动', 'Study':'📚 学习', 'Social':'🎮 社交'};
+            document.getElementById('list_logistics').innerHTML = state.log.map(t => `<div class="hub-row" onclick="openMasterModal('log', '${t._id}')"><div class="posted-col">Peer<span>${new Date(t.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span></div><div class="details-strip"><div class="strip-header">${t.move_date}</div><div class="strip-route">${getAddrText(t.from_addr)} ➡️ ${getAddrText(t.to_addr)}</div><div class="strip-inventory">🏅 ${t.medal_points} Pts | ${t.items_desc.substring(0,40)}..</div></div><div class="reward-col">${t.reward}</div></div>`).join('');
+            document.getElementById('list_market').innerHTML = state.mar.map(m => `<div class="market-card" onclick="openMasterModal('mar', '${m._id}')"><img src="${JSON.parse(m.img_url)[0]||''}" class="m-img" onerror="this.style.display='none'"><div class="m-body"><div><h3 class="m-title">${m.title}</h3><div style="font-size:0.8rem; margin-bottom:10px;">${m.condition} • ${m.seller_name}</div></div><div><div class="m-price">$${m.price}</div><div style="color:var(--muted); font-size:0.85rem;">📍 ${m.location}</div></div></div></div>`).join('');
+            document.getElementById('list_flatting').innerHTML = state.flat.map(fl => `<div class="market-card" onclick="openMasterModal('flat', '${fl._id}')" style="border-top:4px solid var(--warning);"><div style="position:relative;"><img src="${JSON.parse(fl.img_url)[0]||''}" class="m-img" onerror="this.style.display='none'"><div style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.8); color:white; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:800;">UoA Verified</div></div><div class="m-body"><div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:6px; font-weight:800; font-size:0.8rem;">${fl.room_type} | ${fl.bathroom_type}</span></div><h3 class="m-title" style="font-size:1.2rem;">${fl.title}</h3><div style="font-size:0.85rem; color:var(--muted); margin-bottom:15px;">📍 ${fl.location}</div></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="color:var(--dark); font-size:1.6rem; font-weight:900;">$${fl.rent_price}<span style="font-size:0.9rem; color:var(--muted);"> /pw</span></div><div style="font-size:0.8rem; color:var(--muted);">${fl.publisher_name}</div></div></div></div>`).join('');
             document.getElementById('list_teamup').innerHTML = state.team.map(tu => {
                 const jLen = tu.joined_members.length; const pct = Math.min(100, (jLen/tu.max_members)*100);
-                const img = JSON.parse(tu.img_url)[0] || ''; const catStr = catDict[tu.category] || '📌 ' + tu.category;
-                
-                return `
-                <div class="market-card team-card" onclick="openMasterModal('team', '${tu._id}')">
-                    <div style="position:relative;">
-                        <img src="${img}" class="m-img" style="height:160px;" onerror="this.style.display='none'">
-                        <div style="position:absolute; top:10px; right:10px; background:var(--team); color:white; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:800; box-shadow:0 2px 4px rgba(0,0,0,0.2);">${catStr}</div>
-                    </div>
-                    <div class="m-body" style="padding: 1.2rem;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <span style="background:#fee2e2; color:var(--danger); padding:4px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;"><i class="fas fa-star"></i> Req ${tu.min_credit_req}+</span>
-                            <span style="font-weight:900; color:var(--dark); font-size:1.1rem;">💰 ${tu.estimated_cost}</span>
-                        </div>
-                        <h3 class="m-title" style="font-size:1.2rem;">${tu.title}</h3>
-                        <div style="font-size:0.85rem; color:var(--text); margin-bottom:10px;"><i class="fas fa-map-marker-alt" style="color:var(--team);"></i> ${tu.location}</div>
-                        
-                        <div style="background:#fef2f2; border:1px solid #fecaca; padding:8px; border-radius:8px; text-align:center; margin-bottom:10px;">
-                            <div style="font-size:0.75rem; color:var(--danger); font-weight:800; text-transform:uppercase;">Countdown to Go</div>
-                            <div class="tu-countdown" data-time="${tu.meet_time}" style="font-size:1.4rem; font-weight:900; color:var(--danger); letter-spacing:2px;">Loading...</div>
-                        </div>
-
-                        <div class="team-progress-bg"><div class="team-progress-fill" style="width:${pct}%;"></div></div>
-                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700;"><span>${jLen} Joined</span><span>Min ${tu.min_members} / Max ${tu.max_members}</span></div>
-                        <div style="margin-top:15px;">
-                            <button class="btn" style="width:100%; background:var(--team); padding:0.8rem;" onclick="event.stopPropagation(); joinTeam('${tu._id}')">一键上车 (Join) <i class="fas fa-arrow-right"></i></button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">No active team-ups.</p>';
-
-            // Forum
-            document.getElementById('list_forum').innerHTML = state.for.map(f => `<div class="forum-card"><div class="f-header"><div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div><div style="font-size:0.85rem; color:var(--muted);">${new Date(f.created_at).toLocaleString()}</div></div><div class="f-content">${f.content}</div><div class="f-images">${JSON.parse(f.img_url).map(u=>`<img src="${u}">`).join('')}</div><div class="f-actions"><button class="btn btn-outline btn-sm" style="${user&&f.likes.includes(user.email)?'background:var(--primary);color:white;border-color:var(--primary);':''}" onclick="interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button><button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button></div></div>`).join('') || '<p style="text-align:center; padding:3rem; color:var(--muted);">No buzz yet.</p>';
+                return `<div class="market-card team-card" onclick="openMasterModal('team', '${tu._id}')"><div class="m-body"><div><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span style="background:#fee2e2; color:var(--danger); padding:4px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">Req ${tu.min_credit_req}+</span><span style="font-weight:900; color:var(--dark);">💰 ${tu.estimated_cost}</span></div><h3 class="m-title">${tu.title}</h3><div style="background:#fef2f2; padding:8px; border-radius:8px; text-align:center; margin-bottom:10px;"><div class="tu-countdown" data-time="${tu.meet_time}" style="font-size:1.4rem; font-weight:900; color:var(--danger);">Loading..</div></div><div class="team-progress-bg"><div class="team-progress-fill" style="width:${pct}%;"></div></div><div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700;"><span>${jLen} Joined</span><span>Max ${tu.max_members}</span></div><button class="btn" style="width:100%; background:var(--team); margin-top:15px;" onclick="event.stopPropagation(); joinTeam('${tu._id}')">Join Now</button></div></div></div>`;
+            }).join('');
+            document.getElementById('list_forum').innerHTML = state.for.map(f => `<div class="forum-card"><div class="f-author" style="font-weight:800;">${f.author_name}</div><div style="margin-top:10px;">${f.content}</div><div class="thumb-strip">${JSON.parse(f.img_url).map(u=>`<img src="${u}" style="width:100px; height:100px; object-fit:cover; border-radius:10px;">`).join('')}</div><div style="margin-top:10px;"><button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')">Discuss (${f.comments.length})</button></div></div>`).join('');
         } catch(e) { console.log(e); }
     }
 
-    // ======================= MASTER MODAL =======================
+    // ======================= ACTIONS =======================
     async function openMasterModal(type, id) {
         state.activeType = type; state.activeId = id;
-        let endpoint = {log:'/api/task/all', mar:'/api/market/all', flat:'/api/flatting/all', team:'/api/teamup/all', for:'/api/forum/all'}[type];
-        const res = await fetch(endpoint); const d = await res.json();
-        let item = (d.list || []).find(x => x._id === id);
-        
-        if(!item) { const resT = await fetch('/api/user/dashboard', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user?.email})}); const dT = await resT.json(); const arrMap = {log:dT.tasks, mar:dT.market, flat:dT.flatting, team:dT.teamups, for:dT.posts}; item = (arrMap[type]||[]).find(x => x._id === id); }
-        if(!item) return alert("Data unavailable.");
+        const resT = await fetch('/api/user/dashboard', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user?.email})}); const dT = await resT.json();
+        const allItems = [...state.log, ...state.mar, ...state.flat, ...state.team, ...state.for, ...dT.tasks, ...dT.market, ...dT.posts, ...dT.flatting, ...dT.teamups];
+        const item = allItems.find(x => x._id === id); if(!item) return;
 
         const h = document.getElementById('mod_header'); const b = document.getElementById('mod_body'); const f = document.getElementById('mod_footer');
         document.getElementById('modal-map').style.display = 'none';
         document.getElementById('mod_thumbs').innerHTML = (item.img_url ? JSON.parse(item.img_url) : []).map(u => `<img src="${u}" class="thumb-img" onclick="window.open('${u}')">`).join('');
         
         if (type === 'log') {
-            h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem;">${item.reward}</h2><span class="status-badge" style="background:var(--primary); color:white;">${item.status}</span></div>`;
+            h.innerHTML = `<h2 style="color:var(--primary); font-size:2.5rem;">${item.reward}</h2>`;
             let fC = getAddrCoords(item.from_addr); let tC = getAddrCoords(item.to_addr); if(fC && tC) { document.getElementById('modal-map').style.display = 'block'; initModalMap(fC, tC); }
-            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">👤 Publisher</b> <br><b>${item.publisher_name}</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Route</b> <br><b>${getAddrText(item.from_addr)}</b> ➡️ <b>${getAddrText(item.to_addr)}</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Complexity</b> <br><b>${item.task_scale} (${item.has_elevator==='true'?'Elevator':'Stairs'}) - 🏅 ${item.medal_points} Pts</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Inventory</b> <br>${item.items_desc}</div></div>`;
-            let btns = '';
-            if(item.status === 'pending' && item.publisher_id !== user.email) btns = `<button class="btn" style="padding:1.2rem;" onclick="execFlow('log', 'assigned')">Accept Mission</button>`;
-            if(item.status === 'assigned' && item.publisher_id === user.email) btns = `<button class="btn" style="padding:1.2rem;" onclick="execFlow('log', 'completed')">Confirm Delivery</button>`;
-            if(item.publisher_id === user.email && ['pending','assigned'].includes(item.status)) btns += `<button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw</button>`;
-            if(item.status === 'completed' && item.publisher_id === user.email) btns = renderRatingUI(item._id, item.helper_id, 'log', 'Helper');
-            f.innerHTML = btns || `<span style="font-weight:800; color:var(--muted);">Read-Only</span>`;
+            b.innerHTML = `<div><b>From:</b> ${getAddrText(item.from_addr)}<br><b>To:</b> ${getAddrText(item.to_addr)}<br><br><b>Desc:</b> ${item.items_desc}</div>`;
+            f.innerHTML = item.status === 'pending' && item.publisher_id !== user.email ? `<button class="btn" onclick="execFlow('log', 'assigned')">Accept Mission</button>` : '';
         } 
         else if (type === 'mar') {
-            h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--success); font-size:2.8rem;">$${item.price}</h2><span class="status-badge" style="background:var(--success); color:white;">${item.status}</span></div>`;
-            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><h3 style="margin:0; font-size:1.8rem;">${item.title}</h3><div><b>${item.condition}</b> • <b>${item.location}</b></div><div>${item.description}</div>${item.status === 'reserved' && item.buyer_id === user.email ? `<div style="background:#f0fdf4; border:1px dashed var(--success); padding:1rem; border-radius:12px;"><div style="color:var(--success); font-weight:800; font-size:0.8rem; text-transform:uppercase;">Handover Code</div><div style="font-size:2rem; font-weight:900; letter-spacing:4px;">${item.escrow_code}</div><p style="font-size:0.85rem; margin-top:5px;">请线下付款。付款后交出 6 位交接码，卖家输入后即可完结订单并互评。</p></div>` : ''}<div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:10px;"><i class="fas fa-user-circle" style="color:var(--primary);"></i> Seller: ${item.seller_name}</div></div>`;
-            let btns = '';
-            if(item.status === 'available' && item.seller_id !== user.email) btns = `<button class="btn" style="background:var(--success); padding:1.2rem;" onclick="execFlow('mar', 'reserved')">Reserve Item (Pay Offline)</button>`;
-            if(item.status === 'reserved' && item.seller_id === user.email) btns = `<div style="display:flex; gap:10px;"><input type="text" id="escrow_input" placeholder="6-digit code" style="flex:1; text-align:center; font-weight:800; letter-spacing:2px;"><button class="btn" onclick="verifyEscrow('${item._id}')">Verify</button></div>`;
-            if(item.seller_id === user.email && ['available','reserved'].includes(item.status)) btns += `<button class="btn btn-danger" onclick="execFlow('mar', 'available')">Cancel</button>`;
-            if(item.status === 'completed' && item.buyer_id === user.email) btns = renderRatingUI(item._id, item.seller_id, 'mar', 'Seller');
-            f.innerHTML = btns || `<span style="font-weight:800; color:var(--muted);">Read-Only</span>`;
+            h.innerHTML = `<h2 style="color:var(--success); font-size:2.5rem;">$${item.price}</h2>`;
+            b.innerHTML = `<h3>${item.title}</h3><div>${item.description}</div>${item.status==='reserved'&&item.buyer_id===user.email?`<div style="background:#f0fdf4; padding:1.5rem; border-radius:1rem; margin-top:1rem;"><b>Handover Code:</b> <span style="font-size:2rem; color:var(--success); letter-spacing:4px;">${item.escrow_code}</span></div>`:''}`;
+            f.innerHTML = item.status === 'available' && item.seller_id !== user.email ? `<button class="btn" style="background:var(--success);" onclick="execFlow('mar', 'reserved')">Reserve (Offline Pay)</button>` : '';
         }
         else if (type === 'flat') {
-            h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--warning); font-size:2.8rem;">$${item.rent_price}/w</h2><span class="status-badge" style="background:var(--warning); color:white;">${item.status}</span></div>`;
+            h.innerHTML = `<h2 style="color:var(--warning); font-size:2.5rem;">$${item.rent_price}/pw</h2>`;
             if(item.coords) { document.getElementById('modal-map').style.display = 'block'; initModalMap(item.coords.split(',').map(Number), null); }
-            
-            b.innerHTML = `
-                <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
-                    <h3 style="margin:0; font-size:1.8rem;">${item.title}</h3>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:white; padding:15px; border-radius:12px; border:1px solid #eef2f6;">
-                        <div><i class="fas fa-door-open" style="color:var(--muted); width:20px;"></i> <b>Layout:</b> ${item.house_layout || 'N/A'}</div>
-                        <div><i class="fas fa-bed" style="color:var(--muted); width:20px;"></i> <b>Room:</b> ${item.room_type}</div>
-                        <div><i class="fas fa-bath" style="color:var(--muted); width:20px;"></i> <b>Bath:</b> ${item.bathroom_type || 'N/A'}</div>
-                        <div><i class="far fa-calendar-alt" style="color:var(--muted); width:20px;"></i> <b>Available:</b> ${new Date(item.available_date).toLocaleDateString()}</div>
-                    </div>
-                    <div><b style="color:var(--danger); font-size:0.85rem; text-transform:uppercase;"><i class="fas fa-exclamation-circle"></i> Preferences</b> <br><span style="font-weight:700; color:var(--dark);">${item.preferences || 'None'}</span></div>
-                    <div>
-                        <b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Location</b> <br>
-                        <b style="display:inline-block; margin-right: 10px;">${item.location}</b>
-                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none; font-size:0.9rem;"><i class="fas fa-external-link-alt"></i> Google Maps</a>
-                    </div>
-                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Details</b> <br>${item.description}</div>
-                    <div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:15px; margin-top:5px;"><i class="fas fa-shield-check" style="color:var(--success);"></i> Verified Publisher: ${item.publisher_name}</div>
-                </div>`;
-                
-            let btns = '';
-            if(item.publisher_id === user.email) btns = `<button class="btn btn-outline" onclick="toggleFlatting('${item._id}')">${item.status==='open'?'Mark as Closed':'Reopen Listing'}</button> <button class="btn btn-danger" onclick="deleteItem('flat', '${item._id}')">Delete Listing</button>`;
-            f.innerHTML = btns || `<span style="font-weight:800; color:var(--muted);">Comment below to contact publisher.</span>`;
+            b.innerHTML = `<h3>${item.title}</h3><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; background:white; padding:15px; border-radius:12px;"><div><b>Layout:</b> ${item.house_layout}</div><div><b>Bath:</b> ${item.bathroom_type}</div><div><b>Room:</b> ${item.room_type}</div><div><b>Date:</b> ${new Date(item.available_date).toLocaleDateString()}</div></div><div style="margin-top:15px;"><b>Pref:</b> ${item.preferences}</div><div style="margin-top:10px;"><b>Loc:</b> ${item.location} <a href="http://google.com/maps?q=${encodeURIComponent(item.location)}" target="_blank" style="color:var(--primary); font-weight:800;">[Google Maps]</a></div>`;
+            f.innerHTML = item.publisher_id === user.email ? `<button class="btn btn-outline" onclick="toggleFlatting('${item._id}')">${item.status==='open'?'Close':'Reopen'}</button> <button class="btn btn-danger" onclick="deleteItem('flat', '${item._id}')">Delete</button>` : '';
         }
         else if (type === 'team') {
             const jLen = item.joined_members.length; const pct = Math.min(100, (jLen/item.max_members)*100);
-            const catDict = {'Carpool':'🚗 拼车', 'GroupBuy':'🛍️ 团购', 'Sports':'🏃‍♂️ 运动', 'Study':'📚 学习', 'Social':'🎮 社交'};
-            h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--team); font-size:2.5rem;">Team-Up</h2><span class="status-badge" style="background:var(--team); color:white;">${item.status}</span></div>`;
-            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><div style="display:flex; justify-content:space-between; align-items:flex-start;"><h3 style="margin:0; font-size:1.8rem;">${item.title}</h3><span style="background:#fce7f3; color:var(--team); padding:4px 12px; border-radius:8px; font-weight:800; font-size:0.9rem;">${catDict[item.category] || item.category}</span></div><div style="display:flex; gap:15px; color:var(--danger); font-weight:800;"><span>💰 Cost: ${item.estimated_cost}</span><span><i class="fas fa-star"></i> Min Credit: ${item.min_credit_req}+</span></div><div><b>⏰ ${new Date(item.meet_time).toLocaleString()}</b> • <b>📍 ${item.location}</b></div><div>${item.description}</div><div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-top:10px;"><div style="font-weight:800; margin-bottom:10px;">Progress (${jLen}/${item.max_members}) - Min to Go: ${item.min_members}</div><div style="width:100%; height:12px; background:#e2e8f0; border-radius:10px; margin-bottom:15px; overflow:hidden;"><div style="height:100%; background:linear-gradient(90deg, #ec4899, #f43f5e); width:${pct}%;"></div></div><div style="font-size:0.9rem;">${item.joined_members.map(m=>`<span style="background:white; padding:4px 10px; border-radius:20px; border:1px solid #e2e8f0; margin-right:8px; display:inline-block; margin-bottom:5px;"><i class="fas fa-user" style="color:var(--team);"></i> ${m.name}</span>`).join('')}</div></div><div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:10px; font-size:0.85rem; color:var(--muted);"><i class="fas fa-crown" style="color:var(--warning);"></i> Initiator: ${item.initiator_name} (⭐ ${item.initiator_rating.toFixed(1)})</div></div>`;
-            let btns = '';
-            if(item.status === 'gathering' && !item.joined_members.some(m=>m.email===user.email)) btns = `<button class="btn" style="background:var(--team); padding:1.2rem;" onclick="joinTeam('${item._id}')">立即上车 (Join)</button>`;
-            if(item.initiator_id === user.email) btns += `<button class="btn btn-danger" onclick="deleteItem('team', '${item._id}')">Cancel Team-Up</button>`;
-            f.innerHTML = btns || `<span style="font-weight:800; color:var(--muted);">${item.status==='completed'?'Team Full / Resolved.':'You are in this team!'}</span>`;
+            h.innerHTML = `<h2 style="color:var(--team); font-size:2.5rem;">Team-Up</h2>`;
+            b.innerHTML = `<h3>${item.title}</h3><div style="color:var(--danger); font-weight:800;">Cost: ${item.estimated_cost} | Req: ${item.min_credit_req}+</div><div style="margin-top:15px;">${item.description}</div><div style="background:#f8fafc; padding:15px; border-radius:12px; margin-top:15px;"><div style="font-weight:800; margin-bottom:10px;">Members (${jLen}/${item.max_members})</div><div class="team-progress-bg"><div class="team-progress-fill" style="width:${pct}%;"></div></div><div style="font-size:0.8rem; margin-top:10px;">${item.joined_members.map(m=>`<span style="background:white; border:1px solid #eef2f6; padding:4px 10px; border-radius:20px; margin-right:5px;">${m.name}</span>`).join('')}</div></div>`;
+            f.innerHTML = item.status === 'gathering' && !item.joined_members.some(m=>m.email===user.email) ? `<button class="btn" style="background:var(--team);" onclick="joinTeam('${item._id}')">Join Team</button>` : '';
         }
-        else if (type === 'for') {
-            h.innerHTML = `<div style="display:flex; align-items:center; gap:15px;"><div class="brand-icon" style="border-radius:50%;"><i class="fas fa-user"></i></div><div><h3 style="margin:0;">${item.author_name}</h3><small style="color:var(--muted);">${new Date(item.created_at).toLocaleString()}</small></div></div>`;
-            b.innerHTML = `<div style="font-size:1.2rem; color:var(--dark); line-height:1.6;">${item.content}</div>`; f.innerHTML = '';
-        }
+        else if (type === 'for') { h.innerHTML = `<h3>${item.author_name}</h3>`; b.innerHTML = `<div>${item.content}</div>`; f.innerHTML = ''; }
+        
         renderThreadedComments(item.comments || []); document.getElementById('masterModal').style.display = 'flex';
     }
 
-    function renderRatingUI(id, target, type, role) { return `<div style="background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #eef2f6; width:100%;"><h4 style="margin-top:0;">Rate ${role}</h4><div style="display:flex; gap:10px; margin-bottom:10px;"><select id="review_score" style="width:80px;"><option value="5">5 ⭐</option><option value="4">4 ⭐</option><option value="3">3 ⭐</option><option value="2">2 ⭐</option><option value="1">1 ⭐</option></select><input type="text" id="review_text" placeholder="Write a review..." style="flex:1; margin:0;"></div><button class="btn" style="width:100%; background:var(--success);" onclick="submitRating('${id}', '${target}', '${type}')">Submit & Archive</button></div>`; }
-
     function renderThreadedComments(comments) {
-        const area = document.getElementById('mod_comments'); const parents = comments.filter(c => !c.parentId);
-        area.innerHTML = parents.map(p => {
-            const replies = comments.filter(r => String(r.parentId) === String(p.id));
-            return `<div class="comment-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>${p.user}</b><small style="color:var(--muted);">${new Date(p.time).toLocaleString()}</small></div><div style="font-size:1rem;">${p.text} <span class="reply-btn" style="color:var(--primary);cursor:pointer;font-weight:800;font-size:0.8rem;margin-left:10px;" onclick="setReply('${p.id}', '${p.user}')">Reply</span></div>${replies.map(r2 => `<div class="comment-reply"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r2.user}</b> replied to <b>${p.user}</b></small></div><div style="font-size:0.95rem;">${r2.text} <span class="reply-btn" style="color:var(--primary);cursor:pointer;font-weight:800;font-size:0.8rem;margin-left:10px;" onclick="setReply('${r2.id}', '${r2.user}')">Reply</span></div>${comments.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `<div class="comment-reply" style="border-left-color:var(--warning); background:white;"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r3.user}</b> replied to <b>${r2.user}</b></small></div><div style="font-size:0.95rem;">${r3.text}</div></div>`).join('')}</div>`).join('')}</div>`;
-        }).join('') || '<p style="color:var(--muted); text-align:center; font-weight:600;">No discussion yet.</p>';
+        const area = document.getElementById('mod_comments'); area.innerHTML = comments.filter(c => !c.parentId).map(p => `
+            <div class="comment-item"><div><b>${p.user}</b> <small style="color:var(--muted);">${new Date(p.time).toLocaleString()}</small></div><div style="margin-top:5px;">${p.text} <span style="color:var(--primary); cursor:pointer; font-weight:800; font-size:0.75rem; margin-left:10px;" onclick="setReply('${p.id}', '${p.user}')">Reply</span></div>
+            ${comments.filter(r => String(r.parentId) === String(p.id)).map(r => `<div class="comment-reply"><b>${r.user}</b>: ${r.text}</div>`).join('')}</div>
+        `).join('') || '<p style="color:var(--muted); text-align:center;">No discussion yet.</p>';
     }
-
     function setReply(id, name) { state.activeReplyId = id; document.getElementById('reply_hint').style.display='block'; document.getElementById('reply_name').innerText=name; document.getElementById('mod_input').focus(); }
     function cancelReply() { state.activeReplyId = null; document.getElementById('reply_hint').style.display='none'; }
-
     async function postMasterComment() {
         const text = document.getElementById('mod_input').value; if(!text) return;
         const payload = { id: String(Date.now()), user: user.anonymous_name, text, parentId: state.activeReplyId, time: new Date() };
@@ -641,150 +490,66 @@
         document.getElementById('mod_input').value = ""; cancelReply(); openMasterModal(state.activeType, state.activeId); loadHall(); 
     }
 
-    // ======================= ACTIONS =======================
-    async function execFlow(type, status) {
-        if(!confirm("Confirm action?")) return;
-        const api = type === 'log' ? '/api/task/workflow' : '/api/market/workflow';
-        const body = type === 'log' ? { task_id: state.activeId, status, helper_id: user.email } : { item_id: state.activeId, status, buyer_id: user.email };
-        const res = await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
-        const d = await res.json(); if(d.success) { document.getElementById('masterModal').style.display = 'none'; navigate('profile'); } else { alert("❌ " + d.msg); }
-    }
-    async function verifyEscrow(itemId) {
-        const code = document.getElementById('escrow_input').value; if(!code || code.length !== 6) return alert("Enter 6-digit code");
-        const res = await fetch('/api/market/verify-escrow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ item_id: itemId, code, seller_id: user.email }) });
-        const d = await res.json(); if(d.success) { alert("✅ Verified!"); document.getElementById('masterModal').style.display = 'none'; navigate('profile'); } else alert("❌ " + d.msg);
-    }
-    async function submitRating(itemId, targetEmail, type) {
-        const score = document.getElementById('review_score').value; const text = document.getElementById('review_text').value || "Great!";
-        const res = await fetch('/api/user/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target_email: targetEmail, score, text, item_id: itemId, type, reviewer_name: user.anonymous_name }) });
-        if(res.ok) { alert("✅ Rating submitted!"); document.getElementById('masterModal').style.display = 'none'; loadProfileData(); } else alert("Error.");
-    }
-    async function interactForum(id, action) { await fetch('/api/forum/interact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({post_id:id, action, email:user.email}) }); loadHall(); }
-    async function joinTeam(id) {
-        if(!user) return navigate('login'); if(!confirm("Join this Team-Up? Your contact will be shared if grouped.")) return;
-        const res = await fetch('/api/teamup/join', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ team_id: id, email: user.email, name: user.anonymous_name }) });
-        const d = await res.json(); if(d.success) { alert("Success!"); if(state.activeId===id) openMasterModal('team', id); loadHall(); } else alert(d.msg);
-    }
-    async function toggleFlatting(id) { await fetch('/api/flatting/toggle', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})}); document.getElementById('masterModal').style.display='none'; navigate('profile'); }
-    async function deleteItem(type, id) {
-        if(!confirm("Permanently delete?")) return;
-        const apiMap = {log:'/api/task/delete', mar:'/api/market/delete', flat:'/api/flatting/delete', team:'/api/teamup/delete'};
-        const res = await fetch(apiMap[type], { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id}) });
-        const d = await res.json(); if(d.success) { document.getElementById('masterModal').style.display = 'none'; loadHall(); navigate('profile'); } else { alert("❌ " + d.msg); }
-    }
-
-    // ======================= KANBAN PROFILE =======================
-    async function loadProfileData() {
-        try {
-            const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json(); const u = d.user;
-            document.getElementById('profileDetails').innerHTML = [['ID', u.student_id], ['Name', `${u.first_name} ${u.given_name}`], ['Nick', u.anonymous_name], ['Email', u.email]].map(f => `<div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #eef2f6;"><label style="margin-bottom:5px; font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">${f[0]}</label><div style="font-weight:800; font-size:1rem;">${f[1]}</div></div>`).join('');
-            document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0"; document.getElementById('p_medals').innerText = u.medal_points || 0;
-            
-            document.getElementById('pts_list').innerHTML = (u.point_history||[]).slice().reverse().map(h => `<div style="display:flex; justify-content:space-between; padding:1rem; border-bottom:1px solid #eef2f6;"><div><b>${h.desc}</b><br><small>${new Date(h.date).toLocaleString()}</small></div><div style="color:var(--medal); font-weight:800;">+${h.points} Pts</div></div>`).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No points yet.</div>';
-            document.getElementById('rev_list').innerHTML = (u.reviews||[]).slice().reverse().map(r => `<div style="padding:1rem; border-bottom:1px solid #eef2f6;"><div><b>${r.reviewer}</b> <span style="color:var(--warning);">${'⭐'.repeat(r.score)}</span></div><div>${r.text}</div></div>`).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No reviews.</div>';
-
-            const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})}); const dT = await resT.json();
-            
-            const renderKB = (prefix, col, validStatuses, listArray, isTeam=false, isFlat=false) => {
-                const fList = listArray.filter(t => validStatuses.includes(t.status));
-                document.getElementById(`cnt_${prefix}_${col}`).innerText = fList.length;
-                document.getElementById(`col_${prefix}_${col}`).innerHTML = fList.map(t => {
-                    const isOwner = (t.publisher_id||t.seller_id||t.initiator_id) === user.email;
-                    let topText = t.title; if(prefix==='log') topText = t.reward;
-                    let btmText = t.location || getAddrText(t.from_addr);
-                    if(isFlat) { topText = `$${t.rent_price} - ${t.room_type}`; }
-                    if(isTeam) { topText = `👥 ${t.joined_members.length}/${t.max_members} - ${t.title}`; }
-                    return `<div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}">${isOwner?'Owner':'Joined/Helper'}</span><span style="font-size:0.7rem; color:var(--muted);">${new Date(t.created_at).toLocaleDateString()}</span></div><div style="font-weight:900; margin-bottom:5px; font-size:1.1rem;">${topText}</div><div style="font-size:0.8rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 ${btmText}</div></div>`;
-                }).join('');
-            };
-
-            renderKB('log', 'pend', ['pending'], dT.tasks); renderKB('log', 'prog', ['assigned'], dT.tasks); renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks);
-            renderKB('mar', 'pend', ['available'], dT.market); renderKB('mar', 'prog', ['reserved'], dT.market); renderKB('mar', 'hist', ['completed', 'reviewed'], dT.market);
-            renderKB('fl', 'open', ['open'], dT.flatting, false, true); renderKB('fl', 'closed', ['closed'], dT.flatting, false, true);
-            renderKB('tu', 'gather', ['gathering'], dT.teamups, true); renderKB('tu', 'comp', ['completed', 'failed'], dT.teamups, true);
-
-        } catch(e) { console.log(e); }
-    }
-
-    // ======================= POSTING ENGINES =======================
+    // ======================= POST ENGINES =======================
     async function submitLogistics(e) {
-        e.preventDefault(); if(markers.length < 2) return alert("Map locations."); const f = new FormData();
-        f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name);
+        e.preventDefault(); const f = new FormData(); f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name);
         f.append('from_addr', markers[0].getLatLng().lat+','+markers[0].getLatLng().lng+'@@'+document.getElementById('p_from').value); 
         f.append('to_addr', markers[1].getLatLng().lat+','+markers[1].getLatLng().lng+'@@'+document.getElementById('p_to').value);
-        f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1]||''); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
-        Array.from(document.getElementById('p_file').files).forEach(x=>f.append('images', x));
-        document.querySelector('#form_logistics button').innerText = "Broadcasting..."; await fetch('/api/task/create', {method:'POST', body:f}); 
-        document.querySelector('#form_logistics button').innerHTML = 'Broadcast Logistics Task <i class="fas fa-paper-plane"></i>'; switchHall('logistics'); navigate('hall');
+        f.append('move_date', document.getElementById('p_date').value); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
+        Array.from(document.getElementById('p_file').files).forEach(x=>f.append('images', x)); await fetch('/api/task/create', {method:'POST', body:f}); navigate('hall');
     }
-    
     async function submitMarket(e) {
         e.preventDefault(); const f = new FormData(); f.append('seller_id', user.email); f.append('seller_name', user.anonymous_name);
         ['title','price','cond','loc','desc'].forEach(k=>f.append(k==='cond'?'condition':(k==='loc'?'location':(k==='desc'?'description':k)), document.getElementById(`m_${k}`).value));
-        Array.from(document.getElementById('m_file').files).forEach(x=>f.append('images', x));
-        document.querySelector('#form_market button').innerText = "Listing..."; await fetch('/api/market/create', {method:'POST', body:f}); 
-        document.querySelector('#form_market button').innerHTML = 'List Item in Market <i class="fas fa-store"></i>'; switchHall('market'); navigate('hall');
+        Array.from(document.getElementById('m_file').files).forEach(x=>f.append('images', x)); await fetch('/api/market/create', {method:'POST', body:f}); navigate('hall');
     }
-    
     async function submitFlatting(e) {
-        e.preventDefault(); const btn = document.querySelector('#form_flatting button'); btn.innerText = "Locating Map & Publishing...";
-        let locStr = document.getElementById('fl_loc').value; let coords = null;
-        if(markerFlat) {
-            coords = `${markerFlat.getLatLng().lat},${markerFlat.getLatLng().lng}`;
-        } else {
-            try { const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locStr + ', Auckland')}`); const geoData = await geoRes.json(); if(geoData.length > 0) coords = `${geoData[0].lat},${geoData[0].lon}`; } catch(err) { console.log("Geocoding failed"); }
-        }
-        
+        e.preventDefault(); let coords = markerFlat ? `${markerFlat.getLatLng().lat},${markerFlat.getLatLng().lng}` : null;
         const f = new FormData(); f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name); if(coords) f.append('coords', coords);
         ['title','price','type','date','loc','desc','layout','bath','pref'].forEach(k=>{ const mapKey = {price:'rent_price',type:'room_type',date:'available_date',loc:'location',desc:'description',layout:'house_layout',bath:'bathroom_type',pref:'preferences'}[k]||k; f.append(mapKey, document.getElementById(`fl_${k}`).value); });
-        Array.from(document.getElementById('fl_file').files).forEach(x=>f.append('images', x));
-        await fetch('/api/flatting/create', {method:'POST', body:f}); 
-        btn.innerHTML = 'Publish Housing <i class="fas fa-home"></i>'; switchHall('flatting'); navigate('hall');
+        Array.from(document.getElementById('fl_file').files).forEach(x=>f.append('images', x)); await fetch('/api/flatting/create', {method:'POST', body:f}); navigate('hall');
     }
-    
     async function submitTeamUp(e) {
-        e.preventDefault(); const btn = document.querySelector('#form_teamup button'); btn.innerText = "Initiating..."; 
-        const f = new FormData(); f.append('initiator_id', user.email); f.append('initiator_name', user.anonymous_name); f.append('joined_members', JSON.stringify([{email: user.email, name: user.anonymous_name}]));
+        e.preventDefault(); const f = new FormData(); f.append('initiator_id', user.email); f.append('initiator_name', user.anonymous_name); f.append('joined_members', JSON.stringify([{email: user.email, name: user.anonymous_name}]));
         ['title','cat','min','max','time','loc','desc','cost','credit'].forEach(k=>{ const mapKey = {cat:'category', min:'min_members', max:'max_members', time:'meet_time', loc:'location', desc:'description', cost:'estimated_cost', credit:'min_credit_req'}[k]||k; f.append(mapKey, document.getElementById(`tu_${k}`).value); });
-        Array.from(document.getElementById('tu_file').files).forEach(x=>f.append('images', x));
-        const res = await fetch('/api/teamup/create', {method:'POST', body:f}); const d = await res.json();
-        btn.innerHTML = 'Initiate Team-Up <i class="fas fa-users"></i>'; if(!d.success) { alert("❌ " + d.msg); return; } switchHall('teamup'); navigate('hall');
+        Array.from(document.getElementById('tu_file').files).forEach(x=>f.append('images', x)); await fetch('/api/teamup/create', {method:'POST', body:f}).then(r=>r.json()).then(d=>d.success?navigate('hall'):alert(d.msg));
     }
-    
     async function submitForum(e) {
         e.preventDefault(); const f = new FormData(); f.append('author_id', user.email); f.append('author_name', user.anonymous_name); f.append('content', document.getElementById('f_content').value);
-        Array.from(document.getElementById('f_file').files).forEach(x=>f.append('images', x));
-        document.querySelector('#form_forum button').innerText = "Posting..."; await fetch('/api/forum/create', {method:'POST', body:f}); 
-        document.querySelector('#form_forum button').innerHTML = 'Post to Buzz <i class="fas fa-fire"></i>'; document.getElementById('f_content').value = ""; switchHall('forum'); navigate('hall');
+        Array.from(document.getElementById('f_file').files).forEach(x=>f.append('images', x)); await fetch('/api/forum/create', {method:'POST', body:f}); navigate('hall');
     }
 
-    // ======================= AUTH & DEV =======================
-    async function sendCode() {
-        const email = document.getElementById('r_email').value; if(!email) return alert("Email required");
-        document.getElementById('btnSendCode').innerText = "Sending..."; await fetch('/api/auth/send-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})}); alert("Code dispatched."); document.getElementById('btnSendCode').innerText = "Get Code";
+    // ======================= SYSTEM =======================
+    async function loadProfileData() {
+        const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json(); const u = d.user;
+        document.getElementById('profileDetails').innerHTML = `<b>SID:</b> ${u.student_id}<br><b>Name:</b> ${u.first_name} ${u.given_name}<br><b>Email:</b> ${u.email}`;
+        document.getElementById('p_rating').innerText = u.rating_avg.toFixed(1); document.getElementById('p_medals').innerText = u.medal_points;
+        const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})}); const dT = await resT.json();
+        const rKB = (pre, col, sts, arr) => { 
+            const fL = arr.filter(x => sts.includes(x.status)); document.getElementById(`cnt_${pre}_${col}`).innerText = fL.length;
+            document.getElementById(`col_${pre}_${col}`).innerHTML = fL.map(x => `<div class="kanban-card" onclick="openMasterModal('${pre}', '${x._id}')"><b>${x.title||x.reward||x.rent_price}</b><br><small>${x.status}</small></div>`).join('');
+        };
+        rKB('log', 'pend', ['pending'], dT.tasks); rKB('log', 'prog', ['assigned'], dT.tasks); rKB('log', 'hist', ['completed'], dT.tasks);
+        rKB('mar', 'pend', ['available'], dT.market); rKB('mar', 'prog', ['reserved'], dT.market); rKB('mar', 'hist', ['completed'], dT.market);
+        rKB('fl', 'open', ['open'], dT.flatting); rKB('fl', 'closed', ['closed'], dT.flatting);
+        rKB('tu', 'gather', ['gathering'], dT.teamups); rKB('tu', 'comp', ['completed', 'failed'], dT.teamups);
     }
-    document.getElementById('regForm').onsubmit = async e => {
-        e.preventDefault(); const pwd = document.getElementById('r_pwd').value; if (pwd !== document.getElementById('r_pwd2').value) return alert("❌ Passwords do not match");
-        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: pwd, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, gender: document.getElementById('r_gender').value };
-        const btn = document.querySelector('#regForm button[type="submit"]'); btn.innerText = "Authorizing...";
-        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        btn.innerText = "Authorize & Join"; if(res.ok) { alert("✅ Registration Verified!"); navigate('login'); } else alert("❌ Registration Failed.");
-    };
-    document.getElementById('loginForm').onsubmit = async e => {
-        e.preventDefault(); const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})});
-        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Authentication Failed.");
-    };
-    function nuke() { if(confirm("NUKE ALL GLOBAL DATA?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
+    async function execFlow(type, status) { const api = type==='log'?'/api/task/workflow':'/api/market/workflow'; const body = type==='log'?{task_id:state.activeId, status, helper_id:user.email}:{item_id:state.activeId, status, buyer_id:user.email}; await fetch(api, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}).then(r=>r.json()).then(d=>d.success?navigate('profile'):alert(d.msg)); }
+    async function joinTeam(id) { await fetch('/api/teamup/join', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({team_id:id, email:user.email, name:user.anonymous_name})}).then(r=>r.json()).then(d=>d.success?alert("Joined!"):alert(d.msg)); loadHall(); }
+    async function toggleFlatting(id) { await fetch('/api/flatting/toggle', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})}); navigate('profile'); }
+    async function deleteItem(type, id) { if(confirm("Delete?")) await fetch({log:'/api/task/delete',mar:'/api/market/delete',flat:'/api/flatting/delete',team:'/api/teamup/delete'}[type], {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})}); navigate('profile'); }
+    async function sendCode() { const email = document.getElementById('r_email').value; if(!email) return; await fetch('/api/auth/send-code', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email})}); alert("Sent."); }
+    document.getElementById('regForm').onsubmit = async e => { e.preventDefault(); const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value }; await fetch('/api/auth/register', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)}).then(r=>r.ok?navigate('login'):alert("Fail")); };
+    document.getElementById('loginForm').onsubmit = async e => { e.preventDefault(); await fetch('/api/auth/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})}).then(r=>r.json()).then(d=>{if(d.success){user=d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home');}else alert("Fail");}); };
+    function nuke() { if(confirm("Nuke all?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
     
-    // 全局组局倒计时驱动器 (Pulse Engine)
     setInterval(() => {
         document.querySelectorAll('.tu-countdown').forEach(el => {
-            const targetTime = new Date(el.getAttribute('data-time')).getTime(); const now = new Date().getTime(); const diff = targetTime - now;
-            if (diff < 0) { el.innerText = "EXPIRED / 已截止"; el.style.color = "var(--muted)"; el.style.animation = "none"; } 
+            const diff = new Date(el.getAttribute('data-time')).getTime() - new Date().getTime();
+            if (diff < 0) { el.innerText = "EXPIRED"; el.style.animation = "none"; } 
             else {
-                const h = Math.floor(diff / (1000 * 60 * 60)); const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); const s = Math.floor((diff % (1000 * 60)) / 1000);
-                if(h < 1) el.style.animation = "pulse 1s infinite"; else el.style.animation = "none";
-                el.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                const h = Math.floor(diff / 3600000); const m = Math.floor((diff % 3600000) / 60000); const s = Math.floor((diff % 60000) / 1000);
+                if(h < 1) el.style.animation = "pulse 1s infinite"; el.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             }
         });
     }, 1000);
