@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | The Campus Super App V12</title>
+    <title>DormLift Pro | The Campus Super App V12.1 Ultimate</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -103,6 +103,25 @@
         .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
         .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; cursor: pointer; border: 2px solid #f1f5f9; }
         .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* --- V12.1 Gen-Z Homepage Styles --- */
+        .hero-gradient-text {
+            background: linear-gradient(to right, #ec4899, #8b5cf6, #3b82f6, #ec4899); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+        
+        .floating-badge {
+            position: absolute; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); padding: 10px 20px; border-radius: 30px; font-weight: 800; font-size: 0.95rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.8); animation: float 5s ease-in-out infinite; z-index: 5;
+        }
+        .fb-1 { top: 12%; left: 8%; animation-delay: 0s; transform: rotate(-6deg); color: #ec4899; }
+        .fb-2 { top: 25%; right: 6%; animation-delay: 1.5s; transform: rotate(5deg); color: #4f46e5; }
+        .fb-3 { bottom: 35%; left: 5%; animation-delay: 3s; transform: rotate(3deg); color: #d97706; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(var(--r)); } 50% { transform: translateY(-15px) rotate(var(--r)); } }
+        
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 4rem; text-align: left; }
+        .bento-card { border-radius: 28px; padding: 2.2rem; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; position: relative; overflow: hidden; }
+        .bento-card:hover { transform: translateY(-8px) scale(1.02); }
+        .bento-icon-wrapper { width: 54px; height: 54px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 1.5rem; }
     </style>
 </head>
 <body>
@@ -117,12 +136,41 @@
 
 <div class="container">
     <div id="home" class="page active">
-        <section class="card" style="text-align:center; padding: 7rem 2rem; border:none; background: radial-gradient(circle at top right, #ffffff 0%, #f1f5f9 100%);">
-            <h1 style="font-size:4.5rem; margin:0; line-height:1; letter-spacing:-2.5px;">The Campus<br><span style="color:var(--primary)">Super App.</span></h1>
-            <p style="color:var(--muted); font-size:1.3rem; max-width:650px; margin: 2.5rem auto;">Logistics, Market, Housing, and Social Hub. Verified UoA ecosystem.</p>
-            <div style="display:flex; justify-content:center; gap:1.5rem;">
-                <button class="btn" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('post')">Publish to Network</button>
-                <button class="btn btn-outline" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('hall')">Explore Discoveries</button>
+        <section style="position:relative; text-align:center; padding: 7rem 2rem 4rem; border:none; background: #f8fafc; overflow: hidden; border-radius: 40px; margin-bottom: 2rem; border: 1px solid #eef2f6; box-shadow: var(--shadow-sm);">
+            
+            <div class="floating-badge fb-1" style="--r:-6deg;">🔥 Kate Edger 缺一人拼车!</div>
+            <div class="floating-badge fb-2" style="--r:5deg;">🏠 找靠谱 UoA 室友</div>
+            <div class="floating-badge fb-3" style="--r:3deg;">💸 闲置直接换现金</div>
+
+            <h1 style="font-size: clamp(3.5rem, 6vw, 5.5rem); margin:0; line-height:1.05; letter-spacing:-2.5px; font-weight:900; color:var(--dark); position: relative; z-index: 10;">
+                Your Campus Life,<br><span class="hero-gradient-text">Upgraded.</span>
+            </h1>
+            
+            <p style="color:var(--muted); font-size:1.25rem; max-width:600px; margin: 2rem auto 3rem; font-weight:500; position: relative; z-index: 10;">
+                Ditch the messy FB groups. Join the <b>100% verified</b> student network to trade, flat, team-up, and catch the real campus buzz.
+            </p>
+            
+            <div style="display:flex; justify-content:center; gap:1.5rem; position: relative; z-index: 10; flex-wrap: wrap;">
+                <button class="btn" style="padding: 1.2rem 3.5rem; font-size:1.1rem; border-radius: 50px; box-shadow: 0 10px 25px -5px rgba(79,70,229,0.4);" onclick="navigate('post')">🚀 Launch an Action</button>
+                <button class="btn btn-outline" style="padding: 1.2rem 3.5rem; font-size:1.1rem; border-radius: 50px; background: white; border-width: 2px;" onclick="navigate('hall')">👀 Explore the Hub</button>
+            </div>
+            
+            <div class="bento-grid">
+                <div class="bento-card" style="background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a;">
+                    <div class="bento-icon-wrapper" style="background: white; color: #f59e0b; box-shadow: 0 8px 16px rgba(245,158,11,0.15);">🛍️</div>
+                    <h3 style="margin:0 0 10px; font-size:1.5rem; color:#92400e; letter-spacing:-0.5px;">Market & Moves</h3>
+                    <p style="margin:0; color:#b45309; font-weight:500; font-size:0.95rem;">Buy & sell with peers. Get paid to help someone move a fridge across campus.</p>
+                </div>
+                <div class="bento-card" style="background: linear-gradient(145deg, #fce7f3 0%, #fbcfe8 100%); border-color: #f9a8d4;">
+                    <div class="bento-icon-wrapper" style="background: white; color: #ec4899; box-shadow: 0 8px 16px rgba(236,72,153,0.15);">🥂</div>
+                    <h3 style="margin:0 0 10px; font-size:1.5rem; color:#9d174d; letter-spacing:-0.5px;">Team-Up & Flat</h3>
+                    <p style="margin:0; color:#be185d; font-weight:500; font-size:0.95rem;">Find a flatmate you actually like, or squad up for a weekend group buy.</p>
+                </div>
+                <div class="bento-card" style="background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0;">
+                    <div class="bento-icon-wrapper" style="background: white; color: #10b981; box-shadow: 0 8px 16px rgba(16,185,129,0.15);">🛡️</div>
+                    <h3 style="margin:0 0 10px; font-size:1.5rem; color:#065f46; letter-spacing:-0.5px;">Verified Trust</h3>
+                    <p style="margin:0; color:#047857; font-weight:500; font-size:0.95rem;">No scammers. Pure campus vibes powered by strict ID auth and credit scores.</p>
+                </div>
             </div>
         </section>
     </div>
@@ -277,7 +325,7 @@
             </div>
             <div id="kb_mar" class="tab-content kanban-board">
                 <div class="kanban-col"><div class="kanban-header"><span>Available</span><span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span>Reserved (Escrow)</span><span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span>Reserved (Pending)</span><span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog"></div></div>
                 <div class="kanban-col"><div class="kanban-header"><span>Completed</span><span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist"></div></div>
             </div>
             <div id="kb_fl" class="tab-content kanban-board">
@@ -400,7 +448,6 @@
         }, 300);
     }
     
-    // V12.1 Map Update: 支持 Flatting 的单点渲染
     function initModalMap(fC, tC) {
         if(!modalMap) { 
             modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); 
@@ -430,16 +477,16 @@
             }
             state.log = (await resL.json()).list||[]; state.mar = (await resM.json()).list||[]; state.flat = (await resFl.json()).list||[]; state.team = (await resTu.json()).list||[]; state.for = (await resF.json()).list||[];
             
-            // 1. Logistics
+            // Logistics
             document.getElementById('list_logistics').innerHTML = state.log.map(t => `<div class="hub-row" onclick="openMasterModal('log', '${t._id}')"><div class="posted-col" title="${t.publisher_name}"><i class="fas fa-user-circle"></i> ${(t.publisher_name||'Peer').substring(0,6)}..<span>${new Date(t.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span></div><div class="details-strip"><div class="strip-header"><i class="far fa-calendar-check"></i> ${t.move_date}</div><div class="strip-route">${getAddrText(t.from_addr)} <i class="fas fa-arrow-right"></i> ${getAddrText(t.to_addr)}</div><div class="strip-inventory"><span style="background:#fef3c7; color:var(--medal); padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">🏅 ${t.medal_points} Pts</span> ${t.items_desc.substring(0,40)}...</div></div><div class="reward-col">${t.reward}</div></div>`).join('') || '<p style="text-align:center; padding:3rem; color:var(--muted);">No logistics tasks.</p>';
             
-            // 2. Market
+            // Market
             document.getElementById('list_market').innerHTML = state.mar.map(m => `<div class="market-card" onclick="openMasterModal('mar', '${m._id}')"><img src="${JSON.parse(m.img_url)[0]||''}" class="m-img" onerror="this.style.display='none'"><div class="m-body"><div><h3 class="m-title">${m.title}</h3><div style="font-size:0.8rem; margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; font-weight:700;">${m.condition}</span> <span style="color:var(--muted);"><i class="fas fa-user-circle"></i> ${m.seller_name}</span></div></div><div><div class="m-price">$${m.price}</div><div style="color:var(--muted); font-size:0.85rem;"><i class="fas fa-map-marker-alt"></i> ${m.location}</div></div></div></div>`).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">Market is empty.</p>';
             
-            // 3. Flatting (V12.1 结构化)
+            // Flatting 
             document.getElementById('list_flatting').innerHTML = state.flat.map(fl => `<div class="market-card" onclick="openMasterModal('flat', '${fl._id}')" style="border-top:4px solid var(--warning);"><div style="position:relative;"><img src="${JSON.parse(fl.img_url)[0]||''}" class="m-img" style="height:220px;" onerror="this.style.display='none'"><div style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.8); color:white; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:800; backdrop-filter:blur(4px);"><i class="fas fa-shield-check" style="color:#34d399;"></i> UoA Verified</div></div><div class="m-body"><div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:6px; font-weight:800; font-size:0.8rem;">${fl.room_type} | ${fl.bathroom_type}</span><span style="font-size:0.8rem; color:var(--muted); font-weight:700;"><i class="far fa-calendar-alt"></i> ${new Date(fl.available_date).toLocaleDateString()}</span></div><h3 class="m-title" style="font-size:1.2rem;">${fl.title}</h3><div style="font-size:0.85rem; color:var(--muted); margin-bottom:15px;"><i class="fas fa-map-marker-alt"></i> ${fl.location}</div></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="color:var(--dark); font-size:1.6rem; font-weight:900;">$${fl.rent_price}<span style="font-size:0.9rem; color:var(--muted);"> /pw</span></div><div style="font-size:0.8rem; color:var(--muted);"><i class="fas fa-user-circle"></i> ${fl.publisher_name}</div></div></div></div>`).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">No housing listings.</p>';
             
-            // 4. Team-Up (V12.1 倒计时与信用徽章)
+            // Team-Up 
             const catDict = {'Carpool':'🚗 拼车', 'GroupBuy':'🛍️ 团购', 'Sports':'🏃‍♂️ 运动', 'Study':'📚 学习', 'Social':'🎮 社交'};
             document.getElementById('list_teamup').innerHTML = state.team.map(tu => {
                 const jLen = tu.joined_members.length; const pct = Math.min(100, (jLen/tu.max_members)*100);
@@ -473,7 +520,7 @@
                 </div>`;
             }).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">No active team-ups.</p>';
 
-            // 5. Forum
+            // Forum
             document.getElementById('list_forum').innerHTML = state.for.map(f => `<div class="forum-card"><div class="f-header"><div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div><div style="font-size:0.85rem; color:var(--muted);">${new Date(f.created_at).toLocaleString()}</div></div><div class="f-content">${f.content}</div><div class="f-images">${JSON.parse(f.img_url).map(u=>`<img src="${u}">`).join('')}</div><div class="f-actions"><button class="btn btn-outline btn-sm" style="${user&&f.likes.includes(user.email)?'background:var(--primary);color:white;border-color:var(--primary);':''}" onclick="interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button><button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button></div></div>`).join('') || '<p style="text-align:center; padding:3rem; color:var(--muted);">No buzz yet.</p>';
         } catch(e) { console.log(e); }
     }
@@ -505,9 +552,9 @@
         } 
         else if (type === 'mar') {
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--success); font-size:2.8rem;">$${item.price}</h2><span class="status-badge" style="background:var(--success); color:white;">${item.status}</span></div>`;
-            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><h3 style="margin:0; font-size:1.8rem;">${item.title}</h3><div><b>${item.condition}</b> • <b>${item.location}</b></div><div>${item.description}</div>${item.status === 'reserved' && item.buyer_id === user.email ? `<div style="background:#f0fdf4; border:1px dashed var(--success); padding:1rem; border-radius:12px;"><div style="color:var(--success); font-weight:800; font-size:0.8rem; text-transform:uppercase;">Escrow Code</div><div style="font-size:2rem; font-weight:900; letter-spacing:4px;">${item.escrow_code}</div></div>` : ''}<div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:10px;"><i class="fas fa-user-circle" style="color:var(--primary);"></i> Seller: ${item.seller_name}</div></div>`;
+            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><h3 style="margin:0; font-size:1.8rem;">${item.title}</h3><div><b>${item.condition}</b> • <b>${item.location}</b></div><div>${item.description}</div>${item.status === 'reserved' && item.buyer_id === user.email ? `<div style="background:#f0fdf4; border:1px dashed var(--success); padding:1rem; border-radius:12px;"><div style="color:var(--success); font-weight:800; font-size:0.8rem; text-transform:uppercase;">Handover Code</div><div style="font-size:2rem; font-weight:900; letter-spacing:4px;">${item.escrow_code}</div><p style="font-size:0.85rem; margin-top:5px;">请线下付款。付款后交出 6 位交接码，卖家输入后即可完结订单并互评。</p></div>` : ''}<div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:10px;"><i class="fas fa-user-circle" style="color:var(--primary);"></i> Seller: ${item.seller_name}</div></div>`;
             let btns = '';
-            if(item.status === 'available' && item.seller_id !== user.email) btns = `<button class="btn" style="background:var(--success); padding:1.2rem;" onclick="execFlow('mar', 'reserved')">Reserve & Secure Funds</button>`;
+            if(item.status === 'available' && item.seller_id !== user.email) btns = `<button class="btn" style="background:var(--success); padding:1.2rem;" onclick="execFlow('mar', 'reserved')">Reserve Item (Pay Offline)</button>`;
             if(item.status === 'reserved' && item.seller_id === user.email) btns = `<div style="display:flex; gap:10px;"><input type="text" id="escrow_input" placeholder="6-digit code" style="flex:1; text-align:center; font-weight:800; letter-spacing:2px;"><button class="btn" onclick="verifyEscrow('${item._id}')">Verify</button></div>`;
             if(item.seller_id === user.email && ['available','reserved'].includes(item.status)) btns += `<button class="btn btn-danger" onclick="execFlow('mar', 'available')">Cancel</button>`;
             if(item.status === 'completed' && item.buyer_id === user.email) btns = renderRatingUI(item._id, item.seller_id, 'mar', 'Seller');
