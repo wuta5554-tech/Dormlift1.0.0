@@ -1,8 +1,12 @@
 /**
  * DormLift Pro - Super App Master Node (V13.6 终极全业务版)
  * -------------------------------------------------------------
- * 业务覆盖：物流积分、市场核销、租房验证、组局信用、Campus Buzz 社交
- * 修复：显式根路径引导，防止 Cannot GET / 报错
+ * 1. Peer Logistics (校园互助物流 - 含勋章积分系统)
+ * 2. Flea Market (二手市场 - 含 Escrow 核销码机制)
+ * 3. Flatting (校园租房 - 含地图坐标与 UoA 身份验证)
+ * 4. Team-Up (组队拼单 - 含信用门槛与成团判定)
+ * 5. Share Buzz (校园动态 - 包含社交互动与点赞)
+ * 6. Global Cron (自动释放资金与组局到期判定)
  * -------------------------------------------------------------
  */
 
@@ -13,7 +17,6 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const bcrypt = require('bcryptjs');
-const path = require('path'); // 核心：用于解析文件路径
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -25,10 +28,10 @@ const MONGO_URI = process.env.MONGO_URI;
 const GAS_URL = process.env.GAS_URL;
 
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ DormLift Master Node V13.6 DB Connected'))
+    .then(() => console.log('✅ DormLift Super App DB Connected (V13.6)'))
     .catch(err => console.error('❌ DB Connection Error:', err));
 
-// 全局通知助手 (通过 Google Apps Script)
+// 全局邮件通知助手
 function sendEmailNotification(toEmail, subject, htmlContent) {
     if (!GAS_URL) return;
     fetch(GAS_URL, {
@@ -39,24 +42,26 @@ function sendEmailNotification(toEmail, subject, htmlContent) {
 }
 
 // ==========================================
-// 2. 核心数据模型 (5 大板块)
+// 2. 核心数据模型定义 (5 大业务板块)
 // ==========================================
 
-// [用户 - 勋章与评分系统]
+// [用户模型]
 const User = mongoose.model('User', new mongoose.Schema({
     student_id: { type: String, required: true, unique: true }, 
     anonymous_name: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     first_name: String, given_name: String, phone: String, gender: String,
+    school_name: { type: String, default: "University of Auckland" },
     rating_avg: { type: Number, default: 5.0 },
+    task_count: { type: Number, default: 0 },
     medal_points: { type: Number, default: 0 },
     point_history: { type: Array, default: [] },
     reviews: { type: Array, default: [] },
     created_at: { type: Date, default: Date.now }
 }));
 
-// [1. 物流 - Logistics]
+// [1. 物流任务 - Logistics]
 const Task = mongoose.model('Task', new mongoose.Schema({
     publisher_id: String, publisher_name: String, helper_id: String,
     move_date: String, move_time: String, from_addr: String, to_addr: String,
@@ -90,7 +95,7 @@ const Flatting = mongoose.model('Flatting', new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 }));
 
-// [4. 组局拼单 - Team-Up]
+// [4. 校园组队 - Team-Up]
 const TeamUp = mongoose.model('TeamUp', new mongoose.Schema({
     initiator_id: String, initiator_name: String, initiator_rating: { type: Number, default: 5.0 },
     title: String, category: String, min_members: Number, max_members: Number,
@@ -109,7 +114,6 @@ const ForumPost = mongoose.model('ForumPost', new mongoose.Schema({
     img_url: { type: String, default: "[]" },
     likes: { type: Array, default: [] },
     comments: { type: Array, default: [] },
-    status: { type: String, default: 'active' }, 
     created_at: { type: Date, default: Date.now }
 }));
 
@@ -118,7 +122,7 @@ const VerifyCode = mongoose.model('VerifyCode', new mongoose.Schema({
 }));
 
 // ==========================================
-// 3. 中间件与静态资源配置
+// 3. 存储与多媒体配置
 // ==========================================
 cloudinary.config({ 
     cloud_name: process.env.CLOUDINARY_NAME, 
@@ -131,24 +135,16 @@ const upload = multer({ storage: new CloudinaryStorage({
     params: { folder: 'dormlift_v13', allowed_formats: ['jpg', 'png', 'jpeg'] } 
 })});
 
-app.use(cors()); 
-app.use(express.json());
-
-// 重点：显式托管静态资源并处理根路径
-app.use(express.static(__dirname));
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+app.use(cors()); app.use(express.json()); app.use(express.static(__dirname));
 
 // ==========================================
-// 4. 身份验证 API (Auth)
+// 4. 身份验证接口
 // ==========================================
 app.post('/api/auth/send-code', async (req, res) => {
     const { email } = req.body;
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await VerifyCode.findOneAndUpdate({ email }, { code, expire_at: new Date(Date.now() + 5*60000) }, { upsert: true });
-    sendEmailNotification(email, "DormLift Verification", `Code: <b>${code}</b>`);
+    sendEmailNotification(email, "DormLift Verification", `Code: ${code}`);
     res.json({ success: true });
 });
 
@@ -156,7 +152,7 @@ app.post('/api/auth/register', async (req, res) => {
     const { email, code, password, ...userData } = req.body;
     if (code !== "8888") {
         const v = await VerifyCode.findOne({ email });
-        if (!v || v.code !== code) return res.status(400).json({ success: false, msg: "Verify Fail" });
+        if (!v || v.code !== code) return res.status(400).json({ success: false });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     await new User({ ...userData, email, password: hashedPassword }).save();
@@ -177,10 +173,10 @@ app.get('/api/user/detail/:email', async (req, res) => {
 });
 
 // ==========================================
-// 5. 业务模块逻辑
+// 5. 业务逻辑接口 (5 大模块)
 // ==========================================
 
-// [物流]
+// Logistics (物流)
 app.post('/api/task/create', upload.array('images', 5), async (req, res) => {
     const pts = { Small: 1, Medium: 3, Large: 5 }[req.body.task_scale] || 1;
     await new Task({ ...req.body, medal_points: pts, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
@@ -193,40 +189,82 @@ app.post('/api/task/workflow', async (req, res) => {
     if (status === 'completed' && task.status !== 'completed' && task.helper_id) {
         await User.findOneAndUpdate({ email: task.helper_id }, { 
             $inc: { medal_points: task.medal_points },
-            $push: { point_history: { desc: `Help Task: ${task.reward}`, points: task.medal_points, date: new Date() } }
+            $push: { point_history: { desc: `Helper Reward: ${task.reward}`, points: task.medal_points, date: new Date() } }
         });
     }
     await Task.findByIdAndUpdate(task_id, { status, helper_id: status==='pending'?null:helper_id });
     res.json({ success: true });
 });
 
-// [市场 & 核销]
+// Market (市场)
 app.post('/api/market/create', upload.array('images', 5), async (req, res) => {
     await new MarketItem({ ...req.body, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
     res.json({ success: true });
 });
 
-app.post('/api/market/verify-escrow', async (req, res) => {
-    const { item_id, code } = req.body;
-    const item = await MarketItem.findById(item_id);
-    if (item.escrow_code === code) {
-        item.status = 'completed'; item.escrow_code = null; await item.save();
-        res.json({ success: true });
-    } else res.json({ success: false, msg: "Code Error" });
+app.post('/api/market/workflow', async (req, res) => {
+    const { item_id, status, buyer_id } = req.body;
+    const code = status === 'reserved' ? Math.floor(100000 + Math.random() * 900000).toString() : null;
+    await MarketItem.findByIdAndUpdate(item_id, { status, buyer_id, escrow_code: code, reserved_at: new Date() });
+    res.json({ success: true });
 });
 
-// [组局]
+// Flatting (租房)
+app.post('/api/flatting/create', upload.array('images', 5), async (req, res) => {
+    await new Flatting({ ...req.body, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
+    res.json({ success: true });
+});
+
+app.post('/api/flatting/toggle', async (req, res) => {
+    const item = await Flatting.findById(req.body.id);
+    item.status = item.status === 'open' ? 'closed' : 'open';
+    await item.save();
+    res.json({ success: true });
+});
+
+// Team-Up (组队)
+app.post('/api/teamup/create', upload.array('images', 5), async (req, res) => {
+    const u = await User.findOne({ email: req.body.initiator_id });
+    await new TeamUp({ ...req.body, initiator_rating: u.rating_avg, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
+    res.json({ success: true });
+});
+
 app.post('/api/teamup/join', async (req, res) => {
     const { team_id, email, name } = req.body;
     const team = await TeamUp.findById(team_id);
     const u = await User.findOne({ email });
-    if (u.rating_avg < team.min_credit_req) return res.json({ success: false, msg: "Credit Low" });
-    await TeamUp.findByIdAndUpdate(team_id, { $addToSet: { joined_members: { email, name } } });
+    if (u.rating_avg < team.min_credit_req) return res.json({ success: false, msg: "Credit score too low!" });
+    await TeamUp.findByIdAndUpdate(team_id, { $push: { joined_members: { email, name } } });
+    res.json({ success: true });
+});
+
+// Campus Buzz (社区)
+app.post('/api/forum/create', upload.array('images', 5), async (req, res) => {
+    await new ForumPost({ ...req.body, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
+    res.json({ success: true });
+});
+// 在 server.js 约 245 行（Campus Buzz 接口区块）添加
+app.post('/api/forum/delete', async (req, res) => {
+    try {
+        await ForumPost.findByIdAndDelete(req.body.id);
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ success: false, msg: e.message });
+    }
+});
+app.post('/api/forum/interact', async (req, res) => {
+    const { post_id, action, email } = req.body;
+    const p = await ForumPost.findById(post_id);
+    if (action === 'like') {
+        const idx = p.likes.indexOf(email);
+        idx > -1 ? p.likes.splice(idx, 1) : p.likes.push(email);
+    }
+    await p.save();
     res.json({ success: true });
 });
 
 // ==========================================
-// 6. 聚合 Dashboard API (5 标签完全体)
+// 6. 聚合仪表盘 API
 // ==========================================
 app.post('/api/user/dashboard', async (req, res) => {
     const { email } = req.body;
@@ -234,7 +272,7 @@ app.post('/api/user/dashboard', async (req, res) => {
         const [tasks, market, posts, flatting, teamups] = await Promise.all([
             Task.find({ $or: [{ publisher_id: email }, { helper_id: email }] }).sort({ created_at: -1 }),
             MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }).sort({ created_at: -1 }),
-            ForumPost.find({ author_id: email }).sort({ created_at: -1 }), // Campus Buzz 个人动态
+            ForumPost.find({ author_id: email }).sort({ created_at: -1 }),
             Flatting.find({ publisher_id: email }).sort({ created_at: -1 }),
             TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] }).sort({ created_at: -1 })
         ]);
@@ -242,7 +280,9 @@ app.post('/api/user/dashboard', async (req, res) => {
     } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// 通用全量获取
+// ==========================================
+// 7. 通用获取与评论
+// ==========================================
 app.get('/api/:type/all', async (req, res) => {
     const { type } = req.params;
     let list = [];
@@ -262,25 +302,29 @@ app.post('/api/shared/comment', async (req, res) => {
 });
 
 // ==========================================
-// 7. 自动化判定 (Cron Job)
+// 8. 自动巡检系统 (Cron Jobs)
 // ==========================================
 setInterval(async () => {
     try {
-        // 自动结单：预订 7 天后自动确认
-        const oldReserved = await MarketItem.find({ status: 'reserved', reserved_at: { $lte: new Date(Date.now() - 7*86400000) } });
-        for (let m of oldReserved) { m.status = 'completed'; await m.save(); }
-        // 自动成团：到达时间判定状态
+        // 自动释放资金 (7天)
+        const expiredItems = await MarketItem.find({ 
+            status: 'reserved', 
+            reserved_at: { $lte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } 
+        });
+        for (let item of expiredItems) { item.status = 'completed'; item.escrow_code = null; await item.save(); }
+        
+        // 自动成团判定
         const expiredTeams = await TeamUp.find({ status: 'gathering', meet_time: { $lte: new Date() } });
         for (let t of expiredTeams) {
             t.status = t.joined_members.length >= t.min_members ? 'completed' : 'failed';
             await t.save();
         }
     } catch (e) { console.error("Cron Error:", e); }
-}, 600000); 
+}, 600000); // 每 10 分钟运行一次
 
 app.post('/api/dev/nuke', async (req, res) => {
     await Promise.all([Task.deleteMany({}), MarketItem.deleteMany({}), Flatting.deleteMany({}), TeamUp.deleteMany({}), ForumPost.deleteMany({}), User.deleteMany({})]);
     res.json({ success: true });
 });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Master Node V13.6 Listening on ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Master Server V13.6 listening on ${PORT}`));
