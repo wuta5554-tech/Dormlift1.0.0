@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | The Campus Super App V13.6</title>
+    <title>DormLift Pro | The Campus Super App V13.7</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V13.6 Premium Modular Super App
+           DESIGN SYSTEM: V13.7 Premium Modular Super App
         ============================================================= */
         :root {
             --primary: #4f46e5; --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
@@ -29,6 +29,7 @@
         .page { display: none !important; opacity: 0; }
         .page.active { display: block !important; animation: slideUp 0.4s ease forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
         /* Navigation */
         nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
@@ -37,33 +38,66 @@
         .brand-text { font-size: 1.5rem; font-weight: 800; color: var(--dark); letter-spacing: -1px; }
         .nav-links { display: flex; align-items: center; gap: 2rem; }
         .nav-links a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
-        .user-tag { background: rgba(79,70,229,0.1); color: var(--primary); padding: 6px 18px; border-radius: 24px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(79,70,229,0.2); cursor: pointer; }
+        .nav-links a:hover { color: var(--primary); }
+        .user-tag { background: rgba(79,70,229,0.1); color: var(--primary); padding: 6px 18px; border-radius: 24px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(79,70,229,0.2); cursor: pointer; transition: 0.2s; }
 
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
         /* Tabs */
         .tab-container { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 0.5rem; border-radius: 1rem; box-shadow: var(--shadow-sm); border: 1px solid #eef2f6; overflow-x: auto; scrollbar-width: none; }
-        .tab-btn { flex: 1; min-width: 140px; padding: 1rem; text-align: center; font-weight: 800; font-size: 1rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; white-space: nowrap; }
+        .tab-container::-webkit-scrollbar { display: none; }
+        .tab-btn { flex: 1; min-width: 150px; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.05rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; white-space: nowrap; }
+        .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
-        .tab-content { display: none !important; } .tab-content.active { display: block !important; }
+        .tab-content { display: none !important; } .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
 
-        /* Kanban System */
+        /* Hub Layouts */
+        .hub-container { display: flex; flex-direction: column; gap: 1rem; }
+        .hub-row { display: grid; grid-template-columns: 100px 1fr 130px; align-items: center; background: white; border-radius: 16px; padding: 1.5rem 2rem; border: 1px solid #eef2f6; transition: 0.3s; cursor: pointer; margin-bottom: 1rem; }
+        .hub-row:hover { transform: translateX(8px); border-color: var(--primary); box-shadow: var(--shadow-premium); }
+        .posted-col { font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; border-right: 2px solid #f1f5f9; line-height: 1.3; }
+        .details-strip { padding: 0 2.5rem; display: flex; flex-direction: column; gap: 8px; }
+        
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .market-card { background: white; border-radius: 1rem; overflow: hidden; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; position: relative; }
+        .market-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-premium); }
+        .m-img { width: 100%; height: 200px; object-fit: cover; background: #f8fafc; border-bottom: 1px solid #eef2f6; }
+        .m-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        .forum-feed { max-width: 750px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .forum-card { background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #eef2f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+
+        /* KANBAN */
         .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 400px; border: 1px dashed #e2e8f0; }
-        .kanban-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-weight: 800; color: var(--muted); text-transform: uppercase; font-size: 0.85rem; }
-        .kanban-badge { background: var(--dark); color: white; padding: 2px 10px; border-radius: 10px; font-size: 0.75rem; }
+        .kanban-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.9rem; color: var(--muted); text-transform: uppercase; margin-bottom: 1.2rem; padding: 0 5px; }
+        .kanban-badge { background: var(--dark); color: white; padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; }
         .kanban-card { background: white; border-radius: 1rem; padding: 1.2rem; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1.5px solid transparent; cursor: pointer; transition: 0.3s; }
         .kanban-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow-premium); }
         .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
+        .kb-pub { background: #e0e7ff; color: var(--primary); }
+        .kb-help { background: #fef3c7; color: var(--medal); }
 
-        /* Modal & UI Elements */
+        .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79,70,229,0.4); }
+        .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
+        .btn-danger { background: #fee2e2; color: var(--danger); border: 1.5px solid #fecaca; }
+        
+        input, select, textarea { width: 100%; padding: 1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: 0.2s; }
+        input:focus { border-color: var(--primary); outline: none; background: white; }
+
+        /* Maps & Modals */
+        .map-container { height: 350px; width: 100%; border-radius: 1.5rem 1.5rem 0 0; z-index: 10; }
+        #modal-map { height: 280px; border-radius: 1.5rem; border: 2px solid #eef2f6; margin-bottom: 1.5rem; display: none; z-index: 10; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
-        .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
-        .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
-        .thumb-strip { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; }
-        .thumb-img { width: 100px; height: 100px; object-fit: cover; border-radius: 12px; border: 1px solid #eee; }
+
+        /* --- V13.7 Homepage Styles --- */
+        .page-wrapper-home { position: relative; width: 100vw; margin-left: calc(50% - 50vw); margin-top: -3rem; min-height: calc(100vh - 74px); background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+        .culture-texture { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.15; }
+        .hero-title { font-size: clamp(3.5rem, 8.5vw, 6.5rem); font-weight: 900; line-height: 0.95; letter-spacing: -4px; text-align: center; }
+        .hero-title span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
@@ -78,37 +112,39 @@
 
 <div class="container">
     <div id="home" class="page active">
-        <div class="card" style="text-align:center; padding: 6rem 2rem;">
-            <h1 style="font-size:4rem; margin:0; line-height:1;">Campus Life,<br><span style="color:var(--primary)">Whanaungatanga.</span></h1>
-            <p style="font-size:1.3rem; color:var(--muted); margin:2rem 0;">The premier student network for University of Auckland Peers.</p>
-            <div style="display:flex; justify-content:center; gap:1.5rem;">
-                <button class="btn" onclick="navigate('post')">🚀 Launch Action</button>
-                <button class="btn btn-outline" onclick="navigate('hall')">👀 Explore Hub</button>
+        <div class="page-wrapper-home">
+            <h1 class="hero-title">Campus Life,<br><span>Whanaungatanga.</span></h1>
+            <p style="font-size:1.5rem; color:var(--muted); text-align:center; max-width:800px;">The premier student network for <b>University of Auckland</b>.</p>
+            <div style="display:flex; gap:20px; margin-top:40px;">
+                <button class="btn" onclick="navigate('post')" style="padding:1.5rem 4rem;">🚀 Launch Action</button>
+                <button class="btn btn-outline" onclick="navigate('hall')" style="padding:1.5rem 4rem;">👀 Explore Hub</button>
             </div>
         </div>
     </div>
 
     <div id="hall" class="page">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-            <h2 style="font-size:2.5rem; margin:0;">Discovery Hub</h2>
-            <button class="btn btn-outline" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh Feed</button>
+            <h2 style="font-size:2.5rem; margin:0; letter-spacing:-1.5px;">Discovery Hub</h2>
+            <button class="btn btn-outline btn-sm" onclick="loadHall()"><i class="fas fa-sync-alt"></i> Refresh</button>
         </div>
+        
         <div class="tab-container">
-            <button class="tab-btn active" onclick="switchHall('logistics')" id="btn_hall_logistics">Logistics</button>
-            <button class="tab-btn" onclick="switchHall('market')" id="btn_hall_market">Flea Market</button>
-            <button class="tab-btn" onclick="switchHall('flatting')" id="btn_hall_flatting">Flatting</button>
-            <button class="tab-btn" onclick="switchHall('teamup')" id="btn_hall_teamup">Team-Up</button>
-            <button class="tab-btn" onclick="switchHall('forum')" id="btn_hall_forum">Campus Buzz</button>
+            <button class="tab-btn active" onclick="switchHall('logistics')" id="btn_hall_logistics"><i class="fas fa-truck-fast"></i> Logistics</button>
+            <button class="tab-btn" onclick="switchHall('market')" id="btn_hall_market"><i class="fas fa-store"></i> Market</button>
+            <button class="tab-btn" onclick="switchHall('flatting')" id="btn_hall_flatting"><i class="fas fa-home"></i> Flatting</button>
+            <button class="tab-btn" onclick="switchHall('teamup')" id="btn_hall_teamup"><i class="fas fa-users"></i> Team-Up</button>
+            <button class="tab-btn" onclick="switchHall('forum')" id="btn_hall_forum"><i class="fas fa-fire"></i> Buzz</button>
         </div>
+
         <div id="hall_logistics" class="tab-content active"><div id="list_logistics" class="hub-container"></div></div>
-        <div id="hall_market" class="tab-content"><div id="list_market" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;"></div></div>
-        <div id="hall_flatting" class="tab-content"><div id="list_flatting" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;"></div></div>
-        <div id="hall_teamup" class="tab-content"><div id="list_teamup" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;"></div></div>
-        <div id="hall_forum" class="tab-content"><div id="list_forum" style="max-width:800px; margin:auto;"></div></div>
+        <div id="hall_market" class="tab-content"><div id="list_market" class="market-grid"></div></div>
+        <div id="hall_flatting" class="tab-content"><div id="list_flatting" class="market-grid"></div></div>
+        <div id="hall_teamup" class="tab-content"><div id="list_teamup" class="market-grid"></div></div>
+        <div id="hall_forum" class="tab-content"><div id="list_forum" class="forum-feed"></div></div>
     </div>
 
     <div id="post" class="page">
-        <h2 style="font-size:2.5rem; margin-bottom:2rem;">Publish to Network</h2>
+        <h2 style="font-size:2.5rem; margin:0 0 2rem 0; letter-spacing:-1.5px;">Publish to Network</h2>
         <div class="tab-container">
             <button class="tab-btn active" onclick="switchPost('logistics')" id="btn_post_logistics">Logistics</button>
             <button class="tab-btn" onclick="switchPost('market')" id="btn_post_market">Sell Item</button>
@@ -116,119 +152,143 @@
             <button class="tab-btn" onclick="switchPost('teamup')" id="btn_post_teamup">Team-Up</button>
             <button class="tab-btn" onclick="switchPost('forum')" id="btn_post_forum">Share Buzz</button>
         </div>
-        <div id="post_logistics" class="tab-content active card">
-            <form id="form_logistics" onsubmit="submitLogistics(event)">
+
+        <div id="post_logistics" class="tab-content active card" style="padding:0; overflow:hidden;">
+            <div id="map" class="map-container"></div>
+            <form id="form_logistics" style="padding: 2rem 3rem 3rem;" onsubmit="submitLogistics(event)">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
-                    <div><label>Reward (NZD)</label><input type="text" id="p_reward" placeholder="e.g. $25" required></div>
-                    <div><label>Move Date</label><input type="date" id="p_date" required></div>
+                    <div><label>Pickup</label><input type="text" id="p_from" readonly required></div>
+                    <div><label>Destination</label><input type="text" id="p_to" readonly required></div>
                 </div>
-                <label>From Address</label><input type="text" id="p_from" placeholder="Full pickup address" required style="margin-bottom:1.5rem;">
-                <label>To Address</label><input type="text" id="p_to" placeholder="Destination address" required style="margin-bottom:1.5rem;">
-                <label>Inventory Desc</label><textarea id="p_desc" rows="3" required placeholder="e.g. 2 suitcases, 1 monitor"></textarea>
-                <label style="margin-top:1.5rem; display:block;">Scale</label>
-                <select id="p_scale" style="margin-bottom:1.5rem;">
-                    <option value="Small">Small (1 Medal Pt)</option>
-                    <option value="Medium">Medium (3 Medal Pts)</option>
-                    <option value="Large">Large (5 Medal Pts)</option>
-                </select>
-                <button type="submit" class="btn" style="width:100%;">Broadcast Logistics Task <i class="fas fa-paper-plane"></i></button>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                    <div><label>Date</label><input type="date" id="p_date" required></div>
+                    <div><label>Reward (NZD)</label><input type="text" id="p_reward" required></div>
+                </div>
+                <label>Inventory Details</label><textarea id="p_desc" rows="3" required></textarea>
+                <div style="margin:1.5rem 0;"><label>Scale</label><select id="p_scale"><option value="Small">Small (1 Pts)</option><option value="Medium">Medium (3 Pts)</option><option value="Large">Large (5 Pts)</option></select></div>
+                <button type="submit" class="btn" style="width:100%;">Broadcast Logistics Task</button>
             </form>
         </div>
+
+        <div id="post_market" class="tab-content card">
+            <form id="form_market" onsubmit="submitMarket(event)">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                    <div><label>Title</label><input type="text" id="m_title" required></div>
+                    <div><label>Price</label><input type="number" id="m_price" required></div>
+                </div>
+                <label>Description</label><textarea id="m_desc" rows="4" required></textarea>
+                <label style="margin-top:1.5rem; display:block;">Photos</label><input type="file" id="m_file" multiple accept="image/*" required>
+                <button type="submit" class="btn" style="width:100%; margin-top:2rem;">List Item</button>
+            </form>
         </div>
+
+        <div id="post_flatting" class="tab-content card">
+            <form id="form_flatting" onsubmit="submitFlatting(event)">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                    <div><label>Title</label><input type="text" id="fl_title" required></div>
+                    <div><label>Rent ($pw)</label><input type="number" id="fl_price" required></div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                    <div><label>Type</label><select id="fl_type"><option>Single Room</option><option>Double Room</option><option>Studio</option></select></div>
+                    <div><label>Location</label><input type="text" id="fl_loc" required></div>
+                </div>
+                <label>Details</label><textarea id="fl_desc" rows="3" required></textarea>
+                <input type="file" id="fl_file" multiple accept="image/*" style="margin-top:1.5rem;">
+                <button type="submit" class="btn" style="width:100%; margin-top:2rem;">Publish Housing</button>
+            </form>
+        </div>
+
+        <div id="post_teamup" class="tab-content card">
+            <form id="form_teamup" onsubmit="submitTeamUp(event)">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                    <div><label>Activity</label><input type="text" id="tu_title" required></div>
+                    <div><label>Min/Max Members</label><div style="display:flex; gap:10px;"><input type="number" id="tu_min" placeholder="Min"><input type="number" id="tu_max" placeholder="Max"></div></div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                    <div><label>Meeting Time</label><input type="datetime-local" id="tu_time" required></div>
+                    <div><label>Category</label><select id="tu_cat"><option>Carpool</option><option>GroupBuy</option><option>Social</option></select></div>
+                </div>
+                <button type="submit" class="btn" style="width:100%;">Initiate Team-Up</button>
+            </form>
+        </div>
+
+        <div id="post_forum" class="tab-content card">
+            <form id="form_forum" onsubmit="submitForum(event)">
+                <label>Share something with peers...</label><textarea id="f_content" rows="6" required></textarea>
+                <input type="file" id="f_file" multiple accept="image/*" style="margin-top:1.5rem;">
+                <button type="submit" class="btn" style="width:100%; margin-top:2rem;">Post Buzz</button>
+            </form>
+        </div>
+    </div>
 
     <div id="profile" class="page">
         <div style="display:grid; grid-template-columns: 1fr 300px 300px; gap:1.5rem; margin-bottom:2rem;">
             <div class="card" style="margin:0;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                    <h2 style="margin:0;">UoA Identity</h2>
-                    <button class="btn btn-outline btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
-                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;"><h2 style="margin:0;">UoA Identity</h2><button class="btn btn-outline btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
                 <div id="profileDetails" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;"></div>
             </div>
-            <div class="card" style="margin:0; border-left:8px solid #3b82f6;">
-                <h3>Credit Score</h3>
-                <div style="font-size:3.5rem; font-weight:900;">★ <span id="p_rating">5.0</span></div>
-            </div>
-            <div class="card" style="margin:0; border-left:8px solid var(--warning); background:#fffbeb;">
-                <h3>Medal Points</h3>
-                <div style="font-size:3.5rem; font-weight:900; color:var(--medal);">🏅 <span id="p_medals">0</span></div>
-                <button class="btn btn-outline btn-sm" onclick="document.getElementById('pointsModal').style.display='flex'">History</button>
-            </div>
+            <div class="card" style="margin:0; border-left: 8px solid #3b82f6;"><h3 style="margin:0;">Rating</h3><div style="font-size:3.5rem; font-weight:900;">★ <span id="p_rating">5.0</span></div></div>
+            <div class="card" style="margin:0; border-left: 8px solid var(--warning); background: #fffbeb;"><h3 style="margin:0;">Medals</h3><div style="font-size:3.5rem; font-weight:900; color:var(--medal);">🏅 <span id="p_medals">0</span></div></div>
         </div>
 
-        <div class="card" style="padding:0; border:none; box-shadow:none; background:transparent;">
-            <h2 style="margin-bottom:1.5rem;"><i class="fas fa-layer-group" style="color:var(--primary);"></i> My Dashboard</h2>
+        <div class="card" style="padding:0; box-shadow:none; border:none; background:transparent;">
+            <h2 style="font-size:2.2rem; margin:0 0 1.5rem;"><i class="fas fa-layer-group" style="color:var(--primary);"></i> My Dashboard</h2>
             <div class="tab-container" style="background:#f1f5f9;">
                 <button class="tab-btn active" onclick="switchProf('kb_log')" id="btn_prof_kb_log">Logistics</button>
                 <button class="tab-btn" onclick="switchProf('kb_mar')" id="btn_prof_kb_mar">Sell Item</button>
-                <button class="tab-btn" onclick="switchProf('kb_fl')" id="btn_prof_kb_fl">Flatting</button>
+                <button class="tab-btn" onclick="switchProf('kb_fl')" id="btn_prof_kb_fl">Housing</button>
                 <button class="tab-btn" onclick="switchProf('kb_tu')" id="btn_prof_kb_tu">Team-Up</button>
-                <button class="tab-btn" onclick="switchProf('kb_for')" id="btn_prof_kb_for">Share Buzz</button>
+                <button class="tab-btn" onclick="switchProf('kb_for')" id="btn_prof_kb_for">Campus Buzz</button>
             </div>
             
             <div id="kb_log" class="tab-content active kanban-board">
-                <div class="kanban-col"><div class="kanban-header">Pending <span class="kanban-badge" id="cnt_log_pend">0</span></div><div id="col_log_pend"></div></div>
-                <div class="kanban-col"><div class="kanban-header">In Progress <span class="kanban-badge" id="cnt_log_prog">0</span></div><div id="col_log_prog"></div></div>
-                <div class="kanban-col"><div class="kanban-header">History <span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span>Active</span><span class="kanban-badge" id="cnt_log_active">0</span></div><div id="col_log_active"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span>History</span><span class="kanban-badge" id="cnt_log_hist">0</span></div><div id="col_log_hist"></div></div>
             </div>
             <div id="kb_mar" class="tab-content kanban-board">
-                <div class="kanban-col"><div class="kanban-header">Available <span class="kanban-badge" id="cnt_mar_pend">0</span></div><div id="col_mar_pend"></div></div>
-                <div class="kanban-col"><div class="kanban-header">Reserved <span class="kanban-badge" id="cnt_mar_prog">0</span></div><div id="col_mar_prog"></div></div>
-                <div class="kanban-col"><div class="kanban-header">Completed <span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span>On Sale</span><span class="kanban-badge" id="cnt_mar_active">0</span></div><div id="col_mar_active"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span>Sold/Reserved</span><span class="kanban-badge" id="cnt_mar_hist">0</span></div><div id="col_mar_hist"></div></div>
             </div>
             <div id="kb_fl" class="tab-content kanban-board">
-                <div class="kanban-col"><div class="kanban-header">Active Listings <span class="kanban-badge" id="cnt_fl_open">0</span></div><div id="col_fl_open"></div></div>
-                <div class="kanban-col"><div class="kanban-header">Closed <span class="kanban-badge" id="cnt_fl_closed">0</span></div><div id="col_fl_closed"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span>Active Listings</span><span class="kanban-badge" id="cnt_fl_active">0</span></div><div id="col_fl_active"></div></div>
             </div>
             <div id="kb_tu" class="tab-content kanban-board">
-                <div class="kanban-col"><div class="kanban-header">Gathering <span class="kanban-badge" id="cnt_tu_gather">0</span></div><div id="col_tu_gather"></div></div>
-                <div class="kanban-col"><div class="kanban-header">Resolved <span class="kanban-badge" id="cnt_tu_comp">0</span></div><div id="col_tu_comp"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span>Active Teams</span><span class="kanban-badge" id="cnt_tu_active">0</span></div><div id="col_tu_active"></div></div>
             </div>
-            <div id="kb_for" class="tab-content">
-                <div id="col_for_list" style="display:flex; flex-direction:column; gap:1.2rem;"></div>
+            <div id="kb_for" class="tab-content kanban-board">
+                <div class="kanban-col"><div class="kanban-header"><span>My Posts</span><span class="kanban-badge" id="cnt_for_active">0</span></div><div id="col_for_active"></div></div>
             </div>
         </div>
     </div>
 
     <div id="login" class="page">
-        <div class="card" style="max-width:450px; margin:auto;">
-            <h2 style="text-align:center;">Peer Portal Login</h2>
-            <form id="loginForm">
-                <label>University Email</label><input type="text" id="l_user" required style="margin-bottom:1rem;">
-                <label>Password</label><input type="password" id="l_pwd" required style="margin-bottom:1.5rem;">
-                <button type="submit" class="btn" style="width:100%;">Sign In</button>
-            </form>
+        <div class="card" style="max-width:440px; margin:auto; text-align:center;">
+            <h2>Portal Login</h2>
+            <form id="loginForm"><input type="text" id="l_user" placeholder="Email or SID" required><input type="password" id="l_pwd" placeholder="Password" required style="margin:1rem 0;"><button type="submit" class="btn" style="width:100%;">Access Hub</button></form>
+            <p style="margin-top:2rem;">New? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('register')">Register</b></p>
         </div>
     </div>
 </div>
 
 <div id="masterModal" class="modal" onclick="if(event.target.id==='masterModal') this.style.display='none'">
     <div class="modal-content">
-        <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#eee; width:40px; height:40px; border-radius:50%; cursor:pointer;" onclick="document.getElementById('masterModal').style.display='none'">×</button>
-        <div id="mod_header" style="margin-bottom:1.5rem;"></div>
-        <div id="mod_body" style="background:#f8fafc; padding:2rem; border-radius:1.5rem;"></div>
-        <div id="mod_footer" style="margin-top:2rem;"></div>
-    </div>
-</div>
-
-<div id="pointsModal" class="modal" onclick="if(event.target.id==='pointsModal') this.style.display='none'">
-    <div class="modal-content" style="max-width:600px;">
-        <h2 style="margin-top:0;">Medal Point History</h2>
-        <div id="pts_list" style="max-height:400px; overflow-y:auto; border:1px solid #eee; border-radius:12px;"></div>
+        <button style="position:absolute; top:2rem; right:2.5rem; border:none; background:#f1f5f9; width:45px; height:45px; border-radius:50%; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('masterModal').style.display='none'">×</button>
+        <div id="mod_header"></div><div id="modal-map"></div><div id="mod_thumbs" style="display:flex; gap:10px; margin:1.5rem 0;"></div><div id="mod_body"></div><div id="mod_footer" style="margin-top:2rem;"></div>
     </div>
 </div>
 
 <script>
     // ======================= STATE & NAV =======================
     let user = JSON.parse(localStorage.getItem('user'));
-    let state = { log: [], mar: [], flat: [], team: [], for: [] };
+    let map, routingControl, markers = [];
+    let state = { log: [], mar: [], flat: [], team: [], for: [], activeId: null, activeType: null };
 
     function navigate(p) {
         if (!user && ['post', 'profile'].includes(p)) p = 'login';
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
         document.getElementById(p).classList.add('active');
         renderMenu(); window.scrollTo(0,0);
-        if(p === 'hall') loadHall(); if(p === 'profile') loadProfileData();
+        if(p === 'hall') loadHall(); if(p === 'post') initMap(); if(p === 'profile') loadProfileData();
     }
 
     function renderMenu() {
@@ -239,125 +299,126 @@
     }
     function logout() { localStorage.clear(); location.reload(); }
 
+    function switchHall(tab) { toggleTabs('hall', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); }
+    function switchPost(tab) { toggleTabs('post', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); if(tab==='logistics') setTimeout(()=>map.invalidateSize(),200); }
+    function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_tu', 'kb_for'], tab); }
+
     function toggleTabs(prefix, arr, target) {
         arr.forEach(t => {
-            const btn = document.getElementById(`btn_${prefix}_${t}`);
-            const content = document.getElementById(t.startsWith('kb_') ? t : `${prefix}_${t}`);
+            const btn = document.getElementById(`btn_${prefix}_${t}`); 
+            const content = document.getElementById(`${prefix}_${t}`);
             if(btn) btn.classList.toggle('active', t===target);
             if(content) content.classList.toggle('active', t===target);
         });
     }
-    function switchHall(tab) { toggleTabs('hall', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); }
-    function switchPost(tab) { toggleTabs('post', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); }
-    function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_tu', 'kb_for'], tab); }
 
-    // ======================= DASHBOARD ENGINE =======================
+    // ======================= DATA ENGINE =======================
+    async function loadHall() {
+        const types = ['task', 'market', 'flatting', 'teamup', 'forum'];
+        for (let type of types) {
+            const res = await fetch(`/api/${type}/all`);
+            const d = await res.json();
+            state[type === 'task' ? 'log' : type.substring(0,3)] = d.list || [];
+        }
+        renderHallLists();
+    }
+
     async function loadProfileData() {
         try {
-            user = JSON.parse(localStorage.getItem('user'));
-            if (!user) return navigate('login');
+            // 1. 获取用户详情
+            const resU = await fetch(`/api/user/detail/${user.email}`);
+            const dU = await resU.json();
+            const u = dU.user;
+            document.getElementById('profileDetails').innerHTML = `<div><b>Email:</b> ${u.email}</div><div><b>SID:</b> ${u.student_id}</div>`;
+            document.getElementById('p_rating').innerText = u.rating_avg.toFixed(1);
+            document.getElementById('p_medals').innerText = u.medal_points;
 
-            // 1. 获取用户信息 (修正反引号)
-            const resDetail = await fetch(`/api/user/detail/${user.email}`); 
-            const dDetail = await resDetail.json();
-            const u = dDetail.user;
-            if(!u) return;
-
-            // 渲染基本信息
-            const fields = [['SID', u.student_id], ['Name', `${u.first_name} ${u.given_name}`], ['Email', u.email], ['Phone', u.phone]];
-            document.getElementById('profileDetails').innerHTML = fields.map(f => `
-                <div style="background:#f8fafc; padding:1rem; border-radius:10px; border:1px solid #eee;">
-                    <label style="font-size:0.75rem; color:var(--muted);">${f[0]}</label>
-                    <div style="font-weight:800;">${f[1]}</div>
-                </div>`).join('');
-
-            document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0";
-            document.getElementById('p_medals').innerText = u.medal_points || 0;
-            
-            // 渲染积分历史
-            document.getElementById('pts_list').innerHTML = (u.point_history || []).slice().reverse().map(h => `
-                <div style="display:flex; justify-content:space-between; padding:1.2rem; border-bottom:1px solid #eee;">
-                    <div><b>${h.desc}</b><br><small>${new Date(h.date).toLocaleString()}</small></div>
-                    <div style="color:var(--medal); font-weight:800;">+${h.points}</div>
-                </div>`).join('') || '<p style="text-align:center; padding:2rem;">No history.</p>';
-
-            // 2. 加载看板数据 (对齐后端 V13.6)
-            const resDash = await fetch('/api/user/dashboard', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: user.email })
+            // 2. 获取 Dashboard 聚合数据
+            const resD = await fetch('/api/user/dashboard', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ email: user.email }) 
             });
-            const dT = await resDash.json();
+            const dT = await resD.json();
 
-            // 3. 看板分发渲染
-            renderKB('log', 'pend', ['pending'], dT.tasks || []);
-            renderKB('log', 'prog', ['assigned'], dT.tasks || []);
-            renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks || []);
+            // 3. 渲染 5 大看板列
+            renderKB('log', 'active', ['pending', 'assigned'], dT.tasks);
+            renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks);
+            renderKB('mar', 'active', ['available', 'reserved'], dT.market);
+            renderKB('mar', 'hist', ['completed', 'reviewed'], dT.market);
+            renderKB('fl', 'active', ['open', 'closed'], dT.flatting);
+            renderKB('tu', 'active', ['gathering', 'completed', 'failed'], dT.teamups);
+            renderKB('for', 'active', [], dT.posts); // Buzz 不分状态，直接渲染
 
-            renderKB('mar', 'pend', ['available'], dT.market || []);
-            renderKB('mar', 'prog', ['reserved'], dT.market || []);
-            renderKB('mar', 'hist', ['completed', 'reviewed'], dT.market || []);
-
-            renderKB('fl', 'open', ['open'], dT.flatting || []);
-            renderKB('fl', 'closed', ['closed'], dT.flatting || []);
-
-            renderKB('tu', 'gather', ['gathering'], dT.teamups || []);
-            renderKB('tu', 'comp', ['completed', 'failed'], dT.teamups || []);
-
-            // 4. 特殊渲染第 5 标签: Share Buzz
-            document.getElementById('col_for_list').innerHTML = (dT.posts || []).map(p => `
-                <div class="card" style="padding:1.5rem; margin-bottom:1rem; cursor:pointer;" onclick="openMasterModal('for', '${p._id}')">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span class="kb-role-tag" style="background:#f1f5f9;">My Buzz</span>
-                        <small>${new Date(p.created_at).toLocaleString()}</small>
-                    </div>
-                    <div style="font-weight:600;">${p.content}</div>
-                </div>`).join('') || '<div style="padding:3rem; text-align:center; color:var(--muted);">No posts yet.</div>';
-
-        } catch(e) { console.error("Load Error:", e); }
+        } catch(e) { console.error(e); }
     }
 
-    // 通用看板渲染引擎
-    function renderKB(prefix, col, validStatuses, listArray) {
-        const container = document.getElementById(`col_${prefix}_${col}`);
-        const badge = document.getElementById(`cnt_${prefix}_${col}`);
-        if (!container || !badge) return;
-
-        const fList = listArray.filter(t => validStatuses.includes(t.status.toLowerCase()));
-        badge.innerText = fList.length;
-
-        container.innerHTML = fList.map(t => {
-            const isOwner = (t.publisher_id || t.seller_id || t.initiator_id) === user.email;
-            let title = t.title || t.reward || "Untitled Task";
-            return `
-            <div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
+    function renderKB(prefix, col, validStatuses, list) {
+        const filtered = validStatuses.length > 0 ? list.filter(t => validStatuses.includes(t.status)) : list;
+        document.getElementById(`cnt_${prefix}_${col}`).innerText = filtered.length;
+        document.getElementById(`col_${prefix}_${col}`).innerHTML = filtered.map(item => `
+            <div class="kanban-card" onclick="openMasterModal('${prefix}', '${item._id}')">
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                    <span class="kb-role-tag" style="background:${isOwner?'#f1f5f9':'var(--primary)'}; color:${isOwner?'#334155':'white'};">
-                        ${isOwner ? 'Owner' : 'Partner'}
-                    </span>
-                    <small style="color:var(--muted);">${new Date(t.created_at).toLocaleDateString()}</small>
+                    <span class="kb-role-tag ${item.publisher_id === user.email ? 'kb-pub' : 'kb-help'}">${item.publisher_id === user.email ? 'Owner' : 'Participant'}</span>
                 </div>
-                <div style="font-weight:800; color:var(--dark);">${title}</div>
-            </div>`;
-        }).join('') || '<div style="padding:1rem; text-align:center; font-size:0.8rem; color:var(--muted);">None</div>';
+                <div style="font-weight:900;">${item.title || item.reward || item.content.substring(0, 20)}</div>
+                <div style="font-size:0.8rem; color:var(--muted); margin-top:5px;">Status: ${item.status || 'Active'}</div>
+            </div>
+        `).join('');
     }
 
-    // ======================= ACTION HANDLERS =======================
-    async function loadHall() {
-        const [rL, rM, rF, rT, rB] = await Promise.all([fetch('/api/task/all'), fetch('/api/market/all'), fetch('/api/flatting/all'), fetch('/api/teamup/all'), fetch('/api/forum/all')]);
-        const dL = await rL.json(); const dM = await rM.json(); // ... 渲染 Hall 列表逻辑同 V13.4
+    // ======================= MAP & FORMS =======================
+    function initMap() {
+        if(map) return;
+        map = L.map('map').setView([-36.8509, 174.7645], 14);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+        map.on('click', async e => {
+            if(markers.length >= 2) { markers.forEach(m=>map.removeLayer(m)); markers = []; }
+            markers.push(L.marker(e.latlng).addTo(map));
+            const input = document.getElementById(markers.length === 1 ? 'p_from' : 'p_to');
+            input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+        });
     }
 
     async function submitLogistics(e) {
-        e.preventDefault(); const f = { publisher_id: user.email, publisher_name: user.anonymous_name, reward: document.getElementById('p_reward').value, move_date: document.getElementById('p_date').value, from_addr: document.getElementById('p_from').value, to_addr: document.getElementById('p_to').value, items_desc: document.getElementById('p_desc').value, task_scale: document.getElementById('p_scale').value };
-        await fetch('/api/task/create', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(f)});
-        alert("Broadcast Success!"); navigate('hall');
+        e.preventDefault(); const f = new FormData();
+        f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name);
+        f.append('from_addr', document.getElementById('p_from').value); f.append('to_addr', document.getElementById('p_to').value);
+        f.append('move_date', document.getElementById('p_date').value); f.append('reward', document.getElementById('p_reward').value);
+        f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value);
+        await fetch('/api/task/create', { method: 'POST', body: f });
+        navigate('hall');
+    }
+
+    async function submitMarket(e) {
+        e.preventDefault(); const f = new FormData();
+        f.append('seller_id', user.email); f.append('seller_name', user.anonymous_name);
+        f.append('title', document.getElementById('m_title').value); f.append('price', document.getElementById('m_price').value);
+        f.append('description', document.getElementById('m_desc').value);
+        Array.from(document.getElementById('m_file').files).forEach(x => f.append('images', x));
+        await fetch('/api/market/create', { method: 'POST', body: f });
+        navigate('hall');
+    }
+
+    // Additional submit functions (Flatting, TeamUp, Forum) would be implemented here...
+    async function submitForum(e) {
+        e.preventDefault(); const f = new FormData();
+        f.append('author_id', user.email); f.append('author_name', user.anonymous_name);
+        f.append('content', document.getElementById('f_content').value);
+        Array.from(document.getElementById('f_file').files).forEach(x => f.append('images', x));
+        await fetch('/api/forum/create', { method: 'POST', body: f });
+        navigate('hall');
     }
 
     document.getElementById('loginForm').onsubmit = async e => {
         e.preventDefault();
-        const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value})});
-        const d = await res.json(); if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Failed");
+        const res = await fetch('/api/auth/login', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ email: document.getElementById('l_user').value, password: document.getElementById('l_pwd').value })
+        });
+        const d = await res.json();
+        if(d.success) { user = d.user; localStorage.setItem('user', JSON.stringify(user)); navigate('home'); } else alert("Failed");
     };
 
     navigate('home');
