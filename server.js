@@ -264,9 +264,27 @@ app.post('/api/forum/interact', async (req, res) => {
 });
 
 app.post('/api/user/dashboard', async (req, res) => {
-    const { email } = req.body;
-    res.json({ success: true, tasks: await Task.find({ $or: [{ publisher_id: email }, { helper_id: email }] }), market: await MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }), posts: await ForumPost.find({ author_id: email }), flatting: await Flatting.find({ publisher_id: email }), teamups: await TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] }) });
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.json({ success: false, tasks: [], market: [], posts: [], flatting: [], teamups: [] });
+        }
+
+        const [tasks, market, posts, flatting, teamups] = await Promise.all([
+            Task.find({ $or: [{ publisher_id: email }, { helper_id: email }] }),
+            MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }),
+            ForumPost.find({ author_id: email }),
+            Flatting.find({ publisher_id: email }),
+            TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] })
+        ]);
+
+        res.json({ success: true, tasks, market, posts, flatting, teamups });
+    } catch (error) {
+        console.error("Dashboard fetch error:", error);
+        res.status(500).json({ success: false, tasks: [], market: [], posts: [], flatting: [], teamups: [] });
+    }
 });
+
 app.post('/api/dev/nuke', async (req, res) => { await Task.deleteMany({}); await MarketItem.deleteMany({}); await ForumPost.deleteMany({}); await Flatting.deleteMany({}); await TeamUp.deleteMany({}); await User.deleteMany({}); await VerifyCode.deleteMany({}); res.json({ success: true }); });
 
 // ==========================================
