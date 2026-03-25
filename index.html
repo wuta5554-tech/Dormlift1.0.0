@@ -799,19 +799,21 @@ async function loadProfileData() {
         const u = d.user || {};
         
         const profBox = document.getElementById('profileDetails');
-        if (profBox) {
-           profBox.innerHTML = [
-    ['Student ID', u.student_id || 'N/A'], 
-    ['Full Name', `${u.first_name || ''} ${u.given_name || ''}`.trim() || 'Anonymous'], 
-    ['Nickname', u.anonymous_name || 'Anonymous'],
-    ['User Email', u.email || 'N/A']
-            ].map(f => `
-                <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #eef2f6;">
-                    <label style="margin-bottom:5px; font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">${f[0]}</label>
-                    <div style="font-weight:800; font-size:1rem;">${f[1]}</div>
-                </div>
-            `).join('');
-        }
+      if (profBox) {
+    profBox.innerHTML = [
+        // 你的 JSON 里确实没有 student_id，只有 _id
+        ['ID', u.student_id || (u._id ? u._id.slice(-6) : 'Pending')], 
+        // 关键：把 first_name 改成 full_name
+        ['Name', u.full_name || 'Anonymous'], 
+        ['Nick', u.anonymous_name || 'Anonymous'], 
+        ['Email', u.email || '1@163.com']
+    ].map(f => `
+        <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #eef2f6;">
+            <label style="margin-bottom:5px; font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">${f[0]}</label>
+            <div style="font-weight:800; font-size:1rem;">${f[1]}</div>
+        </div>
+    `).join('');
+}
 
         if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0"; 
         if(document.getElementById('p_medals')) document.getElementById('p_medals').innerText = u.medal_points || 0;
