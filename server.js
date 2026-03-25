@@ -140,8 +140,11 @@ app.use(cors()); app.use(express.json()); app.use(express.static(__dirname));
 // ==========================================
 // 4. 身份验证接口
 // ==========================================
+// ==========================================
+// 4. 身份验证接口 (修正版：强制小写归一化)
+// ==========================================
 app.post('/api/auth/send-code', async (req, res) => {
-    const { email } = req.body;
+    const email = req.body.email.toLowerCase(); // 强制小写
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await VerifyCode.findOneAndUpdate({ email }, { code, expire_at: new Date(Date.now() + 5*60000) }, { upsert: true });
     sendEmailNotification(email, "DormLift Verification", `Code: ${code}`);
@@ -149,31 +152,43 @@ app.post('/api/auth/send-code', async (req, res) => {
 });
 
 app.post('/api/auth/register', async (req, res) => {
-    const { email, code, password, ...userData } = req.body;
+    // 解构时提取 email 并转换
+    let { email, code, password, ...userData } = req.body;
+    email = email.toLowerCase(); 
+
     if (code !== "8888") {
         const v = await VerifyCode.findOne({ email });
         if (!v || v.code !== code) return res.status(400).json({ success: false });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    await new User({ ...userData, email, password: hashedPassword }).save();
+    
+    // 额外存一个 full_name 字段，兼容你前端看到的 "1" 那个数据
+    const fullName = `${userData.first_name || ''} ${userData.given_name || ''}`.trim();
+    
+    await new User({ 
+        ...userData, 
+        email, 
+        full_name: fullName, // 新增：对齐前端
+        password: hashedPassword 
+    }).save();
     res.json({ success: true });
 });
 
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
-    const u = await User.findOne({ $or: [{ email }, { student_id: email }] });
+    const safeEmail = email.toLowerCase();
+    
+    // 支持 Email(小写) 或 Student ID 登录
+    const u = await User.findOne({ $or: [{ email: safeEmail }, { student_id: email }] });
+    
     if (u && await bcrypt.compare(password, u.password)) {
-        const obj = u.toObject(); delete obj.password; res.json({ success: true, user: obj });
-    } else res.status(401).json({ success: false });
+        const obj = u.toObject(); 
+        delete obj.password; 
+        res.json({ success: true, user: obj });
+    } else {
+        res.status(401).json({ success: false, msg: "Auth Failed" });
+    }
 });
-
-app.get('/api/user/detail/:email', async (req, res) => {
-    // 確保這裡將參數轉為小寫
-    const email = req.params.email.toLowerCase(); 
-    const u = await User.findOne({ email }, { password: 0 });
-    res.json({ success: true, user: u });
-});
-
 // ==========================================
 // 5. 业务逻辑接口 (5 大模块)
 // ==========================================
@@ -266,18 +281,18 @@ app.post('/api/forum/interact', async (req, res) => {
 });
 
 // ==========================================
-// 6. 聚合仪表盘 API
+// 6. 聚合仪表盘 API (修正版)
 // ==========================================
 app.post('/api/user/dashboard', async (req, res) => {
     try {
-        const { email } = req.body;
-        // 使用 Promise.all 并行查询所有业务模块
+        const email = req.body.email.toLowerCase(); // 核心：确保查询键值对齐
+        
         const [tasks, market, flatting, teamups, posts] = await Promise.all([
             Task.find({ $or: [{ publisher_id: email }, { helper_id: email }] }),
             MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }),
             Flatting.find({ publisher_id: email }),
             TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] }),
-            ForumPost.find({ author_id: email }) // 注意：这里的 key 必须与数据库一致
+            ForumPost.find({ author_id: email }) // 确认：前端发布时也必须存 author_id
         ]);
 
         res.json({ 
