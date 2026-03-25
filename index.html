@@ -532,6 +532,20 @@ function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_
         Array.from(e.target.files).slice(0, 5).forEach(f => { const r = new FileReader(); r.onload = ev => s.innerHTML += `<img src="${ev.target.result}" class="thumb-img">`; r.readAsDataURL(f); });
     }
 
+    async function deleteBuzz(id) {
+    if(!confirm("Delete this post?")) return;
+    const res = await fetch('/api/forum/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+    });
+    const d = await res.json();
+    if(d.success) {
+        loadProfileData(); // 重新加载 Dashboard
+    } else {
+        alert("Delete failed: " + d.msg);
+    }
+}
     // ======================= MAP ENGINE =======================
     function initMap() {
         if(map) return;
