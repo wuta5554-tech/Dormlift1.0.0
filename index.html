@@ -790,19 +790,19 @@ function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_
 
     // ======================= KANBAN PROFILE =======================
 async function loadProfileData() {
-    console.log("Checking User Profile..."); // 调试点1
+    if (!user || !user.email) return navigate('login');
+
     try {
-        // 1. 获取用户详情
-        const res = await fetch(`/api/user/detail/${user.email}`); 
+        // 1. 获取用户详情 (纠正反引号与路径)
+        const res = await fetch(`/api/user/detail/${encodeURIComponent(user.email)}`); 
         const d = await res.json(); 
         const u = d.user || {};
         
-        // 渲染个人信息卡片 - 增加空值保护
         const profBox = document.getElementById('profileDetails');
         if (profBox) {
             profBox.innerHTML = [
                 ['ID', u.student_id || 'Pending'], 
-                ['Name', `${u.first_name || ''} ${u.given_name || ''}`.trim() || 'Unknown'], 
+                ['Name', `${u.first_name || ''} ${u.given_name || ''}`.trim() || 'Anonymous'], 
                 ['Nick', u.anonymous_name || 'Anonymous'], 
                 ['Email', u.email || user.email]
             ].map(f => `
@@ -813,12 +813,10 @@ async function loadProfileData() {
             `).join('');
         }
 
-        // 渲染评分和勋章
         if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0"; 
         if(document.getElementById('p_medals')) document.getElementById('p_medals').innerText = u.medal_points || 0;
 
-        // 2. 获取 Dashboard 聚合数据
-        console.log("Fetching Dashboard Data..."); // 调试点2
+        // 2. 获取 Dashboard 数据
         const resT = await fetch('/api/user/dashboard', { 
             method:'POST', 
             headers:{'Content-Type':'application/json'}, 
@@ -826,18 +824,17 @@ async function loadProfileData() {
         }); 
         const dT = await resT.json();
 
-        // 增强版看板渲染器
+        // 增强版看板渲染器 (业务字段兼容：加入 author_id 判断)
         const renderKB = (prefix, col, validStatuses, listArray = [], isTeam=false, isFlat=false) => {
             const elCnt = document.getElementById(`cnt_${prefix}_${col}`);
             const elCol = document.getElementById(`col_${prefix}_${col}`);
             if (!elCnt || !elCol) return; 
 
-            // 过滤状态
             const fList = (listArray || []).filter(t => validStatuses.includes(t.status));
             elCnt.innerText = fList.length;
-            
             elCol.innerHTML = fList.map(t => {
-                const isOwner = (t.publisher_id || t.seller_id || t.initiator_id) === user.email;
+                // 核心兼容：同时检查 publisher_id, seller_id, initiator_id 和 author_id
+                const isOwner = (t.publisher_id || t.seller_id || t.initiator_id || t.author_id) === user.email;
                 let title = t.title || "No Title";
                 if(prefix === 'log') title = t.reward || "No Reward";
                 if(isFlat) title = `$${t.rent_price || 0} - ${t.room_type || 'Room'}`;
@@ -859,38 +856,33 @@ async function loadProfileData() {
         renderKB('log', 'pend', ['pending'], dT.tasks); 
         renderKB('log', 'prog', ['assigned'], dT.tasks); 
         renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks);
-        
         renderKB('mar', 'pend', ['available'], dT.market); 
         renderKB('mar', 'prog', ['reserved'], dT.market); 
         renderKB('mar', 'hist', ['completed', 'reviewed'], dT.market);
-        
         renderKB('fl', 'open', ['open'], dT.flatting, false, true); 
         renderKB('fl', 'closed', ['closed'], dT.flatting, false, true);
-        
         renderKB('tu', 'gather', ['gathering'], dT.teamups, true); 
         renderKB('tu', 'comp', ['completed', 'failed'], dT.teamups, true);
 
-        // 3. 渲染 My Buzz (防错处理)
+        // 3. 补全 My Buzz 模块渲染
         const bzCol = document.getElementById('col_bz_all');
-        if (bzCol) {
+        const bzCnt = document.getElementById('cnt_bz_all');
+        if (bzCol && bzCnt) {
             const posts = dT.posts || [];
-            document.getElementById('cnt_bz_all').innerText = posts.length;
+            bzCnt.innerText = posts.length;
             bzCol.innerHTML = posts.map(f => `
                 <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; width:100%; text-align:left;">
                     <div style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">${new Date(f.created_at).toLocaleString()}</div>
                     <div style="font-size:0.95rem; margin-bottom:10px;">${f.content || ''}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f8fafc; padding-top:8px;">
                         <span style="font-size:0.8rem; color:var(--muted);"><i class="fas fa-heart"></i> ${f.likes?.length || 0}</span>
-                        <button class="btn-sm" style="color:var(--danger); background:none; border:none;" onclick="deleteBuzz('${f._id}')">Delete</button>
+                        <button class="btn-sm" style="color:var(--danger); background:none; border:none; cursor:pointer;" onclick="event.stopPropagation(); deleteBuzz('${f._id}')">Delete</button>
                     </div>
                 </div>
             `).join('') || '<p style="text-align:center; padding:1rem; color:#ccc;">No posts yet.</p>';
         }
 
-    } catch(e) { 
-        console.error("Critical Profile Load Error:", e);
-        // 如果报错，尝试至少渲染出基础 UI 结构，不至于白屏
-    }
+    } catch(e) { console.error("Profile Load Error:", e); }
 }
     // ======================= POSTING ENGINES =======================
     async function submitLogistics(e) {
