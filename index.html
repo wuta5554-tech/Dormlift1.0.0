@@ -824,27 +824,33 @@
             const d = await res.json();
             const u = d.user || {}; 
 
-            // 2. 渲染 Identity 卡片
-            const profBox = document.getElementById('profileDetails');
-            if (profBox) {
-                const displayId = u.student_id || (u._id ? u._id.slice(-6).toUpperCase() : 'Not Synced');
-                const displayName = u.full_name || u.first_name || 'Anonymous User';
-                
-                profBox.innerHTML = `
-                    <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
-                        <label style="font-size:0.75rem; font-weight:800; color:var(--muted);">STUDENT ID</label>
-                        <div style="font-weight:900; font-size:1.1rem;">${displayId}</div>
-                    </div>
-                    <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
-                        <label style="font-size:0.75rem; font-weight:800; color:var(--muted);">FULL NAME</label>
-                        <div style="font-weight:900; font-size:1.1rem;">${displayName}</div>
-                    </div>
-                    <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
-                        <label style="font-size:0.75rem; font-weight:800; color:var(--muted);">EMAIL</label>
-                        <div style="font-weight:900; font-size:1rem;">${u.email || safeEmail}</div>
-                    </div>
-                `;
-            }
+          // 2. 渲染完整版 Identity 卡片 (四宮格：ID, Name, Nick, Email)
+        const profBox = document.getElementById('profileDetails');
+        if (profBox) {
+            // 安全取值：如果數據庫裡沒有 student_id，就截取數據庫 _id 的後六位當作臨時 ID
+            const displayId = u.student_id || (u._id ? u._id.slice(-6).toUpperCase() : 'Not Synced');
+            const displayName = u.full_name || u.first_name || 'Not Set';
+            const displayNick = u.anonymous_name || 'Anonymous';
+            
+            profBox.innerHTML = `
+                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">STUDENT ID</label>
+                    <div style="font-weight:900; font-size:1.1rem; color:var(--primary);">${displayId}</div>
+                </div>
+                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">FULL NAME</label>
+                    <div style="font-weight:900; font-size:1.1rem;">${displayName}</div>
+                </div>
+                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">NICKNAME</label>
+                    <div style="font-weight:900; font-size:1.1rem;">${displayNick}</div>
+                </div>
+                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">EMAIL</label>
+                    <div style="font-weight:900; font-size:0.95rem; word-break:break-all;">${u.email || safeEmail}</div>
+                </div>
+            `;
+        }
 
             if(document.getElementById('p_medals')) document.getElementById('p_medals').innerText = u.medal_points || 0;
             if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = (u.rating_avg || 5.0).toFixed(1);
