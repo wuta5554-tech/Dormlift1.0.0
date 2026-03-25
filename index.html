@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | The Campus Super App V13.4</title>
+    <title>DormLift Pro | The Campus Super App V13.6</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V13.4 Premium Modular Super App
+           DESIGN SYSTEM: V13.6 Premium Modular Super App
         ============================================================= */
         :root {
             --primary: #4f46e5; --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
@@ -50,7 +50,11 @@
         .tab-btn { flex: 1; min-width: 150px; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.05rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; white-space: nowrap; }
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
-        .tab-content { display: none !important; } .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
+        
+        /* 🚨 終極佈局修復：解決 Kanban 變白或重疊 🚨 */
+        .tab-content { display: none !important; } 
+        .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
+        .tab-content.active.kanban-board { display: grid !important; } /* Kanban 必須是 grid 佈局 */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* Hub Layouts */
@@ -79,6 +83,29 @@
         .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 400px; border: 1px dashed #e2e8f0; }
         .kanban-card { background: white; border-radius: 1rem; padding: 1.2rem; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1.5px solid transparent; cursor: pointer; transition: 0.3s; }
         .kanban-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow-premium); }
+        
+        /* 🚨 修復 Pending0 擠壓問題 🚨 */
+        .kanban-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 10px 15px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .kanban-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            min-width: 25px;
+            text-align: center;
+        }
+
         .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
 
         .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
@@ -107,52 +134,28 @@
         .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; cursor: pointer; border: 2px solid #f1f5f9; }
         .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* --- V13.4 Edge-to-edge (Full-width) Homepage Styles --- */
+        /* --- V13.4 Edge-to-edge Homepage Styles --- */
         .page-wrapper-home {
-            position: relative; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: var(--surface); 
-            
-            /* CSS 突破技巧：强行打破 .container 的限制，实现全屏宽度 */
-            width: 100vw;
-            margin-left: calc(50% - 50vw);
-            margin-top: -3rem; /* 抵消外层 container 的 top margin */
-            min-height: calc(100vh - 74px); /* 视口高度减去顶栏高度 */
-            
-            border-bottom: 1px solid #eef2f6; 
-            overflow: hidden;
+            position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--surface); width: 100vw; margin-left: calc(50% - 50vw); margin-top: -3rem; 
+            min-height: calc(100vh - 74px); border-bottom: 1px solid #eef2f6; overflow: hidden;
         }
 
-        .culture-texture {
-            position: absolute; inset: 0; z-index: 0; pointer-events: none; user-select: none;
-            animation: cloudDrift 60s linear infinite alternate;
-        }
-        @keyframes cloudDrift {
-            from { transform: translate(-20px, -10px) scale(1); }
-            to { transform: translate(20px, 10px) scale(1.02); }
-        }
-        
-        .culture-texture span {
-            position: absolute; font-weight: 900; font-size: 1.8rem; white-space: nowrap; opacity: 0.18; transition: 0.3s;
-        }
-
+        .culture-texture { position: absolute; inset: 0; z-index: 0; pointer-events: none; user-select: none; animation: cloudDrift 60s linear infinite alternate; }
+        @keyframes cloudDrift { from { transform: translate(-20px, -10px) scale(1); } to { transform: translate(20px, 10px) scale(1.02); } }
+        .culture-texture span { position: absolute; font-weight: 900; font-size: 1.8rem; white-space: nowrap; opacity: 0.18; transition: 0.3s; }
         .v-text { writing-mode: vertical-lr; letter-spacing: 0.2rem; }
         .c1 { color: #6366f1; } .c2 { color: #10b981; } .c3 { color: #f43f5e; } .c4 { color: #f59e0b; }
 
-        /* 内容区保持居中限制，防止在大屏幕上被拉得太宽 */
         .home-content { position: relative; z-index: 10; text-align: center; padding: 40px 20px; max-width: 1150px; width: 100%; }
-
         .badge-row { display: flex; justify-content: space-between; margin-bottom: 40px; }
         .f-badge { padding: 12px 24px; border-radius: 50px; font-weight: 800; font-size: 0.85rem; box-shadow: 0 10px 30px rgba(0,0,0,0.06); background: white; border: 1px solid #f1f5f9; display: inline-flex; align-items: center; gap: 8px;}
 
         .hero-title { font-size: clamp(3.5rem, 8.5vw, 6.5rem); font-weight: 900; line-height: 0.95; letter-spacing: -4px; color: var(--dark); margin: 0; animation: heroFloat 5s ease-in-out infinite; }
         @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
         .hero-title span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 15px 30px rgba(79,70,229,0.25)); }
-
         .hero-desc { font-size: 1.5rem; color: var(--muted); max-width: 800px; margin: 30px auto; font-weight: 500; line-height: 1.4; }
 
-        /* 气泡悬浮位置微调以适应全宽 */
         .floating-badge { position: absolute; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 12px 24px; border-radius: 30px; font-weight: 800; font-size: 0.9rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); z-index: 50; border: 1px solid white; animation: floatAnim 6s ease-in-out infinite; display: inline-flex; align-items: center; gap: 6px;}
         @keyframes floatAnim { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-15px) rotate(var(--r, 0deg)); } }
         
@@ -176,55 +179,6 @@
         .c-yellow { border-bottom-color: #fde68a; } .c-pink { border-bottom-color: #fbcfe8; } .c-green { border-bottom-color: #bbf7d0; }
         .bento-card-home h3 { font-size: 1.8rem; font-weight: 900; margin: 0 0 12px; color: var(--dark); }
         .bento-card-home p { margin: 0; font-size: 1.05rem; color: var(--muted); line-height: 1.5; font-weight: 500;}
-  /* 強制修復 Kanban 標題與數字的佈局 */
-.kanban-header {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    padding: 10px 15px;
-    background: #f1f5f9;
-    border-radius: 10px;
-    margin-bottom: 1rem;
-    font-weight: 800;
-}
-
-.kanban-badge {
-    background: var(--primary);
-    color: white;
-    padding: 2px 10px;
-    border-radius: 50px;
-    font-size: 0.85rem;
-}
-
-/* 確保 Identity 卡片內的文字能顯示出來 */
-#profileDetails {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-}
-  /* 解決看板標題和數字重疊 */
-.kanban-header {
-    display: flex !important;
-    justify-content: space-between;
-    align-items: center;
-    background: #f1f5f9;
-    padding: 8px 12px;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    font-weight: 800;
-    color: var(--dark);
-}
-
-.kanban-badge {
-    background: var(--primary);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    min-width: 20px;
-    text-align: center;
-}
     </style>
 </head>
 <body>
@@ -486,7 +440,6 @@
               </div>
            </div>
         </div>
-        <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:5rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
     </div>
 
     <div id="register" class="page">
@@ -538,7 +491,7 @@
     // ======================= STATE & NAV =======================
     let user = JSON.parse(localStorage.getItem('user'));
     let map, routingControl, modalMap, modalRoutingControl, markers = [], modalMarkers = [];
-    let mapFlat, markerFlat; // 专属 Flatting 地图
+    let mapFlat, markerFlat; 
     let state = { log: [], mar: [], flat: [], team: [], for: [], activeId: null, activeType: null, activeReplyId: null };
 
     const getAddrText = str => str ? (str.includes('@@') ? str.split('@@')[1] : str) : 'Unknown';
@@ -562,7 +515,8 @@
 
     function toggleTabs(prefix, arr, target) {
         arr.forEach(t => {
-            const btn = document.getElementById(`btn_${prefix}_${t}`); const content = document.getElementById(`${prefix}_${t}`);
+            const btn = document.getElementById(`btn_${prefix}_${t}`); 
+            const content = document.getElementById(`${prefix}_${t}`);
             if(btn) btn.classList.toggle('active', t===target);
             if(content) content.classList.toggle('active', t===target);
         });
@@ -573,8 +527,17 @@
         if(tab==='logistics' && map) setTimeout(()=>map.invalidateSize(),200); 
         if(tab==='flatting') { initFlatMap(); if(mapFlat) setTimeout(()=>mapFlat.invalidateSize(),200); }
     }
-   // 修改 toggleTabs 的调用参数，包含 'kb_bz'
-function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_tu', 'kb_bz'], tab); }
+    
+    // 🚨 終極修復：手動指定 ID 映射，解決點擊沒反應的問題
+    function switchProf(tabId) {
+        const tabs = ['kb_log', 'kb_mar', 'kb_fl', 'kb_tu', 'kb_bz'];
+        tabs.forEach(t => {
+            const btn = document.getElementById(`btn_prof_${t}`);
+            const content = document.getElementById(t); // 直接抓真實的內容 ID
+            if (btn) btn.classList.toggle('active', t === tabId);
+            if (content) content.classList.toggle('active', t === tabId);
+        });
+    }
     
     function previewFiles(e, id) {
         const s = document.getElementById(id); s.innerHTML = "";
@@ -582,19 +545,20 @@ function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_
     }
 
     async function deleteBuzz(id) {
-    if(!confirm("Delete this post?")) return;
-    const res = await fetch('/api/forum/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-    });
-    const d = await res.json();
-    if(d.success) {
-        loadProfileData(); // 重新加载 Dashboard
-    } else {
-        alert("Delete failed: " + d.msg);
+        if(!confirm("Delete this post?")) return;
+        const res = await fetch('/api/forum/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        const d = await res.json();
+        if(d.success) {
+            loadProfileData(); // 重新加载 Dashboard
+        } else {
+            alert("Delete failed: " + d.msg);
+        }
     }
-}
+
     // ======================= MAP ENGINE =======================
     function initMap() {
         if(map) return;
@@ -617,7 +581,6 @@ function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_
         }, 300);
     }
     
-    // V12.2 Flatting 发布专属地图
     function initFlatMap() {
         if(mapFlat) return;
         setTimeout(() => {
@@ -641,7 +604,6 @@ function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_
         }, 300);
     }
 
-    // Modal 展示地图
     function initModalMap(fC, tC) {
         if(!modalMap) { 
             modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); 
@@ -851,94 +813,107 @@ function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_
         const d = await res.json(); if(d.success) { document.getElementById('masterModal').style.display = 'none'; loadHall(); navigate('profile'); } else { alert("❌ " + d.msg); }
     }
 
-    // ======================= KANBAN PROFILE =======================
-async function loadProfileData() {
-    if (!user || !user.email) return navigate('login');
-    const safeEmail = user.email.toLowerCase();
+    // 🚨 終極防崩潰 Profile 加載邏輯 🚨
+    async function loadProfileData() {
+        if (!user || !user.email) return navigate('login');
+        const safeEmail = user.email.toLowerCase();
 
-    try {
-        // 1. 獲取用戶數據 (UoA Identity)
-        const res = await fetch(`/api/user/detail/${encodeURIComponent(safeEmail)}`);
-        const d = await res.json();
-        
-        // 🚨 這裡使用你提供的 JSON 結構進行對齊
-        const u = d.user || {}; 
+        try {
+            // 1. 獲取 Identity 數據
+            const res = await fetch(`/api/user/detail/${encodeURIComponent(safeEmail)}`);
+            const d = await res.json();
+            const u = d.user || {}; 
 
-        const profBox = document.getElementById('profileDetails');
-        if (profBox) {
-            profBox.innerHTML = `
-                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
-                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">Student ID</label>
-                    <div style="font-weight:900;">${u.student_id || (u._id ? u._id.slice(-6).toUpperCase() : 'N/A')}</div>
-                </div>
-                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
-                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">Full Name</label>
-                    <div style="font-weight:900;">${u.full_name || 'User ' + u.anonymous_name}</div>
-                </div>
-                <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
-                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">Medal Points</label>
-                    <div style="font-weight:900; color:var(--medal);">🏅 ${u.medal_points || 0}</div>
-                </div>
-            `;
-        }
-
-        // 更新頂部大數字 (根據 JSON 數據應顯示 13 和 5.0)
-        if(document.getElementById('p_medals')) document.getElementById('p_medals').innerText = u.medal_points || 0;
-        if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = (u.rating_avg || 5.0).toFixed(1);
-
-        // 2. 獲取 Dashboard 數據
-        const resT = await fetch('/api/user/dashboard', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: safeEmail })
-        });
-        const dT = await resT.json();
-
-        // 3. 渲染看板 (解決 Pending0 顯示重疊的問題)
-        const renderKB = (prefix, col, validStatuses, listArray = []) => {
-            const elCnt = document.getElementById(`cnt_${prefix}_${col}`);
-            const elCol = document.getElementById(`col_${prefix}_${col}`);
-            if (!elCnt || !elCol) return;
-
-            const fList = (listArray || []).filter(t => validStatuses.includes(t.status));
-            elCnt.innerText = fList.length; // 只填數字，HTML 裡的 "Pending" 字樣保留在外面
-            
-            elCol.innerHTML = fList.map(t => `
-                <div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
-                    <div style="font-weight:900; margin-bottom:5px;">${t.title || t.reward || 'No Title'}</div>
-                    <div style="font-size:0.8rem; color:var(--muted);">📍 ${t.location || 'Auckland'}</div>
-                </div>
-            `).join('') || '<div style="font-size:0.75rem; color:#ccc; padding:15px; text-align:center;">No records</div>';
-        };
-
-        // 執行各模塊渲染
-        renderKB('log', 'pend', ['pending'], dT.tasks);
-        renderKB('mar', 'pend', ['available'], dT.market);
-        renderKB('fl', 'open', ['open'], dT.flatting);
-        renderKB('tu', 'gather', ['gathering'], dT.teamups);
-
-        // 4. 渲染 My Buzz (專用獨立邏輯)
-        const bzCol = document.getElementById('col_bz_all');
-        const bzCnt = document.getElementById('cnt_bz_all');
-        if (bzCol && bzCnt) {
-            const posts = dT.posts || [];
-            bzCnt.innerText = posts.length;
-            bzCol.innerHTML = posts.map(f => `
-                <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; text-align:left; box-shadow:none;">
-                    <div style="font-size:0.8rem; color:var(--muted); mb:8px;">${new Date(f.created_at).toLocaleString()}</div>
-                    <div style="font-size:0.95rem; font-weight:500;">${f.content || ''}</div>
-                    <div style="margin-top:10px; border-top:1px solid #f8fafc; padding-top:8px;">
-                        <button class="btn-sm" style="color:var(--danger); background:none; border:none; cursor:pointer;" 
-                                onclick="event.stopPropagation(); deleteBuzz('${f._id}')">Delete Post</button>
+            // 2. 渲染 Identity 卡片
+            const profBox = document.getElementById('profileDetails');
+            if (profBox) {
+                const displayId = u.student_id || (u._id ? u._id.slice(-6).toUpperCase() : 'Not Synced');
+                const displayName = u.full_name || u.first_name || 'Anonymous User';
+                
+                profBox.innerHTML = `
+                    <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                        <label style="font-size:0.75rem; font-weight:800; color:var(--muted);">STUDENT ID</label>
+                        <div style="font-weight:900; font-size:1.1rem;">${displayId}</div>
                     </div>
-                </div>
-            `).join('') || '<p style="text-align:center; padding:2rem; color:#ccc;">No posts yet.</p>';
-        }
+                    <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                        <label style="font-size:0.75rem; font-weight:800; color:var(--muted);">FULL NAME</label>
+                        <div style="font-weight:900; font-size:1.1rem;">${displayName}</div>
+                    </div>
+                    <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
+                        <label style="font-size:0.75rem; font-weight:800; color:var(--muted);">EMAIL</label>
+                        <div style="font-weight:900; font-size:1rem;">${u.email || safeEmail}</div>
+                    </div>
+                `;
+            }
 
-    } catch (e) {
-        console.error("Critical Render Error:", e);
+            if(document.getElementById('p_medals')) document.getElementById('p_medals').innerText = u.medal_points || 0;
+            if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = (u.rating_avg || 5.0).toFixed(1);
+
+            // 3. 獲取 Dashboard 聚合數據
+            const resT = await fetch('/api/user/dashboard', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: safeEmail })
+            });
+            const dT = await resT.json();
+
+            // 4. 看板渲染器 (解決 Pending0 顯示重疊的問題)
+            const renderKB = (prefix, col, validStatuses, listArray = []) => {
+                const elCnt = document.getElementById(`cnt_${prefix}_${col}`);
+                const elCol = document.getElementById(`col_${prefix}_${col}`);
+                if (!elCnt || !elCol) return;
+
+                const fList = (listArray || []).filter(t => validStatuses.includes(t.status));
+                elCnt.innerText = fList.length; // 只改數字
+                
+                elCol.innerHTML = fList.map(t => {
+                    const isOwner = (t.publisher_id || t.seller_id || t.initiator_id || t.author_id) === safeEmail;
+                    return `
+                        <div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                <span class="kb-role-tag" style="background:${isOwner?'#e0e7ff':'#f1f5f9'}; color:${isOwner?'#4f46e5':'#64748b'};">${isOwner?'Owner':'Joined'}</span>
+                                <span style="font-size:0.7rem; color:var(--muted);">${new Date(t.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div style="font-weight:900; margin-bottom:5px;">${t.title || t.reward || 'Untitled'}</div>
+                            <div style="font-size:0.8rem; color:var(--muted);">📍 ${t.location || 'Auckland'}</div>
+                        </div>
+                    `;
+                }).join('') || '<div style="font-size:0.75rem; color:#ccc; padding:15px; text-align:center;">No records</div>';
+            };
+
+            renderKB('log', 'pend', ['pending'], dT.tasks);
+            renderKB('log', 'prog', ['assigned'], dT.tasks);
+            renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks);
+            renderKB('mar', 'pend', ['available'], dT.market);
+            renderKB('mar', 'prog', ['reserved'], dT.market);
+            renderKB('mar', 'hist', ['completed', 'reviewed'], dT.market);
+            renderKB('fl', 'open', ['open'], dT.flatting);
+            renderKB('fl', 'closed', ['closed'], dT.flatting);
+            renderKB('tu', 'gather', ['gathering'], dT.teamups);
+            renderKB('tu', 'comp', ['completed', 'failed'], dT.teamups);
+
+            // 5. 渲染 My Buzz
+            const bzCol = document.getElementById('col_bz_all');
+            const bzCnt = document.getElementById('cnt_bz_all');
+            if (bzCol && bzCnt) {
+                const posts = dT.posts || [];
+                bzCnt.innerText = posts.length;
+                bzCol.innerHTML = posts.map(f => `
+                    <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; text-align:left; box-shadow:none;">
+                        <div style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">${new Date(f.created_at).toLocaleString()}</div>
+                        <div style="font-size:0.95rem; font-weight:500;">${f.content || ''}</div>
+                        <div style="margin-top:10px; border-top:1px solid #f8fafc; padding-top:8px;">
+                            <button class="btn-sm" style="color:var(--danger); background:none; border:none; cursor:pointer; font-weight:800;" onclick="event.stopPropagation(); deleteBuzz('${f._id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('') || '<p style="text-align:center; padding:2rem; color:#ccc;">No posts yet.</p>';
+            }
+
+        } catch (e) {
+            console.error("Dashboard Load Error:", e);
+        }
     }
-}
+
     // ======================= POSTING ENGINES =======================
     async function submitLogistics(e) {
         e.preventDefault(); if(markers.length < 2) return alert("Map locations."); const f = new FormData();
