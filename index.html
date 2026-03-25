@@ -800,11 +800,11 @@ async function loadProfileData() {
         
         const profBox = document.getElementById('profileDetails');
         if (profBox) {
-            profBox.innerHTML = [
-                ['ID', u.student_id || 'Pending'], 
-                ['Name', `${u.first_name || ''} ${u.given_name || ''}`.trim() || 'Anonymous'], 
-                ['Nick', u.anonymous_name || 'Anonymous'], 
-                ['Email', u.email || user.email]
+           profBox.innerHTML = [
+    ['Student ID', u.student_id || 'N/A'], 
+    ['Full Name', `${u.first_name || ''} ${u.given_name || ''}`.trim() || 'Anonymous'], 
+    ['Nickname', u.anonymous_name || 'Anonymous'],
+    ['User Email', u.email || 'N/A']
             ].map(f => `
                 <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #eef2f6;">
                     <label style="margin-bottom:5px; font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">${f[0]}</label>
