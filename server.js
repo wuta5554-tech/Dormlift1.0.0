@@ -168,10 +168,16 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.get('/api/user/detail/:email', async (req, res) => {
-    // 强制转换为小写再查询，确保匹配成功
-    const email = req.params.email.toLowerCase(); 
-    const user = await User.findOne({ email }, { password: 0 });
-    res.json({ success: true, user });
+    try {
+        // 关键：将 URL 参数中的 email 统一转为小写再查询
+        const email = req.params.email.toLowerCase(); 
+        const user = await User.findOne({ email }, { password: 0 });
+        
+        // 如果查不到，返回 success: true 但 user 为 null
+        res.json({ success: true, user }); 
+    } catch (e) {
+        res.status(500).json({ success: false });
+    }
 });
 
 // ==========================================
