@@ -168,7 +168,9 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.get('/api/user/detail/:email', async (req, res) => {
-    const user = await User.findOne({ email: req.params.email }, { password: 0 });
+    // 强制转换为小写再查询，确保匹配成功
+    const email = req.params.email.toLowerCase(); 
+    const user = await User.findOne({ email }, { password: 0 });
     res.json({ success: true, user });
 });
 
