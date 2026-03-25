@@ -267,15 +267,28 @@ app.post('/api/forum/interact', async (req, res) => {
 // 6. 聚合仪表盘 API
 // ==========================================
 app.post('/api/user/dashboard', async (req, res) => {
-    const { email } = req.body;
-    const [tasks, market, posts, flatting, teamups] = await Promise.all([
-        Task.find({ $or: [{ publisher_id: email }, { helper_id: email }] }),
-        MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }),
-        ForumPost.find({ author_id: email }), // 确保这里是 author_id
-        Flatting.find({ publisher_id: email }),
-        TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] })
-    ]);
-    res.json({ success: true, tasks, market, posts, flatting, teamups });
+    try {
+        const { email } = req.body;
+        // 使用 Promise.all 并行查询所有业务模块
+        const [tasks, market, flatting, teamups, posts] = await Promise.all([
+            Task.find({ $or: [{ publisher_id: email }, { helper_id: email }] }),
+            MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }),
+            Flatting.find({ publisher_id: email }),
+            TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] }),
+            ForumPost.find({ author_email: email }) // 注意：这里的 key 必须与数据库一致
+        ]);
+
+        res.json({ 
+            success: true, 
+            tasks: tasks || [], 
+            market: market || [], 
+            flatting: flatting || [], 
+            teamups: teamups || [], 
+            posts: posts || [] 
+        });
+    } catch (e) {
+        res.status(500).json({ success: false, msg: e.message });
+    }
 });
 
 // ==========================================
