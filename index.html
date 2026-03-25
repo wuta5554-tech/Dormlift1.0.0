@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | The Campus Super App V12.1 Ultimate</title>
+    <title>DormLift Pro | The Campus Super App V12.2</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V12.1 Premium Modular Super App
+           DESIGN SYSTEM: V12.2 Premium Modular Super App
         ============================================================= */
         :root {
             --primary: #4f46e5; --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
@@ -91,10 +91,13 @@
         input, select, textarea { width: 100%; padding: 1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: 0.2s; }
         input:focus, textarea:focus, select:focus { border-color: var(--primary); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79,70,229,0.1); }
 
-        #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
+        /* Maps Setup */
+        .map-container { height: 350px; width: 100%; border-radius: 1.5rem 1.5rem 0 0; z-index: 10; }
         #modal-map { height: 280px; border-radius: 1.5rem; border: 2px solid #eef2f6; z-index: 10; margin-bottom: 1.5rem; display: none; }
         .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; }
-        
+        .custom-pin { background: transparent; border: none; } 
+        .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
         /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
@@ -137,40 +140,19 @@
 <div class="container">
     <div id="home" class="page active">
         <section style="position:relative; text-align:center; padding: 7rem 2rem 4rem; border:none; background: #f8fafc; overflow: hidden; border-radius: 40px; margin-bottom: 2rem; border: 1px solid #eef2f6; box-shadow: var(--shadow-sm);">
-            
             <div class="floating-badge fb-1" style="--r:-6deg;">🔥 Kate Edger 缺一人拼车!</div>
             <div class="floating-badge fb-2" style="--r:5deg;">🏠 找靠谱 UoA 室友</div>
             <div class="floating-badge fb-3" style="--r:3deg;">💸 闲置直接换现金</div>
-
-            <h1 style="font-size: clamp(3.5rem, 6vw, 5.5rem); margin:0; line-height:1.05; letter-spacing:-2.5px; font-weight:900; color:var(--dark); position: relative; z-index: 10;">
-                Your Campus Life,<br><span class="hero-gradient-text">Upgraded.</span>
-            </h1>
-            
-            <p style="color:var(--muted); font-size:1.25rem; max-width:600px; margin: 2rem auto 3rem; font-weight:500; position: relative; z-index: 10;">
-                Ditch the messy FB groups. Join the <b>100% verified</b> student network to trade, flat, team-up, and catch the real campus buzz.
-            </p>
-            
+            <h1 style="font-size: clamp(3.5rem, 6vw, 5.5rem); margin:0; line-height:1.05; letter-spacing:-2.5px; font-weight:900; color:var(--dark); position: relative; z-index: 10;">Your Campus Life,<br><span class="hero-gradient-text">Upgraded.</span></h1>
+            <p style="color:var(--muted); font-size:1.25rem; max-width:600px; margin: 2rem auto 3rem; font-weight:500; position: relative; z-index: 10;">Ditch the messy FB groups. Join the <b>100% verified</b> student network to trade, flat, team-up, and catch the real campus buzz.</p>
             <div style="display:flex; justify-content:center; gap:1.5rem; position: relative; z-index: 10; flex-wrap: wrap;">
                 <button class="btn" style="padding: 1.2rem 3.5rem; font-size:1.1rem; border-radius: 50px; box-shadow: 0 10px 25px -5px rgba(79,70,229,0.4);" onclick="navigate('post')">🚀 Launch an Action</button>
                 <button class="btn btn-outline" style="padding: 1.2rem 3.5rem; font-size:1.1rem; border-radius: 50px; background: white; border-width: 2px;" onclick="navigate('hall')">👀 Explore the Hub</button>
             </div>
-            
             <div class="bento-grid">
-                <div class="bento-card" style="background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a;">
-                    <div class="bento-icon-wrapper" style="background: white; color: #f59e0b; box-shadow: 0 8px 16px rgba(245,158,11,0.15);">🛍️</div>
-                    <h3 style="margin:0 0 10px; font-size:1.5rem; color:#92400e; letter-spacing:-0.5px;">Market & Moves</h3>
-                    <p style="margin:0; color:#b45309; font-weight:500; font-size:0.95rem;">Buy & sell with peers. Get paid to help someone move a fridge across campus.</p>
-                </div>
-                <div class="bento-card" style="background: linear-gradient(145deg, #fce7f3 0%, #fbcfe8 100%); border-color: #f9a8d4;">
-                    <div class="bento-icon-wrapper" style="background: white; color: #ec4899; box-shadow: 0 8px 16px rgba(236,72,153,0.15);">🥂</div>
-                    <h3 style="margin:0 0 10px; font-size:1.5rem; color:#9d174d; letter-spacing:-0.5px;">Team-Up & Flat</h3>
-                    <p style="margin:0; color:#be185d; font-weight:500; font-size:0.95rem;">Find a flatmate you actually like, or squad up for a weekend group buy.</p>
-                </div>
-                <div class="bento-card" style="background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0;">
-                    <div class="bento-icon-wrapper" style="background: white; color: #10b981; box-shadow: 0 8px 16px rgba(16,185,129,0.15);">🛡️</div>
-                    <h3 style="margin:0 0 10px; font-size:1.5rem; color:#065f46; letter-spacing:-0.5px;">Verified Trust</h3>
-                    <p style="margin:0; color:#047857; font-weight:500; font-size:0.95rem;">No scammers. Pure campus vibes powered by strict ID auth and credit scores.</p>
-                </div>
+                <div class="bento-card" style="background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a;"><div class="bento-icon-wrapper" style="background: white; color: #f59e0b; box-shadow: 0 8px 16px rgba(245,158,11,0.15);">🛍️</div><h3 style="margin:0 0 10px; font-size:1.5rem; color:#92400e; letter-spacing:-0.5px;">Market & Moves</h3><p style="margin:0; color:#b45309; font-weight:500; font-size:0.95rem;">Buy & sell with peers. Get paid to help someone move a fridge across campus.</p></div>
+                <div class="bento-card" style="background: linear-gradient(145deg, #fce7f3 0%, #fbcfe8 100%); border-color: #f9a8d4;"><div class="bento-icon-wrapper" style="background: white; color: #ec4899; box-shadow: 0 8px 16px rgba(236,72,153,0.15);">🥂</div><h3 style="margin:0 0 10px; font-size:1.5rem; color:#9d174d; letter-spacing:-0.5px;">Team-Up & Flat</h3><p style="margin:0; color:#be185d; font-weight:500; font-size:0.95rem;">Find a flatmate you actually like, or squad up for a weekend group buy.</p></div>
+                <div class="bento-card" style="background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0;"><div class="bento-icon-wrapper" style="background: white; color: #10b981; box-shadow: 0 8px 16px rgba(16,185,129,0.15);">🛡️</div><h3 style="margin:0 0 10px; font-size:1.5rem; color:#065f46; letter-spacing:-0.5px;">Verified Trust</h3><p style="margin:0; color:#047857; font-weight:500; font-size:0.95rem;">No scammers. Pure campus vibes powered by strict ID auth and credit scores.</p></div>
             </div>
         </section>
     </div>
@@ -207,7 +189,7 @@
         </div>
 
         <div id="post_logistics" class="tab-content active card" style="padding:0; overflow:hidden;">
-            <div id="map"></div>
+            <div id="map" class="map-container"></div>
             <div class="route-info-strip"><span><i class="fas fa-route"></i> DIST: <b id="distVal">0.00</b> km</span><span><i class="fas fa-hourglass-half"></i> EST: <b id="timeVal">0</b> min</span></div>
             <form id="form_logistics" style="padding: 0 3rem 3rem;" onsubmit="submitLogistics(event)">
                 <div class="form-grid"><div><label>Pickup</label><input type="text" id="p_from" readonly required></div><div><label>Destination</label><input type="text" id="p_to" readonly required></div></div>
@@ -232,8 +214,12 @@
             </form>
         </div>
 
-        <div id="post_flatting" class="tab-content card">
-            <form id="form_flatting" onsubmit="submitFlatting(event)">
+        <div id="post_flatting" class="tab-content card" style="padding:0; overflow:hidden;">
+            <div id="map_flat" class="map-container"></div>
+            <div class="route-info-strip" style="background: var(--warning); margin-bottom: 2rem;">
+                <span><i class="fas fa-map-pin"></i> 选定坐标 (Selected): <b id="flat_coord_val">未选择</b></span>
+            </div>
+            <form id="form_flatting" style="padding: 0 3rem 3rem;" onsubmit="submitFlatting(event)">
                 <div class="form-grid">
                     <div><label>Listing Title</label><input type="text" id="fl_title" placeholder="e.g. Master Room in City" required></div>
                     <div><label>Rent per week (NZD)</label><input type="number" id="fl_price" required></div>
@@ -248,7 +234,7 @@
                 </div>
                 <div class="form-grid">
                     <div><label>Preferences (硬性要求)</label><input type="text" id="fl_pref" placeholder="e.g. No Pets, Girls Only" required></div>
-                    <div><label>Location (Address)</label><input type="text" id="fl_loc" placeholder="e.g. 123 Symonds St" required></div>
+                    <div><label>Location (Address)</label><input type="text" id="fl_loc" placeholder="Click map to auto-fill or type..." required></div>
                 </div>
                 <label>Additional Details</label><textarea id="fl_desc" rows="3" required></textarea>
                 <label>Photos</label><input type="file" id="fl_file" multiple accept="image/*" required onchange="previewFiles(event, 'fl_preview')"><div id="fl_preview" class="thumb-strip"></div>
@@ -389,6 +375,7 @@
     // ======================= STATE & NAV =======================
     let user = JSON.parse(localStorage.getItem('user'));
     let map, routingControl, modalMap, modalRoutingControl, markers = [], modalMarkers = [];
+    let mapFlat, markerFlat; // 专属 Flatting 地图
     let state = { log: [], mar: [], flat: [], team: [], for: [], activeId: null, activeType: null, activeReplyId: null };
 
     const getAddrText = str => str ? (str.includes('@@') ? str.split('@@')[1] : str) : 'Unknown';
@@ -418,7 +405,11 @@
         });
     }
     function switchHall(tab) { toggleTabs('hall', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); }
-    function switchPost(tab) { toggleTabs('post', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); if(tab==='logistics'&&map) setTimeout(()=>map.invalidateSize(),200); }
+    function switchPost(tab) { 
+        toggleTabs('post', ['logistics', 'market', 'flatting', 'teamup', 'forum'], tab); 
+        if(tab==='logistics' && map) setTimeout(()=>map.invalidateSize(),200); 
+        if(tab==='flatting') { initFlatMap(); if(mapFlat) setTimeout(()=>mapFlat.invalidateSize(),200); }
+    }
     function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_tu'], tab); }
     
     function previewFiles(e, id) {
@@ -448,6 +439,31 @@
         }, 300);
     }
     
+    // V12.2 Flatting 发布专属地图
+    function initFlatMap() {
+        if(mapFlat) return;
+        setTimeout(() => {
+            mapFlat = L.map('map_flat', {zoomControl: false}).setView([-36.8509, 174.7645], 14); 
+            L.control.zoom({position: 'topright'}).addTo(mapFlat);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(mapFlat);
+
+            mapFlat.on('click', async e => {
+                if(markerFlat) mapFlat.removeLayer(markerFlat);
+                let cI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--warning)"><i class="fas fa-home" style="color:var(--warning); font-size:14px;"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
+                markerFlat = L.marker(e.latlng, {icon: cI}).addTo(mapFlat);
+                document.getElementById('flat_coord_val').innerText = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+                const input = document.getElementById('fl_loc'); 
+                input.value = "Fetching address...";
+                try { 
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`); 
+                    const d = await res.json(); 
+                    input.value = d.display_name.split(',').slice(0,3).join(',').trim(); 
+                } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
+            });
+        }, 300);
+    }
+
+    // Modal 展示地图
     function initModalMap(fC, tC) {
         if(!modalMap) { 
             modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); 
@@ -458,6 +474,7 @@
         let sI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--primary)"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
         
         if(fC && !tC) { 
+            sI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--warning)"><i class="fas fa-home" style="color:var(--warning);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
             let m1 = L.marker(fC, {icon: sI}).addTo(modalMap); modalMarkers.push(m1); modalMap.setView(fC, 15);
         } else if(fC && tC) { 
             let eI=L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--success)"><i class="fas fa-flag-checkered" style="color:var(--success);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
@@ -563,7 +580,26 @@
         else if (type === 'flat') {
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--warning); font-size:2.8rem;">$${item.rent_price}/w</h2><span class="status-badge" style="background:var(--warning); color:white;">${item.status}</span></div>`;
             if(item.coords) { document.getElementById('modal-map').style.display = 'block'; initModalMap(item.coords.split(',').map(Number), null); }
-            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><h3 style="margin:0; font-size:1.8rem;">${item.title}</h3><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:white; padding:15px; border-radius:12px; border:1px solid #eef2f6;"><div><i class="fas fa-door-open" style="color:var(--muted); width:20px;"></i> <b>Layout:</b> ${item.house_layout || 'N/A'}</div><div><i class="fas fa-bed" style="color:var(--muted); width:20px;"></i> <b>Room:</b> ${item.room_type}</div><div><i class="fas fa-bath" style="color:var(--muted); width:20px;"></i> <b>Bath:</b> ${item.bathroom_type || 'N/A'}</div><div><i class="far fa-calendar-alt" style="color:var(--muted); width:20px;"></i> <b>Available:</b> ${new Date(item.available_date).toLocaleDateString()}</div></div><div><b style="color:var(--danger); font-size:0.85rem; text-transform:uppercase;"><i class="fas fa-exclamation-circle"></i> Preferences</b> <br><span style="font-weight:700; color:var(--dark);">${item.preferences || 'None'}</span></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Location</b> <br><b>${item.location}</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Details</b> <br>${item.description}</div><div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:15px; margin-top:5px;"><i class="fas fa-shield-check" style="color:var(--success);"></i> Verified Publisher: ${item.publisher_name}</div></div>`;
+            
+            b.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
+                    <h3 style="margin:0; font-size:1.8rem;">${item.title}</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:white; padding:15px; border-radius:12px; border:1px solid #eef2f6;">
+                        <div><i class="fas fa-door-open" style="color:var(--muted); width:20px;"></i> <b>Layout:</b> ${item.house_layout || 'N/A'}</div>
+                        <div><i class="fas fa-bed" style="color:var(--muted); width:20px;"></i> <b>Room:</b> ${item.room_type}</div>
+                        <div><i class="fas fa-bath" style="color:var(--muted); width:20px;"></i> <b>Bath:</b> ${item.bathroom_type || 'N/A'}</div>
+                        <div><i class="far fa-calendar-alt" style="color:var(--muted); width:20px;"></i> <b>Available:</b> ${new Date(item.available_date).toLocaleDateString()}</div>
+                    </div>
+                    <div><b style="color:var(--danger); font-size:0.85rem; text-transform:uppercase;"><i class="fas fa-exclamation-circle"></i> Preferences</b> <br><span style="font-weight:700; color:var(--dark);">${item.preferences || 'None'}</span></div>
+                    <div>
+                        <b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Location</b> <br>
+                        <b style="display:inline-block; margin-right: 10px;">${item.location}</b>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:none; font-size:0.9rem;"><i class="fas fa-external-link-alt"></i> Google Maps</a>
+                    </div>
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Details</b> <br>${item.description}</div>
+                    <div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:15px; margin-top:5px;"><i class="fas fa-shield-check" style="color:var(--success);"></i> Verified Publisher: ${item.publisher_name}</div>
+                </div>`;
+                
             let btns = '';
             if(item.publisher_id === user.email) btns = `<button class="btn btn-outline" onclick="toggleFlatting('${item._id}')">${item.status==='open'?'Mark as Closed':'Reopen Listing'}</button> <button class="btn btn-danger" onclick="deleteItem('flat', '${item._id}')">Delete Listing</button>`;
             f.innerHTML = btns || `<span style="font-weight:800; color:var(--muted);">Comment below to contact publisher.</span>`;
@@ -693,7 +729,12 @@
     async function submitFlatting(e) {
         e.preventDefault(); const btn = document.querySelector('#form_flatting button'); btn.innerText = "Locating Map & Publishing...";
         let locStr = document.getElementById('fl_loc').value; let coords = null;
-        try { const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locStr + ', Auckland')}`); const geoData = await geoRes.json(); if(geoData.length > 0) coords = `${geoData[0].lat},${geoData[0].lon}`; } catch(err) { console.log("Geocoding failed"); }
+        if(markerFlat) {
+            coords = `${markerFlat.getLatLng().lat},${markerFlat.getLatLng().lng}`;
+        } else {
+            try { const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locStr + ', Auckland')}`); const geoData = await geoRes.json(); if(geoData.length > 0) coords = `${geoData[0].lat},${geoData[0].lon}`; } catch(err) { console.log("Geocoding failed"); }
+        }
+        
         const f = new FormData(); f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name); if(coords) f.append('coords', coords);
         ['title','price','type','date','loc','desc','layout','bath','pref'].forEach(k=>{ const mapKey = {price:'rent_price',type:'room_type',date:'available_date',loc:'location',desc:'description',layout:'house_layout',bath:'bathroom_type',pref:'preferences'}[k]||k; f.append(mapKey, document.getElementById(`fl_${k}`).value); });
         Array.from(document.getElementById('fl_file').files).forEach(x=>f.append('images', x));
