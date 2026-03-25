@@ -790,63 +790,72 @@ function switchProf(tab) { toggleTabs('prof', ['kb_log', 'kb_mar', 'kb_fl', 'kb_
 
     // ======================= KANBAN PROFILE =======================
 async function loadProfileData() {
+    console.log("Checking User Profile..."); // 调试点1
     try {
-        // 1. 获取基础用户资料
+        // 1. 获取用户详情
         const res = await fetch(`/api/user/detail/${user.email}`); 
-        if(!res.ok) throw new Error("User Detail Fetch Failed");
         const d = await res.json(); 
         const u = d.user || {};
         
-        // 安全渲染个人信息卡片
-        const profileTarget = document.getElementById('profileDetails');
-        if(profileTarget) {
-            profileTarget.innerHTML = [
-                ['ID', u.student_id || 'N/A'], 
-                ['Name', `${u.first_name || ''} ${u.given_name || ''}`], 
-                ['Nick', u.anonymous_name || 'Guest'], 
-                ['Email', u.email || '']
-            ].map(f => `<div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #eef2f6;"><label style="margin-bottom:5px; font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">${f[0]}</label><div style="font-weight:800; font-size:1rem;">${f[1]}</div></div>`).join('');
+        // 渲染个人信息卡片 - 增加空值保护
+        const profBox = document.getElementById('profileDetails');
+        if (profBox) {
+            profBox.innerHTML = [
+                ['ID', u.student_id || 'Pending'], 
+                ['Name', `${u.first_name || ''} ${u.given_name || ''}`.trim() || 'Unknown'], 
+                ['Nick', u.anonymous_name || 'Anonymous'], 
+                ['Email', u.email || user.email]
+            ].map(f => `
+                <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #eef2f6;">
+                    <label style="margin-bottom:5px; font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">${f[0]}</label>
+                    <div style="font-weight:800; font-size:1rem;">${f[1]}</div>
+                </div>
+            `).join('');
         }
-        
+
+        // 渲染评分和勋章
         if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0"; 
         if(document.getElementById('p_medals')) document.getElementById('p_medals').innerText = u.medal_points || 0;
 
         // 2. 获取 Dashboard 聚合数据
+        console.log("Fetching Dashboard Data..."); // 调试点2
         const resT = await fetch('/api/user/dashboard', { 
             method:'POST', 
             headers:{'Content-Type':'application/json'}, 
-            body:JSON.stringify({email:user.email})
+            body:JSON.stringify({email: user.email})
         }); 
         const dT = await resT.json();
 
-        // 定义渲染器 (带安全检查)
+        // 增强版看板渲染器
         const renderKB = (prefix, col, validStatuses, listArray = [], isTeam=false, isFlat=false) => {
             const elCnt = document.getElementById(`cnt_${prefix}_${col}`);
             const elCol = document.getElementById(`col_${prefix}_${col}`);
-            if(!elCnt || !elCol) return; // 如果元素不存在则跳过，不报错
+            if (!elCnt || !elCol) return; 
 
-            const fList = listArray.filter(t => validStatuses.includes(t.status));
+            // 过滤状态
+            const fList = (listArray || []).filter(t => validStatuses.includes(t.status));
             elCnt.innerText = fList.length;
+            
             elCol.innerHTML = fList.map(t => {
-                const isOwner = (t.publisher_id||t.seller_id||t.initiator_id) === user.email;
-                let topText = t.title || 'Untitled'; 
-                if(prefix==='log') topText = t.reward || 'No Reward';
-                let btmText = t.location || (t.from_addr ? t.from_addr.name : 'Unknown');
-                if(isFlat) { topText = `$${t.rent_price} - ${t.room_type}`; }
-                if(isTeam) { topText = `👥 ${t.joined_members?.length || 0}/${t.max_members} - ${t.title}`; }
+                const isOwner = (t.publisher_id || t.seller_id || t.initiator_id) === user.email;
+                let title = t.title || "No Title";
+                if(prefix === 'log') title = t.reward || "No Reward";
+                if(isFlat) title = `$${t.rent_price || 0} - ${t.room_type || 'Room'}`;
                 
-                return `<div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}">${isOwner?'Owner':'Joined'}</span>
-                        <span style="font-size:0.7rem; color:var(--muted);">${new Date(t.created_at).toLocaleDateString()}</span>
+                return `
+                    <div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}">${isOwner?'Owner':'Joined'}</span>
+                            <span style="font-size:0.7rem; color:var(--muted);">${new Date(t.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div style="font-weight:900; margin-bottom:5px; font-size:1.1rem;">${title}</div>
+                        <div style="font-size:0.8rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 ${t.location || 'Auckland'}</div>
                     </div>
-                    <div style="font-weight:900; margin-bottom:5px; font-size:1.1rem;">${topText}</div>
-                    <div style="font-size:0.8rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 ${btmText}</div>
-                </div>`;
-            }).join('') || '<div style="font-size:0.8rem; color:ccc; padding:10px;">Empty</div>';
+                `;
+            }).join('') || '<div style="font-size:0.75rem; color:#ccc; padding:10px; text-align:center;">No records</div>';
         };
 
-        // 渲染 4 大看板
+        // 渲染前四个板块
         renderKB('log', 'pend', ['pending'], dT.tasks); 
         renderKB('log', 'prog', ['assigned'], dT.tasks); 
         renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks);
@@ -861,30 +870,26 @@ async function loadProfileData() {
         renderKB('tu', 'gather', ['gathering'], dT.teamups, true); 
         renderKB('tu', 'comp', ['completed', 'failed'], dT.teamups, true);
 
-        // 3. 渲染第五个标签 My Buzz
-        const buzzList = dT.posts || [];
-        const bzCnt = document.getElementById('cnt_bz_all');
+        // 3. 渲染 My Buzz (防错处理)
         const bzCol = document.getElementById('col_bz_all');
-        
-        if(bzCnt) bzCnt.innerText = buzzList.length;
-        if(bzCol) {
-            bzCol.innerHTML = buzzList.map(f => `
-                <div class="forum-card" style="margin-bottom:1rem; box-shadow:none; border:1px solid #eef2f6; width: 100%; text-align: left;">
-                    <div class="f-header">
-                        <div style="font-size:0.85rem; color:var(--muted);">${new Date(f.created_at).toLocaleString()}</div>
-                    </div>
-                    <div class="f-content" style="font-size:0.95rem; margin: 10px 0;">${f.content}</div>
-                    <div class="f-actions" style="display:flex; gap:15px; border-top: 1px solid #f8fafc; padding-top: 10px;">
-                        <span style="font-size:0.8rem;"><i class="fas fa-heart"></i> ${f.likes?.length || 0}</span>
-                        <span style="font-size:0.8rem;"><i class="fas fa-comment"></i> ${f.comments?.length || 0}</span>
-                        <button class="btn-sm" style="margin-left:auto; background:none; border:none; color:var(--danger); cursor:pointer;" onclick="deleteBuzz('${f._id}')">Delete</button>
+        if (bzCol) {
+            const posts = dT.posts || [];
+            document.getElementById('cnt_bz_all').innerText = posts.length;
+            bzCol.innerHTML = posts.map(f => `
+                <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; width:100%; text-align:left;">
+                    <div style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">${new Date(f.created_at).toLocaleString()}</div>
+                    <div style="font-size:0.95rem; margin-bottom:10px;">${f.content || ''}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f8fafc; padding-top:8px;">
+                        <span style="font-size:0.8rem; color:var(--muted);"><i class="fas fa-heart"></i> ${f.likes?.length || 0}</span>
+                        <button class="btn-sm" style="color:var(--danger); background:none; border:none;" onclick="deleteBuzz('${f._id}')">Delete</button>
                     </div>
                 </div>
-            `).join('') || '<p style="text-align:center; padding:2rem; color:var(--muted);">No posts yet.</p>';
+            `).join('') || '<p style="text-align:center; padding:1rem; color:#ccc;">No posts yet.</p>';
         }
 
     } catch(e) { 
-        console.error("Dashboard Critical Error:", e); 
+        console.error("Critical Profile Load Error:", e);
+        // 如果报错，尝试至少渲染出基础 UI 结构，不至于白屏
     }
 }
     // ======================= POSTING ENGINES =======================
