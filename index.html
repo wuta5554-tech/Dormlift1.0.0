@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V11.5 Premium Modular Super App
+           DESIGN SYSTEM: V11.6 Premium Modular Super App
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -307,8 +307,15 @@
                 <div class="form-grid"><div><label>First Name</label><input type="text" id="r_fn" required></div><div><label>Last Name</label><input type="text" id="r_ln" required></div></div>
                 <label>University Email</label>
                 <div style="display:flex; gap:12px; margin-bottom:1.5rem;"><input type="email" id="r_email" required style="margin:0"><button type="button" class="btn btn-outline btn-sm" style="width:150px; font-weight:800;" onclick="sendCode()" id="btnSendCode">Get Code</button></div>
+                
                 <div class="form-grid"><div><label>Verification Code</label><input type="text" id="r_code" required></div><div><label>Phone Number</label><input type="text" id="r_phone" required></div></div>
-                <div class="form-grid"><div><label>Gender</label><select id="r_gender"><option>Male</option><option>Female</option></select></div><div><label>Create Password</label><input type="password" id="r_pwd" required></div></div>
+                <div style="margin-bottom:1.5rem;"><label>Gender</label><select id="r_gender"><option>Male</option><option>Female</option></select></div>
+                
+                <div class="form-grid">
+                    <div><label>Create Password</label><input type="password" id="r_pwd" required></div>
+                    <div><label>Confirm Password</label><input type="password" id="r_pwd2" required placeholder="Re-enter password"></div>
+                </div>
+
                 <button type="submit" class="btn" style="width:100%; margin-top:1.5rem; padding:1.2rem; font-size:1.1rem;">Authorize & Join</button>
             </form>
             <p style="text-align:center; margin-top:2rem; font-size:0.95rem;">Already registered? <b style="color:var(--primary); cursor:pointer;" onclick="navigate('login')">Sign In</b></p>
@@ -468,7 +475,7 @@
                 const input = document.getElementById(isStart ? 'p_from' : 'p_to');
                 input.value = "Fetching campus address...";
                 try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/11.5'} });
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/11.6'} });
                     const d = await res.json();
                     input.value = d.display_name ? d.display_name.split(',').slice(0,3).join(',').trim() : `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
                 } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
@@ -921,9 +928,39 @@
 
     document.getElementById('regForm').onsubmit = async e => {
         e.preventDefault();
-        const b = { student_id: document.getElementById('r_sid').value, anonymous_name: document.getElementById('r_anon').value, first_name: document.getElementById('r_fn').value, given_name: document.getElementById('r_ln').value, email: document.getElementById('r_email').value, password: document.getElementById('r_pwd').value, code: document.getElementById('r_code').value, phone: document.getElementById('r_phone').value, gender: document.getElementById('r_gender').value };
+
+        // 新增：密码二次验证拦截
+        const pwd = document.getElementById('r_pwd').value;
+        const pwd2 = document.getElementById('r_pwd2').value;
+        if (pwd !== pwd2) {
+            return alert("❌ 两次输入的密码不一致，请重新确认！(Passwords do not match)");
+        }
+
+        const b = { 
+            student_id: document.getElementById('r_sid').value, 
+            anonymous_name: document.getElementById('r_anon').value, 
+            first_name: document.getElementById('r_fn').value, 
+            given_name: document.getElementById('r_ln').value, 
+            email: document.getElementById('r_email').value, 
+            password: pwd, 
+            code: document.getElementById('r_code').value, 
+            phone: document.getElementById('r_phone').value, 
+            gender: document.getElementById('r_gender').value 
+        };
+
+        const submitBtn = document.querySelector('#regForm button[type="submit"]');
+        submitBtn.innerText = "Authorizing...";
+
         const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
-        if(res.ok) { alert("Registration Verified!"); navigate('login'); } else alert("Registration Failed. Check code.");
+        
+        submitBtn.innerText = "Authorize & Join";
+
+        if(res.ok) { 
+            alert("✅ Registration Verified!"); 
+            navigate('login'); 
+        } else {
+            alert("❌ Registration Failed. Check your code or duplicate student ID.");
+        }
     };
 
     document.getElementById('loginForm').onsubmit = async e => {
