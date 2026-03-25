@@ -275,7 +275,7 @@ app.post('/api/user/dashboard', async (req, res) => {
             MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }),
             Flatting.find({ publisher_id: email }),
             TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] }),
-            ForumPost.find({ author_email: email }) // 注意：这里的 key 必须与数据库一致
+            ForumPost.find({ author_id: email }) // 注意：这里的 key 必须与数据库一致
         ]);
 
         res.json({ 
