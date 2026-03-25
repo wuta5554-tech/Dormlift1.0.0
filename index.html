@@ -483,7 +483,7 @@
         try {
             const [resL, resM, resF] = await Promise.all([fetch('/api/task/all'), fetch('/api/market/all'), fetch('/api/forum/all')]);
             
-            // 防御性拦截：处理 Railway 唤醒时的 HTML 错误页面，防止白屏
+            // 防御性拦截：处理 Railway 唤醒时的 HTML 错误页面，防止白屏崩溃
             if (!resL.ok || !resM.ok || !resF.ok) {
                 const loadingMsg = '<div style="padding:5rem; text-align:center; color:var(--warning); font-size:1.1rem; font-weight:600;"><i class="fas fa-satellite-dish fa-fade" style="margin-right:10px;"></i> 校园服务器正在唤醒，请稍等几秒后点击右上角 [Refresh Feed] 刷新...</div>';
                 document.getElementById('list_logistics').innerHTML = loadingMsg;
@@ -616,6 +616,7 @@
             if(item.status === 'assigned' && item.publisher_id === user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>`;
             if(item.publisher_id === user.email && (item.status === 'pending' || item.status === 'assigned')) btns += `<button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw Task</button>`;
             
+            // 评分 UI (Logistics)
             if(item.status === 'completed' && item.publisher_id === user.email) {
                 btns = `
                 <div style="width:100%; background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #eef2f6;">
@@ -664,6 +665,7 @@
             }
             if(item.seller_id === user.email && (item.status === 'available' || item.status === 'reserved')) btns += `<button class="btn btn-danger" style="margin-top:10px; width:100%;" onclick="execFlow('mar', 'available')">Cancel & Relist</button>`;
             
+            // 评分 UI (Market)
             if(item.status === 'completed' && item.buyer_id === user.email) {
                 btns = `
                 <div style="width:100%; background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #eef2f6;">
