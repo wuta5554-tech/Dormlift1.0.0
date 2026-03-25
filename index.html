@@ -202,6 +202,29 @@
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
 }
+  /* 解決看板標題和數字重疊 */
+.kanban-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    background: #f1f5f9;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--dark);
+}
+
+.kanban-badge {
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    min-width: 20px;
+    text-align: center;
+}
     </style>
 </head>
 <body>
@@ -834,35 +857,36 @@ async function loadProfileData() {
     const safeEmail = user.email.toLowerCase();
 
     try {
-        // 1. 獲取身份數據
+        // 1. 獲取用戶數據 (UoA Identity)
         const res = await fetch(`/api/user/detail/${encodeURIComponent(safeEmail)}`);
         const d = await res.json();
-        const u = d.user || user; // 如果後端查不到，先用緩存裡的 user 墊底
+        
+        // 🚨 這裡使用你提供的 JSON 結構進行對齊
+        const u = d.user || {}; 
 
-        // 2. 暴力填入 Identity (不再用循環，直接寫死，防止渲染崩潰)
         const profBox = document.getElementById('profileDetails');
         if (profBox) {
             profBox.innerHTML = `
                 <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
-                    <label style="font-size:0.7rem; font-weight:800; color:var(--muted);">STUDENT ID</label>
-                    <div style="font-weight:900;">${u.student_id || 'N/A'}</div>
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">Student ID</label>
+                    <div style="font-weight:900;">${u.student_id || (u._id ? u._id.slice(-6).toUpperCase() : 'N/A')}</div>
                 </div>
                 <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
-                    <label style="font-size:0.7rem; font-weight:800; color:var(--muted);">FULL NAME</label>
-                    <div style="font-weight:900;">${u.full_name || u.first_name || 'Anonymous'}</div>
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">Full Name</label>
+                    <div style="font-weight:900;">${u.full_name || 'User ' + u.anonymous_name}</div>
                 </div>
                 <div style="background:#f8fafc; padding:1.2rem; border-radius:12px; border:1px solid #eef2f6;">
-                    <label style="font-size:0.7rem; font-weight:800; color:var(--muted);">NICKNAME</label>
-                    <div style="font-weight:900;">${u.anonymous_name || 'Anonymous'}</div>
+                    <label style="font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase;">Medal Points</label>
+                    <div style="font-weight:900; color:var(--medal);">🏅 ${u.medal_points || 0}</div>
                 </div>
             `;
         }
 
-        // 3. 更新積分 (對應你數據庫裡的 13 分)
+        // 更新頂部大數字 (根據 JSON 數據應顯示 13 和 5.0)
         if(document.getElementById('p_medals')) document.getElementById('p_medals').innerText = u.medal_points || 0;
         if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = (u.rating_avg || 5.0).toFixed(1);
 
-        // 4. 獲取 Dashboard 數據
+        // 2. 獲取 Dashboard 數據
         const resT = await fetch('/api/user/dashboard', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -870,44 +894,45 @@ async function loadProfileData() {
         });
         const dT = await resT.json();
 
-        // 5. 看板渲染器 (加入安全保護，防止「Pending0」)
+        // 3. 渲染看板 (解決 Pending0 顯示重疊的問題)
         const renderKB = (prefix, col, validStatuses, listArray = []) => {
             const elCnt = document.getElementById(`cnt_${prefix}_${col}`);
             const elCol = document.getElementById(`col_${prefix}_${col}`);
             if (!elCnt || !elCol) return;
 
             const fList = (listArray || []).filter(t => validStatuses.includes(t.status));
-            elCnt.innerText = fList.length; // 只寫數字
+            elCnt.innerText = fList.length; // 只填數字，HTML 裡的 "Pending" 字樣保留在外面
             
             elCol.innerHTML = fList.map(t => `
                 <div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
-                    <div style="font-weight:900;">${t.title || t.reward || 'Untitled'}</div>
+                    <div style="font-weight:900; margin-bottom:5px;">${t.title || t.reward || 'No Title'}</div>
                     <div style="font-size:0.8rem; color:var(--muted);">📍 ${t.location || 'Auckland'}</div>
                 </div>
             `).join('') || '<div style="font-size:0.75rem; color:#ccc; padding:15px; text-align:center;">No records</div>';
         };
 
-        // 渲染看板各個模塊
+        // 執行各模塊渲染
         renderKB('log', 'pend', ['pending'], dT.tasks);
-        renderKB('log', 'prog', ['assigned'], dT.tasks);
-        renderKB('log', 'hist', ['completed'], dT.tasks);
-        
         renderKB('mar', 'pend', ['available'], dT.market);
         renderKB('fl', 'open', ['open'], dT.flatting);
         renderKB('tu', 'gather', ['gathering'], dT.teamups);
 
-        // 6. 渲染 My Buzz (你的核心需求)
+        // 4. 渲染 My Buzz (專用獨立邏輯)
         const bzCol = document.getElementById('col_bz_all');
-        if (bzCol) {
+        const bzCnt = document.getElementById('cnt_bz_all');
+        if (bzCol && bzCnt) {
             const posts = dT.posts || [];
-            document.getElementById('cnt_bz_all').innerText = posts.length;
+            bzCnt.innerText = posts.length;
             bzCol.innerHTML = posts.map(f => `
-                <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; text-align:left;">
-                    <div style="font-size:0.8rem; color:var(--muted);">${new Date(f.created_at).toLocaleString()}</div>
-                    <div style="margin:10px 0;">${f.content}</div>
-                    <button class="btn-sm" style="color:var(--danger); background:none; border:none;" onclick="deleteBuzz('${f._id}')">Delete</button>
+                <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; text-align:left; box-shadow:none;">
+                    <div style="font-size:0.8rem; color:var(--muted); mb:8px;">${new Date(f.created_at).toLocaleString()}</div>
+                    <div style="font-size:0.95rem; font-weight:500;">${f.content || ''}</div>
+                    <div style="margin-top:10px; border-top:1px solid #f8fafc; padding-top:8px;">
+                        <button class="btn-sm" style="color:var(--danger); background:none; border:none; cursor:pointer;" 
+                                onclick="event.stopPropagation(); deleteBuzz('${f._id}')">Delete Post</button>
+                    </div>
                 </div>
-            `).join('') || '<p style="text-align:center; padding:1rem; color:#ccc;">No posts yet.</p>';
+            `).join('') || '<p style="text-align:center; padding:2rem; color:#ccc;">No posts yet.</p>';
         }
 
     } catch (e) {
