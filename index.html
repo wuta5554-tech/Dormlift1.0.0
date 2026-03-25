@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormLift Pro | The Campus Super App</title>
+    <title>DormLift Pro | The Campus Super App V12</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
@@ -15,60 +15,45 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V12 Premium Modular Super App
+           DESIGN SYSTEM: V12.1 Premium Modular Super App
         ============================================================= */
         :root {
-            --primary: #4f46e5;
-            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            --success: #059669;
-            --warning: #f59e0b;
-            --danger: #dc2626;
-            --medal: #d97706; 
-            --team: #ec4899; 
-            --dark: #0f172a;
-            --text: #334155;
-            --muted: #64748b;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --radius-lg: 1.25rem;
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --primary: #4f46e5; --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --success: #059669; --warning: #f59e0b; --danger: #dc2626; --medal: #d97706; --team: #ec4899; 
+            --dark: #0f172a; --text: #334155; --muted: #64748b; --bg: #f8fafc; --surface: #ffffff;
+            --radius-lg: 1.25rem; --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05); --shadow-premium: 0 10px 15px -3px rgba(0,0,0,0.08);
         }
-
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
         
         .page { display: none !important; opacity: 0; }
         .page.active { display: block !important; animation: slideUp 0.4s ease forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
         /* Navigation */
         nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 1rem 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0; }
         .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
-        .brand-icon { width: 42px; height: 42px; background: var(--primary-gradient); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .brand-icon { width: 42px; height: 42px; background: var(--primary-gradient); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
         .brand-text { font-size: 1.5rem; font-weight: 800; color: var(--dark); letter-spacing: -1px; }
         .nav-links { display: flex; align-items: center; gap: 2rem; }
         .nav-links a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
         .nav-links a:hover { color: var(--primary); }
-        .user-tag { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 6px 18px; border-radius: 24px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(79, 70, 229, 0.2); cursor: pointer; transition: 0.2s; }
-        .user-tag:hover { background: var(--primary); color: white; }
+        .user-tag { background: rgba(79,70,229,0.1); color: var(--primary); padding: 6px 18px; border-radius: 24px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(79,70,229,0.2); cursor: pointer; transition: 0.2s; }
 
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
-        /* Unified Modular Tabs (Scrollable for 5 items) */
+        /* Tabs */
         .tab-container { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 0.5rem; border-radius: 1rem; box-shadow: var(--shadow-sm); border: 1px solid #eef2f6; overflow-x: auto; scrollbar-width: none; }
         .tab-container::-webkit-scrollbar { display: none; }
         .tab-btn { flex: 1; min-width: 150px; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.05rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; white-space: nowrap; }
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
-        .tab-content { display: none !important; }
-        .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
+        .tab-content { display: none !important; } .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* =============================================================
-           HUB LAYOUTS (Logistics, Market, Flatting, TeamUp, Forum)
-        ============================================================= */
+        /* Hub Layouts */
         .hub-container { display: flex; flex-direction: column; gap: 1rem; }
         .hub-row { display: grid; grid-template-columns: 100px 1fr 130px; align-items: center; background: white; border-radius: 16px; padding: 1.5rem 2rem; border: 1px solid #eef2f6; transition: 0.3s; cursor: pointer; margin-bottom: 1rem; }
         .hub-row:hover { transform: translateX(8px); border-color: var(--primary); box-shadow: var(--shadow-premium); }
@@ -82,17 +67,14 @@
         .m-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
         
         /* Team-Up Card Specifics */
-        .team-card { border-left: 5px solid var(--team); }
+        .team-card { border-top: 4px solid var(--team); }
         .team-progress-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; margin: 12px 0; overflow: hidden; }
         .team-progress-fill { height: 100%; background: linear-gradient(90deg, #ec4899, #f43f5e); transition: width 0.5s ease; }
 
-        /* Forum */
         .forum-feed { max-width: 750px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
         .forum-card { background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #eef2f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 
-        /* =============================================================
-           KANBAN & MAP & FORMS
-        ============================================================= */
+        /* KANBAN & FORMS */
         .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 400px; border: 1px dashed #e2e8f0; }
         .kanban-card { background: white; border-radius: 1rem; padding: 1.2rem; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1.5px solid transparent; cursor: pointer; transition: 0.3s; }
@@ -100,14 +82,14 @@
         .kb-role-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
 
         .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79,70,229,0.4); }
         .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
         .btn-outline:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .btn-danger { background: #fee2e2; color: var(--danger); border: 1.5px solid #fecaca; }
         
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
         input, select, textarea { width: 100%; padding: 1rem 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 1rem; transition: 0.2s; }
-        input:focus, textarea:focus, select:focus { border-color: var(--primary); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        input:focus, textarea:focus, select:focus { border-color: var(--primary); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79,70,229,0.1); }
 
         #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
         #modal-map { height: 280px; border-radius: 1.5rem; border: 2px solid #eef2f6; z-index: 10; margin-bottom: 1.5rem; display: none; }
@@ -116,9 +98,10 @@
         /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
-        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .comment-item { background: white; padding: 1.25rem; border-radius: 1.2rem; margin-bottom: 1.25rem; border: 1px solid #f1f5f9; }
+        .comment-reply { margin-left: 3rem; margin-top: 1rem; border-left: 4px solid var(--primary); padding-left: 1.5rem; background: #fafafa; border-radius: 0 1.2rem 1.2rem 0; }
         .thumb-strip { display: flex; gap: 14px; overflow-x: auto; padding: 12px 0; margin-bottom: 2rem; }
-        .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; cursor: pointer; border: 2px solid #f1f5f9; transition: 0.3s; }
+        .thumb-img { width: 120px; height: 120px; object-fit: cover; border-radius: 14px; cursor: pointer; border: 2px solid #f1f5f9; }
         .status-badge { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
@@ -140,11 +123,6 @@
             <div style="display:flex; justify-content:center; gap:1.5rem;">
                 <button class="btn" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('post')">Publish to Network</button>
                 <button class="btn btn-outline" style="padding: 1.2rem 4.5rem; font-size:1.1rem;" onclick="navigate('hall')">Explore Discoveries</button>
-            </div>
-            <div class="value-grid">
-                <div class="value-card"><i class="fas fa-tags"></i><h3 style="margin:0 0 10px 0;">Peer Pricing</h3><p style="margin:0;">By students, for students. Zero commission fees.</p></div>
-                <div class="value-card" style="border-color:var(--success);"><i class="fas fa-bolt" style="color:var(--success);"></i><h3 style="margin:0 0 10px 0;">Instant Flexibility</h3><p style="margin:0;">Match with available student helpers in minutes.</p></div>
-                <div class="value-card" style="border-color:var(--warning);"><i class="fas fa-shield-check" style="color:var(--warning);"></i><h3 style="margin:0 0 10px 0;">Verified Trust</h3><p style="margin:0;">Only UoA members with verified SIDs can interact.</p></div>
             </div>
         </section>
     </div>
@@ -208,13 +186,23 @@
 
         <div id="post_flatting" class="tab-content card">
             <form id="form_flatting" onsubmit="submitFlatting(event)">
-                <div class="form-grid"><div><label>Listing Title</label><input type="text" id="fl_title" placeholder="e.g. Master Room in City" required></div><div><label>Rent per week (NZD)</label><input type="number" id="fl_price" required></div></div>
                 <div class="form-grid">
-                    <div><label>Room Type</label><select id="fl_type"><option>Single Room</option><option>Double Room</option><option>Ensuite</option><option>Studio</option><option>Whole House</option></select></div>
+                    <div><label>Listing Title</label><input type="text" id="fl_title" placeholder="e.g. Master Room in City" required></div>
+                    <div><label>Rent per week (NZD)</label><input type="number" id="fl_price" required></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>House Layout (格局)</label><input type="text" id="fl_layout" placeholder="e.g. 4 Bed 2 Bath" required></div>
+                    <div><label>Bathroom</label><select id="fl_bath"><option>Ensuite (独立卫浴)</option><option>Shared (与室友共享)</option></select></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>Room Type</label><select id="fl_type"><option>Single Room</option><option>Double Room</option><option>Studio</option><option>Whole House</option></select></div>
                     <div><label>Available From</label><input type="date" id="fl_date" required></div>
                 </div>
-                <label>Location / Address</label><input type="text" id="fl_loc" required style="margin-bottom:1.5rem;">
-                <label>Flatmate Preferences & Details</label><textarea id="fl_desc" rows="4" required></textarea>
+                <div class="form-grid">
+                    <div><label>Preferences (硬性要求)</label><input type="text" id="fl_pref" placeholder="e.g. No Pets, Girls Only" required></div>
+                    <div><label>Location (Address)</label><input type="text" id="fl_loc" placeholder="e.g. 123 Symonds St" required></div>
+                </div>
+                <label>Additional Details</label><textarea id="fl_desc" rows="3" required></textarea>
                 <label>Photos</label><input type="file" id="fl_file" multiple accept="image/*" required onchange="previewFiles(event, 'fl_preview')"><div id="fl_preview" class="thumb-strip"></div>
                 <button type="submit" class="btn" style="width:100%; padding:1.2rem; background:var(--warning);">Publish Housing <i class="fas fa-home"></i></button>
             </form>
@@ -222,9 +210,34 @@
 
         <div id="post_teamup" class="tab-content card">
             <form id="form_teamup" onsubmit="submitTeamUp(event)">
-                <div class="form-grid"><div><label>Event / Buy Title</label><input type="text" id="tu_title" placeholder="e.g. Uber to Airport / Group Buy Desk" required></div><div><label>Target Members (Incl. you)</label><input type="number" id="tu_count" min="2" max="50" required></div></div>
-                <div class="form-grid"><div><label>Meeting Time / Deadline</label><input type="datetime-local" id="tu_time" required></div><div><label>Meeting Location</label><input type="text" id="tu_loc" required></div></div>
-                <label>Description & Requirements</label><textarea id="tu_desc" rows="4" placeholder="Explain the plan..." required></textarea>
+                <div class="form-grid">
+                    <div><label>Event / Buy Title</label><input type="text" id="tu_title" placeholder="e.g. Uber to Airport" required></div>
+                    <div><label>Category (活动分类)</label>
+                        <select id="tu_cat" style="border-color:var(--team); color:var(--team); font-weight:700;">
+                            <option value="Carpool">🚗 Carpool (拼车/出行)</option><option value="GroupBuy">🛍️ Group Buy (拼单/团购)</option>
+                            <option value="Sports">🏃‍♂️ Sports (运动/户外)</option><option value="Study">📚 Study (自习/课业)</option><option value="Social">🎮 Social (社交)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div><label>Min Members (成团底线)</label><input type="number" id="tu_min" min="2" required></div>
+                    <div><label>Max Members (人数上限)</label><input type="number" id="tu_max" min="2" required></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>Meeting Time / Deadline</label><input type="datetime-local" id="tu_time" required></div>
+                    <div><label>Location (集合地)</label><input type="text" id="tu_loc" required></div>
+                </div>
+                <div class="form-grid">
+                    <div><label>Est. Cost (预估花费)</label><input type="text" id="tu_cost" placeholder="e.g. $15 或 AA" required></div>
+                    <div><label>Min Credit Required (信用要求)</label>
+                        <select id="tu_credit" style="color:var(--danger); font-weight:800;">
+                            <option value="0">0 (所有人可进)</option><option value="4.0">4.0+ ⭐ (基本靠谱)</option>
+                            <option value="4.5">4.5+ ⭐ (绝对优质)</option><option value="4.8">4.8+ ⭐ (完美信用)</option>
+                        </select>
+                    </div>
+                </div>
+                <label>Description & Requirements</label><textarea id="tu_desc" rows="3" required></textarea>
+                <label>Cover Photo (海报/商品图)</label><input type="file" id="tu_file" multiple accept="image/*" required onchange="previewFiles(event, 'tu_preview')"><div id="tu_preview" class="thumb-strip"></div>
                 <button type="submit" class="btn" style="width:100%; padding:1.2rem; background:var(--team); margin-top:1rem;">Initiate Team-Up <i class="fas fa-users"></i></button>
             </form>
         </div>
@@ -273,7 +286,7 @@
             </div>
             <div id="kb_tu" class="tab-content kanban-board">
                 <div class="kanban-col"><div class="kanban-header"><span>Gathering</span><span class="kanban-badge" id="cnt_tu_gather">0</span></div><div id="col_tu_gather"></div></div>
-                <div class="kanban-col"><div class="kanban-header"><span>Completed</span><span class="kanban-badge" id="cnt_tu_comp">0</span></div><div id="col_tu_comp"></div></div>
+                <div class="kanban-col"><div class="kanban-header"><span>Resolved (Comp/Fail)</span><span class="kanban-badge" id="cnt_tu_comp">0</span></div><div id="col_tu_comp"></div></div>
             </div>
         </div>
         <button class="btn btn-danger btn-sm" style="opacity:0.4; margin-top:5rem;" onclick="nuke()">☢️ Wipe Global Data Node (DEV)</button>
@@ -311,10 +324,10 @@
         <div class="thumb-strip" id="mod_thumbs"></div>
         <div id="mod_body" style="background:#f8fafc; padding:2.5rem; border-radius:1.5rem; border:1px solid #eef2f6;"></div>
         
-        <div id="mod_interaction" class="interaction-box">
+        <div id="mod_interaction" class="interaction-box" style="background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6;">
             <h4 style="margin-top:0;"><i class="far fa-comments" style="color:var(--primary);"></i> Discussion Thread</h4>
             <div id="mod_comments" style="max-height:350px; overflow-y:auto; margin-bottom:2rem;"></div>
-            <div id="reply_hint" class="reply-hint">Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right;">[Cancel]</span></div>
+            <div id="reply_hint" style="display:none; background:#eef2ff; padding:12px 20px; border-radius:12px; margin-bottom:15px; font-size:0.88rem; border-left:6px solid var(--primary);">Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800;">[Cancel Reply]</span></div>
             <div style="display:flex; gap:12px;"><input type="text" id="mod_input" placeholder="Ask details..." style="margin:0;"><button class="btn btn-sm" onclick="postMasterComment()">Send</button></div>
         </div>
         <div id="mod_footer" style="margin-top:3rem; display:flex; flex-direction:column; gap:15px;"></div>
@@ -386,11 +399,20 @@
             });
         }, 300);
     }
+    
+    // V12.1 Map Update: 支持 Flatting 的单点渲染
     function initModalMap(fC, tC) {
-        if(!modalMap) { modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(modalMap); modalRoutingControl = L.Routing.control({ lineOptions:{styles:[{color:'#4f46e5', weight:5}]}, createMarker:()=>null, show:false }).addTo(modalMap); }
+        if(!modalMap) { 
+            modalMap = L.map('modal-map', {zoomControl: false}).setView([-36.8509, 174.7645], 14); 
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(modalMap); 
+            modalRoutingControl = L.Routing.control({ lineOptions:{styles:[{color:'#4f46e5', weight:5}]}, createMarker:()=>null, show:false }).addTo(modalMap); 
+        }
         modalMarkers.forEach(l => modalMap.removeLayer(l)); modalMarkers = []; modalRoutingControl.setWaypoints([]);
-        if(fC && tC) {
-            let sI=L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--primary)"><i class="fas fa-street-view" style="color:var(--primary);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
+        let sI = L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--primary)"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
+        
+        if(fC && !tC) { 
+            let m1 = L.marker(fC, {icon: sI}).addTo(modalMap); modalMarkers.push(m1); modalMap.setView(fC, 15);
+        } else if(fC && tC) { 
             let eI=L.divIcon({className:'custom-pin', html:`<div class="pin-wrapper" style="border-color:var(--success)"><i class="fas fa-flag-checkered" style="color:var(--success);"></i></div>`, iconSize:[34,34], iconAnchor:[17,34]});
             let m1=L.marker(fC, {icon: sI}).addTo(modalMap); let m2=L.marker(tC, {icon: eI}).addTo(modalMap);
             modalMarkers.push(m1, m2); modalRoutingControl.setWaypoints([L.latLng(fC[0], fC[1]), L.latLng(tC[0], tC[1])]); modalMap.fitBounds(new L.featureGroup([m1, m2]).getBounds(), {padding: [30, 30]});
@@ -398,7 +420,7 @@
         setTimeout(() => modalMap.invalidateSize(), 300); 
     }
 
-    // ======================= HUB LOADING (5 Systems) =======================
+    // ======================= HUB LOADING =======================
     async function loadHall() {
         try {
             const [resL, resM, resFl, resTu, resF] = await Promise.all([fetch('/api/task/all'), fetch('/api/market/all'), fetch('/api/flatting/all'), fetch('/api/teamup/all'), fetch('/api/forum/all')]);
@@ -414,13 +436,41 @@
             // 2. Market
             document.getElementById('list_market').innerHTML = state.mar.map(m => `<div class="market-card" onclick="openMasterModal('mar', '${m._id}')"><img src="${JSON.parse(m.img_url)[0]||''}" class="m-img" onerror="this.style.display='none'"><div class="m-body"><div><h3 class="m-title">${m.title}</h3><div style="font-size:0.8rem; margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; font-weight:700;">${m.condition}</span> <span style="color:var(--muted);"><i class="fas fa-user-circle"></i> ${m.seller_name}</span></div></div><div><div class="m-price">$${m.price}</div><div style="color:var(--muted); font-size:0.85rem;"><i class="fas fa-map-marker-alt"></i> ${m.location}</div></div></div></div>`).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">Market is empty.</p>';
             
-            // 3. Flatting (Structured Listings)
-            document.getElementById('list_flatting').innerHTML = state.flat.map(fl => `<div class="market-card" onclick="openMasterModal('flat', '${fl._id}')" style="border-top:4px solid var(--warning);"><div style="position:relative;"><img src="${JSON.parse(fl.img_url)[0]||''}" class="m-img" style="height:220px;" onerror="this.style.display='none'"><div style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.8); color:white; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:800; backdrop-filter:blur(4px);"><i class="fas fa-shield-check" style="color:#34d399;"></i> UoA Verified</div></div><div class="m-body"><div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:6px; font-weight:800; font-size:0.8rem;">${fl.room_type}</span><span style="font-size:0.8rem; color:var(--muted); font-weight:700;"><i class="far fa-calendar-alt"></i> ${new Date(fl.available_date).toLocaleDateString()}</span></div><h3 class="m-title" style="font-size:1.2rem;">${fl.title}</h3><div style="font-size:0.85rem; color:var(--muted); margin-bottom:15px;"><i class="fas fa-map-marker-alt"></i> ${fl.location}</div></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="color:var(--dark); font-size:1.6rem; font-weight:900;">$${fl.rent_price}<span style="font-size:0.9rem; color:var(--muted);"> /pw</span></div><div style="font-size:0.8rem; color:var(--muted);"><i class="fas fa-user-circle"></i> ${fl.publisher_name}</div></div></div></div>`).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">No housing listings.</p>';
+            // 3. Flatting (V12.1 结构化)
+            document.getElementById('list_flatting').innerHTML = state.flat.map(fl => `<div class="market-card" onclick="openMasterModal('flat', '${fl._id}')" style="border-top:4px solid var(--warning);"><div style="position:relative;"><img src="${JSON.parse(fl.img_url)[0]||''}" class="m-img" style="height:220px;" onerror="this.style.display='none'"><div style="position:absolute; top:10px; right:10px; background:rgba(15,23,42,0.8); color:white; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:800; backdrop-filter:blur(4px);"><i class="fas fa-shield-check" style="color:#34d399;"></i> UoA Verified</div></div><div class="m-body"><div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span style="background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:6px; font-weight:800; font-size:0.8rem;">${fl.room_type} | ${fl.bathroom_type}</span><span style="font-size:0.8rem; color:var(--muted); font-weight:700;"><i class="far fa-calendar-alt"></i> ${new Date(fl.available_date).toLocaleDateString()}</span></div><h3 class="m-title" style="font-size:1.2rem;">${fl.title}</h3><div style="font-size:0.85rem; color:var(--muted); margin-bottom:15px;"><i class="fas fa-map-marker-alt"></i> ${fl.location}</div></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="color:var(--dark); font-size:1.6rem; font-weight:900;">$${fl.rent_price}<span style="font-size:0.9rem; color:var(--muted);"> /pw</span></div><div style="font-size:0.8rem; color:var(--muted);"><i class="fas fa-user-circle"></i> ${fl.publisher_name}</div></div></div></div>`).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">No housing listings.</p>';
             
-            // 4. Team-Up (Progress Bars)
+            // 4. Team-Up (V12.1 倒计时与信用徽章)
+            const catDict = {'Carpool':'🚗 拼车', 'GroupBuy':'🛍️ 团购', 'Sports':'🏃‍♂️ 运动', 'Study':'📚 学习', 'Social':'🎮 社交'};
             document.getElementById('list_teamup').innerHTML = state.team.map(tu => {
-                const jLen = tu.joined_members.length; const pct = Math.min(100, (jLen/tu.target_count)*100);
-                return `<div class="market-card team-card" onclick="openMasterModal('team', '${tu._id}')"><div class="m-body"><div><div style="font-size:0.8rem; color:var(--muted); font-weight:800; text-transform:uppercase; margin-bottom:5px;">Target: ${tu.meet_time.replace('T', ' ')}</div><h3 class="m-title" style="font-size:1.3rem;">${tu.title}</h3><div style="font-size:0.9rem; color:var(--text); margin-bottom:10px;"><i class="fas fa-map-marker-alt" style="color:var(--team);"></i> ${tu.location}</div><div class="team-progress-bg"><div class="team-progress-fill" style="width:${pct}%;"></div></div><div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700;"><span>${jLen} Joined</span><span>${tu.target_count} Total</span></div></div><div style="margin-top:15px;"><button class="btn" style="width:100%; background:var(--team);" onclick="event.stopPropagation(); joinTeam('${tu._id}')">Join Team-Up <i class="fas fa-arrow-right"></i></button></div></div></div>`;
+                const jLen = tu.joined_members.length; const pct = Math.min(100, (jLen/tu.max_members)*100);
+                const img = JSON.parse(tu.img_url)[0] || ''; const catStr = catDict[tu.category] || '📌 ' + tu.category;
+                
+                return `
+                <div class="market-card team-card" onclick="openMasterModal('team', '${tu._id}')">
+                    <div style="position:relative;">
+                        <img src="${img}" class="m-img" style="height:160px;" onerror="this.style.display='none'">
+                        <div style="position:absolute; top:10px; right:10px; background:var(--team); color:white; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:800; box-shadow:0 2px 4px rgba(0,0,0,0.2);">${catStr}</div>
+                    </div>
+                    <div class="m-body" style="padding: 1.2rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="background:#fee2e2; color:var(--danger); padding:4px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;"><i class="fas fa-star"></i> Req ${tu.min_credit_req}+</span>
+                            <span style="font-weight:900; color:var(--dark); font-size:1.1rem;">💰 ${tu.estimated_cost}</span>
+                        </div>
+                        <h3 class="m-title" style="font-size:1.2rem;">${tu.title}</h3>
+                        <div style="font-size:0.85rem; color:var(--text); margin-bottom:10px;"><i class="fas fa-map-marker-alt" style="color:var(--team);"></i> ${tu.location}</div>
+                        
+                        <div style="background:#fef2f2; border:1px solid #fecaca; padding:8px; border-radius:8px; text-align:center; margin-bottom:10px;">
+                            <div style="font-size:0.75rem; color:var(--danger); font-weight:800; text-transform:uppercase;">Countdown to Go</div>
+                            <div class="tu-countdown" data-time="${tu.meet_time}" style="font-size:1.4rem; font-weight:900; color:var(--danger); letter-spacing:2px;">Loading...</div>
+                        </div>
+
+                        <div class="team-progress-bg"><div class="team-progress-fill" style="width:${pct}%;"></div></div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700;"><span>${jLen} Joined</span><span>Min ${tu.min_members} / Max ${tu.max_members}</span></div>
+                        <div style="margin-top:15px;">
+                            <button class="btn" style="width:100%; background:var(--team); padding:0.8rem;" onclick="event.stopPropagation(); joinTeam('${tu._id}')">一键上车 (Join) <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>`;
             }).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">No active team-ups.</p>';
 
             // 5. Forum
@@ -428,13 +478,13 @@
         } catch(e) { console.log(e); }
     }
 
-    // ======================= MASTER MODAL (Handles 5 types) =======================
+    // ======================= MASTER MODAL =======================
     async function openMasterModal(type, id) {
         state.activeType = type; state.activeId = id;
         let endpoint = {log:'/api/task/all', mar:'/api/market/all', flat:'/api/flatting/all', team:'/api/teamup/all', for:'/api/forum/all'}[type];
         const res = await fetch(endpoint); const d = await res.json();
-        
         let item = (d.list || []).find(x => x._id === id);
+        
         if(!item) { const resT = await fetch('/api/user/dashboard', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user?.email})}); const dT = await resT.json(); const arrMap = {log:dT.tasks, mar:dT.market, flat:dT.flatting, team:dT.teamups, for:dT.posts}; item = (arrMap[type]||[]).find(x => x._id === id); }
         if(!item) return alert("Data unavailable.");
 
@@ -445,7 +495,7 @@
         if (type === 'log') {
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--primary); font-size:2.8rem;">${item.reward}</h2><span class="status-badge" style="background:var(--primary); color:white;">${item.status}</span></div>`;
             let fC = getAddrCoords(item.from_addr); let tC = getAddrCoords(item.to_addr); if(fC && tC) { document.getElementById('modal-map').style.display = 'block'; initModalMap(fC, tC); }
-            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">👤 Publisher</b> <br><b>${item.publisher_name}</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup -> 🏁 Destination</b> <br><b>${getAddrText(item.from_addr)}</b> ➡️ <b>${getAddrText(item.to_addr)}</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Complexity & Reward</b> <br><b>${item.task_scale} (${item.has_elevator==='true'?'Elevator':'Stairs'}) - 🏅 ${item.medal_points} Pts</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Inventory</b> <br>${item.items_desc}</div></div>`;
+            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">👤 Publisher</b> <br><b>${item.publisher_name}</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Route</b> <br><b>${getAddrText(item.from_addr)}</b> ➡️ <b>${getAddrText(item.to_addr)}</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Complexity</b> <br><b>${item.task_scale} (${item.has_elevator==='true'?'Elevator':'Stairs'}) - 🏅 ${item.medal_points} Pts</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Inventory</b> <br>${item.items_desc}</div></div>`;
             let btns = '';
             if(item.status === 'pending' && item.publisher_id !== user.email) btns = `<button class="btn" style="padding:1.2rem;" onclick="execFlow('log', 'assigned')">Accept Mission</button>`;
             if(item.status === 'assigned' && item.publisher_id === user.email) btns = `<button class="btn" style="padding:1.2rem;" onclick="execFlow('log', 'completed')">Confirm Delivery</button>`;
@@ -465,19 +515,21 @@
         }
         else if (type === 'flat') {
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--warning); font-size:2.8rem;">$${item.rent_price}/w</h2><span class="status-badge" style="background:var(--warning); color:white;">${item.status}</span></div>`;
-            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><h3 style="margin:0; font-size:1.8rem;">${item.title}</h3><div><b>${item.room_type}</b> • <b>Available: ${new Date(item.available_date).toLocaleDateString()}</b></div><div><b>📍 ${item.location}</b></div><div>${item.description}</div><div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:10px;"><i class="fas fa-shield-check" style="color:var(--success);"></i> Verified Publisher: ${item.publisher_name}</div></div>`;
+            if(item.coords) { document.getElementById('modal-map').style.display = 'block'; initModalMap(item.coords.split(',').map(Number), null); }
+            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><h3 style="margin:0; font-size:1.8rem;">${item.title}</h3><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:white; padding:15px; border-radius:12px; border:1px solid #eef2f6;"><div><i class="fas fa-door-open" style="color:var(--muted); width:20px;"></i> <b>Layout:</b> ${item.house_layout || 'N/A'}</div><div><i class="fas fa-bed" style="color:var(--muted); width:20px;"></i> <b>Room:</b> ${item.room_type}</div><div><i class="fas fa-bath" style="color:var(--muted); width:20px;"></i> <b>Bath:</b> ${item.bathroom_type || 'N/A'}</div><div><i class="far fa-calendar-alt" style="color:var(--muted); width:20px;"></i> <b>Available:</b> ${new Date(item.available_date).toLocaleDateString()}</div></div><div><b style="color:var(--danger); font-size:0.85rem; text-transform:uppercase;"><i class="fas fa-exclamation-circle"></i> Preferences</b> <br><span style="font-weight:700; color:var(--dark);">${item.preferences || 'None'}</span></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Location</b> <br><b>${item.location}</b></div><div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📝 Details</b> <br>${item.description}</div><div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:15px; margin-top:5px;"><i class="fas fa-shield-check" style="color:var(--success);"></i> Verified Publisher: ${item.publisher_name}</div></div>`;
             let btns = '';
-            if(item.publisher_id === user.email) btns = `<button class="btn btn-outline" onclick="toggleFlatting('${item._id}')">${item.status==='open'?'Mark as Closed':'Reopen Listing'}</button> <button class="btn btn-danger" onclick="deleteItem('flat', '${item._id}')">Delete</button>`;
+            if(item.publisher_id === user.email) btns = `<button class="btn btn-outline" onclick="toggleFlatting('${item._id}')">${item.status==='open'?'Mark as Closed':'Reopen Listing'}</button> <button class="btn btn-danger" onclick="deleteItem('flat', '${item._id}')">Delete Listing</button>`;
             f.innerHTML = btns || `<span style="font-weight:800; color:var(--muted);">Comment below to contact publisher.</span>`;
         }
         else if (type === 'team') {
-            const jLen = item.joined_members.length; const pct = Math.min(100, (jLen/item.target_count)*100);
+            const jLen = item.joined_members.length; const pct = Math.min(100, (jLen/item.max_members)*100);
+            const catDict = {'Carpool':'🚗 拼车', 'GroupBuy':'🛍️ 团购', 'Sports':'🏃‍♂️ 运动', 'Study':'📚 学习', 'Social':'🎮 社交'};
             h.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><h2 style="margin:0; color:var(--team); font-size:2.5rem;">Team-Up</h2><span class="status-badge" style="background:var(--team); color:white;">${item.status}</span></div>`;
-            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><h3 style="margin:0; font-size:1.8rem;">${item.title}</h3><div><b>⏰ ${item.meet_time.replace('T', ' ')}</b> • <b>📍 ${item.location}</b></div><div>${item.description}</div><div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0;"><div style="font-weight:800; margin-bottom:10px;">Members (${jLen}/${item.target_count})</div><div style="width:100%; height:12px; background:#e2e8f0; border-radius:10px; margin-bottom:15px; overflow:hidden;"><div style="height:100%; background:var(--team); width:${pct}%;"></div></div><div style="font-size:0.9rem;">${item.joined_members.map(m=>`<span style="background:white; padding:4px 10px; border-radius:20px; border:1px solid #e2e8f0; margin-right:8px;"><i class="fas fa-user"></i> ${m.name}</span>`).join('')}</div></div></div>`;
+            b.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;"><div style="display:flex; justify-content:space-between; align-items:flex-start;"><h3 style="margin:0; font-size:1.8rem;">${item.title}</h3><span style="background:#fce7f3; color:var(--team); padding:4px 12px; border-radius:8px; font-weight:800; font-size:0.9rem;">${catDict[item.category] || item.category}</span></div><div style="display:flex; gap:15px; color:var(--danger); font-weight:800;"><span>💰 Cost: ${item.estimated_cost}</span><span><i class="fas fa-star"></i> Min Credit: ${item.min_credit_req}+</span></div><div><b>⏰ ${new Date(item.meet_time).toLocaleString()}</b> • <b>📍 ${item.location}</b></div><div>${item.description}</div><div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-top:10px;"><div style="font-weight:800; margin-bottom:10px;">Progress (${jLen}/${item.max_members}) - Min to Go: ${item.min_members}</div><div style="width:100%; height:12px; background:#e2e8f0; border-radius:10px; margin-bottom:15px; overflow:hidden;"><div style="height:100%; background:linear-gradient(90deg, #ec4899, #f43f5e); width:${pct}%;"></div></div><div style="font-size:0.9rem;">${item.joined_members.map(m=>`<span style="background:white; padding:4px 10px; border-radius:20px; border:1px solid #e2e8f0; margin-right:8px; display:inline-block; margin-bottom:5px;"><i class="fas fa-user" style="color:var(--team);"></i> ${m.name}</span>`).join('')}</div></div><div style="font-weight:700; border-top:1px dashed #eef2f6; padding-top:10px; font-size:0.85rem; color:var(--muted);"><i class="fas fa-crown" style="color:var(--warning);"></i> Initiator: ${item.initiator_name} (⭐ ${item.initiator_rating.toFixed(1)})</div></div>`;
             let btns = '';
-            if(item.status === 'gathering' && !item.joined_members.some(m=>m.email===user.email)) btns = `<button class="btn" style="background:var(--team); padding:1.2rem;" onclick="joinTeam('${item._id}')">Join Team-Up</button>`;
+            if(item.status === 'gathering' && !item.joined_members.some(m=>m.email===user.email)) btns = `<button class="btn" style="background:var(--team); padding:1.2rem;" onclick="joinTeam('${item._id}')">立即上车 (Join)</button>`;
             if(item.initiator_id === user.email) btns += `<button class="btn btn-danger" onclick="deleteItem('team', '${item._id}')">Cancel Team-Up</button>`;
-            f.innerHTML = btns || `<span style="font-weight:800; color:var(--muted);">${item.status==='completed'?'Team is full. Emails sent.':'You are in this team!'}</span>`;
+            f.innerHTML = btns || `<span style="font-weight:800; color:var(--muted);">${item.status==='completed'?'Team Full / Resolved.':'You are in this team!'}</span>`;
         }
         else if (type === 'for') {
             h.innerHTML = `<div style="display:flex; align-items:center; gap:15px;"><div class="brand-icon" style="border-radius:50%;"><i class="fas fa-user"></i></div><div><h3 style="margin:0;">${item.author_name}</h3><small style="color:var(--muted);">${new Date(item.created_at).toLocaleString()}</small></div></div>`;
@@ -486,15 +538,13 @@
         renderThreadedComments(item.comments || []); document.getElementById('masterModal').style.display = 'flex';
     }
 
-    function renderRatingUI(id, target, type, role) {
-        return `<div style="background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #eef2f6; width:100%;"><h4 style="margin-top:0;">Rate ${role}</h4><div style="display:flex; gap:10px; margin-bottom:10px;"><select id="review_score" style="width:80px;"><option value="5">5 ⭐</option><option value="4">4 ⭐</option><option value="3">3 ⭐</option><option value="2">2 ⭐</option><option value="1">1 ⭐</option></select><input type="text" id="review_text" placeholder="Write a review..." style="flex:1; margin:0;"></div><button class="btn" style="width:100%; background:var(--success);" onclick="submitRating('${id}', '${target}', '${type}')">Submit & Archive</button></div>`;
-    }
+    function renderRatingUI(id, target, type, role) { return `<div style="background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #eef2f6; width:100%;"><h4 style="margin-top:0;">Rate ${role}</h4><div style="display:flex; gap:10px; margin-bottom:10px;"><select id="review_score" style="width:80px;"><option value="5">5 ⭐</option><option value="4">4 ⭐</option><option value="3">3 ⭐</option><option value="2">2 ⭐</option><option value="1">1 ⭐</option></select><input type="text" id="review_text" placeholder="Write a review..." style="flex:1; margin:0;"></div><button class="btn" style="width:100%; background:var(--success);" onclick="submitRating('${id}', '${target}', '${type}')">Submit & Archive</button></div>`; }
 
     function renderThreadedComments(comments) {
         const area = document.getElementById('mod_comments'); const parents = comments.filter(c => !c.parentId);
         area.innerHTML = parents.map(p => {
             const replies = comments.filter(r => String(r.parentId) === String(p.id));
-            return `<div class="comment-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>${p.user}</b><small style="color:var(--muted);">${new Date(p.time).toLocaleString()}</small></div><div style="font-size:1rem;">${p.text} <span class="reply-btn" onclick="setReply('${p.id}', '${p.user}')">Reply</span></div>${replies.map(r2 => `<div class="comment-reply"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r2.user}</b> replied to <b>${p.user}</b></small></div><div style="font-size:0.95rem;">${r2.text} <span class="reply-btn" onclick="setReply('${r2.id}', '${r2.user}')">Reply</span></div>${comments.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `<div class="comment-reply" style="border-left-color:var(--warning); background:white;"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r3.user}</b> replied to <b>${r2.user}</b></small></div><div style="font-size:0.95rem;">${r3.text}</div></div>`).join('')}</div>`).join('')}</div>`;
+            return `<div class="comment-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>${p.user}</b><small style="color:var(--muted);">${new Date(p.time).toLocaleString()}</small></div><div style="font-size:1rem;">${p.text} <span class="reply-btn" style="color:var(--primary);cursor:pointer;font-weight:800;font-size:0.8rem;margin-left:10px;" onclick="setReply('${p.id}', '${p.user}')">Reply</span></div>${replies.map(r2 => `<div class="comment-reply"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r2.user}</b> replied to <b>${p.user}</b></small></div><div style="font-size:0.95rem;">${r2.text} <span class="reply-btn" style="color:var(--primary);cursor:pointer;font-weight:800;font-size:0.8rem;margin-left:10px;" onclick="setReply('${r2.id}', '${r2.user}')">Reply</span></div>${comments.filter(r3 => String(r3.parentId) === String(r2.id)).map(r3 => `<div class="comment-reply" style="border-left-color:var(--warning); background:white;"><div style="margin-bottom:6px;"><small style="color:var(--muted); font-weight:700;"><b>${r3.user}</b> replied to <b>${r2.user}</b></small></div><div style="font-size:0.95rem;">${r3.text}</div></div>`).join('')}</div>`).join('')}</div>`;
         }).join('') || '<p style="color:var(--muted); text-align:center; font-weight:600;">No discussion yet.</p>';
     }
 
@@ -508,13 +558,13 @@
         document.getElementById('mod_input').value = ""; cancelReply(); openMasterModal(state.activeType, state.activeId); loadHall(); 
     }
 
-    // ======================= ACTIONS (Flow, Verify, Delete, Rate) =======================
+    // ======================= ACTIONS =======================
     async function execFlow(type, status) {
         if(!confirm("Confirm action?")) return;
         const api = type === 'log' ? '/api/task/workflow' : '/api/market/workflow';
         const body = type === 'log' ? { task_id: state.activeId, status, helper_id: user.email } : { item_id: state.activeId, status, buyer_id: user.email };
-        await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
-        document.getElementById('masterModal').style.display = 'none'; navigate('profile');
+        const res = await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        const d = await res.json(); if(d.success) { document.getElementById('masterModal').style.display = 'none'; navigate('profile'); } else { alert("❌ " + d.msg); }
     }
     async function verifyEscrow(itemId) {
         const code = document.getElementById('escrow_input').value; if(!code || code.length !== 6) return alert("Enter 6-digit code");
@@ -528,23 +578,23 @@
     }
     async function interactForum(id, action) { await fetch('/api/forum/interact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({post_id:id, action, email:user.email}) }); loadHall(); }
     async function joinTeam(id) {
-        if(!user) return navigate('login'); if(!confirm("Join this Team-Up? Your email will be shared with the group if full.")) return;
+        if(!user) return navigate('login'); if(!confirm("Join this Team-Up? Your contact will be shared if grouped.")) return;
         const res = await fetch('/api/teamup/join', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ team_id: id, email: user.email, name: user.anonymous_name }) });
-        const d = await res.json(); if(d.success) { alert("Joined!"); if(state.activeId===id) openMasterModal('team', id); loadHall(); } else alert(d.msg);
+        const d = await res.json(); if(d.success) { alert("Success!"); if(state.activeId===id) openMasterModal('team', id); loadHall(); } else alert(d.msg);
     }
     async function toggleFlatting(id) { await fetch('/api/flatting/toggle', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})}); document.getElementById('masterModal').style.display='none'; navigate('profile'); }
     async function deleteItem(type, id) {
         if(!confirm("Permanently delete?")) return;
         const apiMap = {log:'/api/task/delete', mar:'/api/market/delete', flat:'/api/flatting/delete', team:'/api/teamup/delete'};
-        await fetch(apiMap[type], { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id}) });
-        document.getElementById('masterModal').style.display = 'none'; loadHall(); navigate('profile');
+        const res = await fetch(apiMap[type], { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id}) });
+        const d = await res.json(); if(d.success) { document.getElementById('masterModal').style.display = 'none'; loadHall(); navigate('profile'); } else { alert("❌ " + d.msg); }
     }
 
     // ======================= KANBAN PROFILE =======================
     async function loadProfileData() {
         try {
             const res = await fetch(`/api/user/detail/${user.email}`); const d = await res.json(); const u = d.user;
-            document.getElementById('profileDetails').innerHTML = [['ID', u.student_id], ['Name', `${u.first_name} ${u.given_name}`], ['Nick', u.anonymous_name], ['Email', u.email]].map(f => `<div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #eef2f6;"><label style="margin-bottom:5px;">${f[0]}</label><div style="font-weight:800; font-size:1rem;">${f[1]}</div></div>`).join('');
+            document.getElementById('profileDetails').innerHTML = [['ID', u.student_id], ['Name', `${u.first_name} ${u.given_name}`], ['Nick', u.anonymous_name], ['Email', u.email]].map(f => `<div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #eef2f6;"><label style="margin-bottom:5px; font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">${f[0]}</label><div style="font-weight:800; font-size:1rem;">${f[1]}</div></div>`).join('');
             document.getElementById('p_rating').innerText = u.rating_avg ? u.rating_avg.toFixed(1) : "5.0"; document.getElementById('p_medals').innerText = u.medal_points || 0;
             
             document.getElementById('pts_list').innerHTML = (u.point_history||[]).slice().reverse().map(h => `<div style="display:flex; justify-content:space-between; padding:1rem; border-bottom:1px solid #eef2f6;"><div><b>${h.desc}</b><br><small>${new Date(h.date).toLocaleString()}</small></div><div style="color:var(--medal); font-weight:800;">+${h.points} Pts</div></div>`).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No points yet.</div>';
@@ -560,7 +610,7 @@
                     let topText = t.title; if(prefix==='log') topText = t.reward;
                     let btmText = t.location || getAddrText(t.from_addr);
                     if(isFlat) { topText = `$${t.rent_price} - ${t.room_type}`; }
-                    if(isTeam) { topText = `👥 ${t.joined_members.length}/${t.target_count} - ${t.title}`; }
+                    if(isTeam) { topText = `👥 ${t.joined_members.length}/${t.max_members} - ${t.title}`; }
                     return `<div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span class="kb-role-tag ${isOwner?'kb-pub':'kb-help'}">${isOwner?'Owner':'Joined/Helper'}</span><span style="font-size:0.7rem; color:var(--muted);">${new Date(t.created_at).toLocaleDateString()}</span></div><div style="font-weight:900; margin-bottom:5px; font-size:1.1rem;">${topText}</div><div style="font-size:0.8rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 ${btmText}</div></div>`;
                 }).join('');
             };
@@ -568,12 +618,12 @@
             renderKB('log', 'pend', ['pending'], dT.tasks); renderKB('log', 'prog', ['assigned'], dT.tasks); renderKB('log', 'hist', ['completed', 'reviewed'], dT.tasks);
             renderKB('mar', 'pend', ['available'], dT.market); renderKB('mar', 'prog', ['reserved'], dT.market); renderKB('mar', 'hist', ['completed', 'reviewed'], dT.market);
             renderKB('fl', 'open', ['open'], dT.flatting, false, true); renderKB('fl', 'closed', ['closed'], dT.flatting, false, true);
-            renderKB('tu', 'gather', ['gathering'], dT.teamups, true); renderKB('tu', 'comp', ['completed'], dT.teamups, true);
+            renderKB('tu', 'gather', ['gathering'], dT.teamups, true); renderKB('tu', 'comp', ['completed', 'failed'], dT.teamups, true);
 
         } catch(e) { console.log(e); }
     }
 
-    // ======================= 7. POSTING ENGINES =======================
+    // ======================= POSTING ENGINES =======================
     async function submitLogistics(e) {
         e.preventDefault(); if(markers.length < 2) return alert("Map locations."); const f = new FormData();
         f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name);
@@ -582,33 +632,42 @@
         f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1]||''); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
         Array.from(document.getElementById('p_file').files).forEach(x=>f.append('images', x));
         document.querySelector('#form_logistics button').innerText = "Broadcasting..."; await fetch('/api/task/create', {method:'POST', body:f}); 
-        document.querySelector('#form_logistics button').innerText = "Broadcast Logistics Task"; switchHall('logistics'); navigate('hall');
+        document.querySelector('#form_logistics button').innerHTML = 'Broadcast Logistics Task <i class="fas fa-paper-plane"></i>'; switchHall('logistics'); navigate('hall');
     }
+    
     async function submitMarket(e) {
         e.preventDefault(); const f = new FormData(); f.append('seller_id', user.email); f.append('seller_name', user.anonymous_name);
         ['title','price','cond','loc','desc'].forEach(k=>f.append(k==='cond'?'condition':(k==='loc'?'location':(k==='desc'?'description':k)), document.getElementById(`m_${k}`).value));
         Array.from(document.getElementById('m_file').files).forEach(x=>f.append('images', x));
         document.querySelector('#form_market button').innerText = "Listing..."; await fetch('/api/market/create', {method:'POST', body:f}); 
-        document.querySelector('#form_market button').innerText = "List Item in Market"; switchHall('market'); navigate('hall');
+        document.querySelector('#form_market button').innerHTML = 'List Item in Market <i class="fas fa-store"></i>'; switchHall('market'); navigate('hall');
     }
+    
     async function submitFlatting(e) {
-        e.preventDefault(); const f = new FormData(); f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name);
-        ['title','price','type','date','loc','desc'].forEach(k=>f.append({price:'rent_price',type:'room_type',date:'available_date',loc:'location',desc:'description'}[k]||k, document.getElementById(`fl_${k}`).value));
+        e.preventDefault(); const btn = document.querySelector('#form_flatting button'); btn.innerText = "Locating Map & Publishing...";
+        let locStr = document.getElementById('fl_loc').value; let coords = null;
+        try { const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locStr + ', Auckland')}`); const geoData = await geoRes.json(); if(geoData.length > 0) coords = `${geoData[0].lat},${geoData[0].lon}`; } catch(err) { console.log("Geocoding failed"); }
+        const f = new FormData(); f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name); if(coords) f.append('coords', coords);
+        ['title','price','type','date','loc','desc','layout','bath','pref'].forEach(k=>{ const mapKey = {price:'rent_price',type:'room_type',date:'available_date',loc:'location',desc:'description',layout:'house_layout',bath:'bathroom_type',pref:'preferences'}[k]||k; f.append(mapKey, document.getElementById(`fl_${k}`).value); });
         Array.from(document.getElementById('fl_file').files).forEach(x=>f.append('images', x));
-        document.querySelector('#form_flatting button').innerText = "Publishing..."; await fetch('/api/flatting/create', {method:'POST', body:f}); 
-        document.querySelector('#form_flatting button').innerText = "Publish Housing"; switchHall('flatting'); navigate('hall');
+        await fetch('/api/flatting/create', {method:'POST', body:f}); 
+        btn.innerHTML = 'Publish Housing <i class="fas fa-home"></i>'; switchHall('flatting'); navigate('hall');
     }
+    
     async function submitTeamUp(e) {
-        e.preventDefault(); 
-        const b = { initiator_id: user.email, initiator_name: user.anonymous_name, title: document.getElementById('tu_title').value, target_count: document.getElementById('tu_count').value, meet_time: document.getElementById('tu_time').value, location: document.getElementById('tu_loc').value, description: document.getElementById('tu_desc').value, joined_members: [{email: user.email, name: user.anonymous_name}] };
-        document.querySelector('#form_teamup button').innerText = "Initiating..."; await fetch('/api/teamup/create', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)}); 
-        document.querySelector('#form_teamup button').innerText = "Initiate Team-Up"; switchHall('teamup'); navigate('hall');
+        e.preventDefault(); const btn = document.querySelector('#form_teamup button'); btn.innerText = "Initiating..."; 
+        const f = new FormData(); f.append('initiator_id', user.email); f.append('initiator_name', user.anonymous_name); f.append('joined_members', JSON.stringify([{email: user.email, name: user.anonymous_name}]));
+        ['title','cat','min','max','time','loc','desc','cost','credit'].forEach(k=>{ const mapKey = {cat:'category', min:'min_members', max:'max_members', time:'meet_time', loc:'location', desc:'description', cost:'estimated_cost', credit:'min_credit_req'}[k]||k; f.append(mapKey, document.getElementById(`tu_${k}`).value); });
+        Array.from(document.getElementById('tu_file').files).forEach(x=>f.append('images', x));
+        const res = await fetch('/api/teamup/create', {method:'POST', body:f}); const d = await res.json();
+        btn.innerHTML = 'Initiate Team-Up <i class="fas fa-users"></i>'; if(!d.success) { alert("❌ " + d.msg); return; } switchHall('teamup'); navigate('hall');
     }
+    
     async function submitForum(e) {
         e.preventDefault(); const f = new FormData(); f.append('author_id', user.email); f.append('author_name', user.anonymous_name); f.append('content', document.getElementById('f_content').value);
         Array.from(document.getElementById('f_file').files).forEach(x=>f.append('images', x));
         document.querySelector('#form_forum button').innerText = "Posting..."; await fetch('/api/forum/create', {method:'POST', body:f}); 
-        document.querySelector('#form_forum button').innerText = "Post to Buzz"; document.getElementById('f_content').value = ""; switchHall('forum'); navigate('hall');
+        document.querySelector('#form_forum button').innerHTML = 'Post to Buzz <i class="fas fa-fire"></i>'; document.getElementById('f_content').value = ""; switchHall('forum'); navigate('hall');
     }
 
     // ======================= AUTH & DEV =======================
@@ -629,6 +688,19 @@
     };
     function nuke() { if(confirm("NUKE ALL GLOBAL DATA?")) fetch('/api/dev/nuke', {method:'POST'}).then(()=>logout()); }
     
+    // 全局组局倒计时驱动器 (Pulse Engine)
+    setInterval(() => {
+        document.querySelectorAll('.tu-countdown').forEach(el => {
+            const targetTime = new Date(el.getAttribute('data-time')).getTime(); const now = new Date().getTime(); const diff = targetTime - now;
+            if (diff < 0) { el.innerText = "EXPIRED / 已截止"; el.style.color = "var(--muted)"; el.style.animation = "none"; } 
+            else {
+                const h = Math.floor(diff / (1000 * 60 * 60)); const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); const s = Math.floor((diff % (1000 * 60)) / 1000);
+                if(h < 1) el.style.animation = "pulse 1s infinite"; else el.style.animation = "none";
+                el.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            }
+        });
+    }, 1000);
+
     navigate('home');
 </script>
 </body>
