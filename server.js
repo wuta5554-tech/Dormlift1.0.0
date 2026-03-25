@@ -268,16 +268,14 @@ app.post('/api/forum/interact', async (req, res) => {
 // ==========================================
 app.post('/api/user/dashboard', async (req, res) => {
     const { email } = req.body;
-    try {
-        const [tasks, market, posts, flatting, teamups] = await Promise.all([
-            Task.find({ $or: [{ publisher_id: email }, { helper_id: email }] }).sort({ created_at: -1 }),
-            MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }).sort({ created_at: -1 }),
-            ForumPost.find({ author_id: email }).sort({ created_at: -1 }),
-            Flatting.find({ publisher_id: email }).sort({ created_at: -1 }),
-            TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] }).sort({ created_at: -1 })
-        ]);
-        res.json({ success: true, tasks, market, posts, flatting, teamups });
-    } catch (e) { res.status(500).json({ success: false }); }
+    const [tasks, market, posts, flatting, teamups] = await Promise.all([
+        Task.find({ $or: [{ publisher_id: email }, { helper_id: email }] }),
+        MarketItem.find({ $or: [{ seller_id: email }, { buyer_id: email }] }),
+        ForumPost.find({ author_id: email }), // 确保这里是 author_id
+        Flatting.find({ publisher_id: email }),
+        TeamUp.find({ $or: [{ initiator_id: email }, { "joined_members.email": email }] })
+    ]);
+    res.json({ success: true, tasks, market, posts, flatting, teamups });
 });
 
 // ==========================================
