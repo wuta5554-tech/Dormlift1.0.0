@@ -15,7 +15,7 @@
 
     <style>
         /* =============================================================
-           DESIGN SYSTEM: V11.4 Premium Modular Super App
+           DESIGN SYSTEM: V11.5 Premium Modular Super App
         ============================================================= */
         :root {
             --primary: #4f46e5;
@@ -55,24 +55,23 @@
         .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
         .card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-premium); border: 1px solid #eef2f6; margin-bottom: 2rem; }
 
-        /* Unified Modular Tabs - Hard Switch Logic */
+        /* Unified Modular Tabs */
         .tab-container { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 0.5rem; border-radius: 1rem; box-shadow: var(--shadow-sm); border: 1px solid #eef2f6; }
         .tab-btn { flex: 1; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.1rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; }
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
         
-        /* STRICT TAB CONTENT HIDING */
         .tab-content { display: none !important; }
         .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Value Props Styling (Home) */
+        /* Value Props (Home) */
         .value-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 5rem; }
         .value-card { padding: 2.5rem; text-align: left; border-top: 5px solid var(--primary); background: white; border-radius: var(--radius-lg); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .value-card i { font-size: 2.5rem; margin-bottom: 1.5rem; color: var(--primary); display: block; }
 
         /* =============================================================
-           HUB LAYOUTS (Logistics, Market, Forum)
+           HUB LAYOUTS
         ============================================================= */
         .hub-container { display: flex; flex-direction: column; gap: 1rem; }
         .hub-row { display: grid; grid-template-columns: 100px 1fr 130px; align-items: center; background: white; border-radius: 16px; padding: 1.5rem 2rem; border: 1px solid #eef2f6; transition: 0.3s; cursor: pointer; margin-bottom: 1rem; }
@@ -102,7 +101,7 @@
         .f-images img { height: 180px; border-radius: 10px; border: 1px solid #eef2f6; object-fit: cover; cursor: pointer; }
 
         /* =============================================================
-           KANBAN WORKFLOW DASHBOARDS
+           KANBAN & FORMS
         ============================================================= */
         .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .kanban-col { background: rgba(241, 245, 249, 0.7); border-radius: 1.5rem; padding: 1.5rem; min-height: 400px; border: 1px dashed #e2e8f0; }
@@ -114,18 +113,6 @@
         .kb-pub { background: #f1f5f9; color: var(--dark); }
         .kb-help { background: var(--primary-gradient); color: white; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
 
-        /* =============================================================
-           MAP & ROUTING
-        ============================================================= */
-        #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
-        #modal-map { height: 280px; border-radius: 1.5rem; border: 2px solid #eef2f6; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 1.5rem; display: none; }
-        .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; border-bottom: 4px solid var(--primary); }
-        .leaflet-routing-container { display: none !important; }
-        .custom-pin { background: transparent; border: none; } .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-
-        /* =============================================================
-           FORMS & BUTTONS
-        ============================================================= */
         .btn { background: var(--primary-gradient); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4); }
         .btn-outline { background: white; color: var(--text); border: 2px solid #e2e8f0; }
@@ -138,9 +125,14 @@
         input:read-only { background: #f1f5f9; color: var(--muted); font-weight: 500; }
         label { font-size: 0.8rem; font-weight: 800; color: var(--muted); margin-bottom: 0.6rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* =============================================================
-           MODALS & INTERACTIONS
-        ============================================================= */
+        /* MAP */
+        #map { height: 450px; border-radius: 1.5rem 1.5rem 0 0; border: 1px solid #e2e8f0; z-index: 10; border-bottom: none; }
+        #modal-map { height: 280px; border-radius: 1.5rem; border: 2px solid #eef2f6; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 1.5rem; display: none; }
+        .route-info-strip { background: var(--dark); color: white; padding: 1.25rem 2.5rem; border-radius: 0 0 1.5rem 1.5rem; display: flex; justify-content: space-around; font-weight: 700; margin-bottom: 2.5rem; border-bottom: 4px solid var(--primary); }
+        .leaflet-routing-container { display: none !important; }
+        .custom-pin { background: transparent; border: none; } .pin-wrapper { background: white; border: 2.5px solid var(--primary); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
+        /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: white; width: 95%; max-width: 850px; max-height: 92vh; overflow-y: auto; border-radius: 2rem; padding: 3.5rem; position: relative; }
         .interaction-box { background: #f8fafc; border-radius: 1.5rem; padding: 2rem; margin-top: 2.5rem; border: 1px solid #eef2f6; }
@@ -269,6 +261,7 @@
                 <h3 style="margin:0; font-size:1.3rem;">Credit Score</h3>
                 <div style="font-size:3.5rem; font-weight:900; color:var(--dark); line-height:1.2;">★ <span id="p_rating">5.0</span></div>
                 <p style="color:var(--muted); font-size:0.9rem; margin-top:0.5rem;">Based on <b id="p_task_count">0</b> total tasks.</p>
+                <button class="btn btn-outline btn-sm" style="margin-top:1rem; border-color:#3b82f6; color:#3b82f6;" onclick="document.getElementById('reviewsModal').style.display='flex'">View Reviews</button>
             </div>
 
             <div class="card" style="margin:0; border-left: 8px solid var(--warning); background: linear-gradient(to right, #fffbeb, #ffffff); display:flex; flex-direction:column; justify-content:center;">
@@ -344,7 +337,7 @@
             <div id="reply_hint" class="reply-hint"><i class="fas fa-reply fa-flip-horizontal" style="margin-right:5px;"></i> Replying to <b id="reply_name"></b> <span onclick="cancelReply()" style="color:var(--danger); cursor:pointer; float:right; font-weight:800; font-size:0.75rem;">[Cancel Reply]</span></div>
             <div style="display:flex; gap:12px;"><input type="text" id="mod_input" placeholder="Ask details or discuss..." style="margin:0; height:54px;"><button class="btn btn-sm" style="width:130px; height:54px; font-size:1rem;" onclick="postMasterComment()">Send</button></div>
         </div>
-        <div id="mod_footer" style="margin-top:3rem; display:flex; justify-content:flex-end; gap:15px;"></div>
+        <div id="mod_footer" style="margin-top:3rem; display:flex; justify-content:flex-end; gap:15px; flex-direction:column;"></div>
     </div>
 </div>
 
@@ -354,6 +347,14 @@
         <h2 style="margin-top:0; color:var(--dark);"><i class="fas fa-medal" style="color:var(--medal);"></i> Medal Point History</h2>
         <p style="color:var(--muted); margin-bottom:2rem;">Ledger of points awarded for assisting peers.</p>
         <div id="pts_list" style="max-height: 400px; overflow-y: auto; border: 1px solid #eef2f6; border-radius: 12px;"></div>
+    </div>
+</div>
+
+<div id="reviewsModal" class="modal" onclick="if(event.target.id==='reviewsModal') this.style.display='none'">
+    <div class="modal-content" style="max-width:600px;">
+        <button style="position:absolute; top:1.5rem; right:1.5rem; border:none; background:transparent; font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('reviewsModal').style.display='none'">&times;</button>
+        <h2 style="margin-top:0; color:var(--dark);"><i class="fas fa-star" style="color:var(--warning);"></i> 信用评价 (Peer Reviews)</h2>
+        <div id="rev_list" style="max-height: 400px; overflow-y: auto; border: 1px solid #eef2f6; border-radius: 12px;"></div>
     </div>
 </div>
 
@@ -432,7 +433,7 @@
         });
     }
 
-    // ======================= MAP ENGINE (CartoDB + OSRM) =======================
+    // ======================= MAP ENGINE =======================
     function initMap() {
         if(map) return;
         setTimeout(() => {
@@ -467,7 +468,7 @@
                 const input = document.getElementById(isStart ? 'p_from' : 'p_to');
                 input.value = "Fetching campus address...";
                 try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/11.4'} });
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`, { headers: {'User-Agent': 'DormLiftPro/11.5'} });
                     const d = await res.json();
                     input.value = d.display_name ? d.display_name.split(',').slice(0,3).join(',').trim() : `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
                 } catch { input.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
@@ -482,7 +483,7 @@
         try {
             const [resL, resM, resF] = await Promise.all([fetch('/api/task/all'), fetch('/api/market/all'), fetch('/api/forum/all')]);
             
-            // 防御性拦截：处理 Railway 唤醒时的 HTML 错误页面
+            // 防御性拦截：处理 Railway 唤醒时的 HTML 错误页面，防止白屏
             if (!resL.ok || !resM.ok || !resF.ok) {
                 const loadingMsg = '<div style="padding:5rem; text-align:center; color:var(--warning); font-size:1.1rem; font-weight:600;"><i class="fas fa-satellite-dish fa-fade" style="margin-right:10px;"></i> 校园服务器正在唤醒，请稍等几秒后点击右上角 [Refresh Feed] 刷新...</div>';
                 document.getElementById('list_logistics').innerHTML = loadingMsg;
@@ -499,7 +500,10 @@
                 const pubDate = new Date(t.created_at).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
                 return `
                 <div class="hub-row" onclick="openMasterModal('log', '${t._id}')">
-                    <div class="posted-col">PUB<span>${pubDate}</span></div>
+                    <div class="posted-col" style="text-transform:none; font-size:0.85rem;" title="${t.publisher_name || 'UoA Peer'}">
+                        <i class="fas fa-user-circle"></i> ${(t.publisher_name || 'Peer').substring(0,6)}..
+                        <span>${pubDate}</span>
+                    </div>
                     <div class="details-strip">
                         <div class="strip-header"><i class="far fa-calendar-check"></i> Move: ${t.move_date} @ ${t.move_time || 'TBA'}</div>
                         <div class="strip-route"><i class="fas fa-circle"></i> ${getAddrText(t.from_addr)} <i class="fas fa-arrow-right" style="margin:0 5px; color:var(--text);"></i> <i class="fas fa-flag-checkered"></i> ${getAddrText(t.to_addr)}</div>
@@ -517,7 +521,10 @@
                     <div class="m-body">
                         <div>
                             <h3 class="m-title">${m.title}</h3>
-                            <div class="m-meta" style="margin-bottom:10px;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; color:var(--dark); font-weight:700;">${m.condition}</span></div>
+                            <div class="m-meta" style="margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+                                <span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; color:var(--dark); font-weight:700;">${m.condition}</span>
+                                <span style="font-size:0.8rem; color:var(--muted);"><i class="fas fa-user-circle"></i> ${m.seller_name || 'UoA Seller'}</span>
+                            </div>
                         </div>
                         <div><div class="m-price">$${m.price}</div><div class="m-meta"><i class="fas fa-map-marker-alt"></i> ${m.location}</div></div>
                     </div>
@@ -578,7 +585,6 @@
             item = sourceArray.find(x => x._id === id);
         }
         if(!item && type === 'for') {
-             // Edge case for forum posts opened from profile that are not in 'all' list
              const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
              const dT = await resT.json();
              item = (dT.posts||[]).find(x => x._id === id);
@@ -598,6 +604,7 @@
             
             b.innerHTML = `
                 <div style="display:flex; flex-direction:column; gap:15px; font-size:1.05rem;">
+                    <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">👤 发布者 (Publisher)</b> <br><span style="font-weight:700; color:var(--primary);">${item.publisher_name || 'UoA Peer'}</span></div>
                     <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">📍 Pickup Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.from_addr)}</span></div>
                     <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">🏁 Destination Location</b> <br><span style="font-weight:700; color:var(--dark);">${getAddrText(item.to_addr)}</span></div>
                     <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">⚙️ Logistics Complexity & Reward</b> <br><span style="font-weight:700; color:var(--dark);">${item.task_scale || 'Small'} Task (${item.has_elevator==='true'?'Elevator':'Stairs Only'})</span><span style="margin-left:10px; background:#fef3c7; color:var(--medal); padding:4px 10px; border-radius:8px; font-weight:800; font-size:0.85rem; border:1px solid #fde68a;">🏅 ${item.medal_points || 1} Pts for Helper</span></div>
@@ -607,7 +614,22 @@
             let btns = '';
             if(item.status === 'pending' && item.publisher_id !== user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'assigned')">Accept Mission & Start Helping <i class="fas fa-check-circle"></i></button>`;
             if(item.status === 'assigned' && item.publisher_id === user.email) btns = `<button class="btn" style="padding:1.4rem 3rem;" onclick="execFlow('log', 'completed')">Confirm Delivery & Release Funds <i class="fas fa-box-check"></i></button>`;
-            if(item.publisher_id === user.email) btns += `<button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw Task</button>`;
+            if(item.publisher_id === user.email && (item.status === 'pending' || item.status === 'assigned')) btns += `<button class="btn btn-danger" onclick="deleteItem('log', '${item._id}')">Withdraw Task</button>`;
+            
+            if(item.status === 'completed' && item.publisher_id === user.email) {
+                btns = `
+                <div style="width:100%; background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #eef2f6;">
+                    <h4 style="margin-top:0; color:var(--dark);">为 Helper 评分</h4>
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <select id="review_score" style="width:120px; font-size:1rem; padding:0.5rem;"><option value="5">⭐⭐⭐⭐⭐ 5</option><option value="4">⭐⭐⭐⭐ 4</option><option value="3">⭐⭐⭐ 3</option><option value="2">⭐⭐ 2</option><option value="1">⭐ 1</option></select>
+                        <input type="text" id="review_text" placeholder="对方靠谱吗？写句评价..." style="flex:1; margin:0;">
+                    </div>
+                    <button class="btn" style="width:100%; background:var(--success);" onclick="submitRating('${item._id}', '${item.helper_id}', 'log')">提交评价并归档 <i class="fas fa-check-double"></i></button>
+                </div>`;
+            } else if (item.status === 'reviewed') {
+                btns = `<span style="font-size:0.9rem; color:var(--success); font-weight:800; text-transform:uppercase;"><i class="fas fa-check-double"></i> 任务已归档并评价</span>`;
+            }
+
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
         
         } else if (type === 'mar') {
@@ -617,13 +639,45 @@
                     <h3 style="margin:0; color:var(--dark); font-size:1.8rem;">${item.title}</h3>
                     <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Condition & Location</b> <br><span style="font-weight:700; color:var(--dark);">${item.condition}</span> • <span style="font-weight:700; color:var(--dark);">${item.location}</span></div>
                     <div><b style="color:var(--muted); font-size:0.85rem; text-transform:uppercase;">Description</b> <br><span style="color:var(--text);">${item.description}</span></div>
-                    <div style="font-size:0.85rem; color:var(--muted); font-weight:700; margin-top:1rem;">Seller: ${item.seller_id}</div>
+                    
+                    ${item.status === 'reserved' && item.buyer_id === user.email ? 
+                    `<div style="margin-top:1rem; padding:1.5rem; background:#f0fdf4; border:1px dashed var(--success); border-radius:12px;">
+                        <div style="font-size:0.85rem; color:var(--success); font-weight:800; text-transform:uppercase; margin-bottom:5px;">你的提货核销码</div>
+                        <div style="font-size:2rem; font-weight:900; color:var(--dark); letter-spacing:4px;">${item.escrow_code}</div>
+                        <div style="font-size:0.8rem; color:var(--muted); margin-top:5px;">验货后交由卖家输入以释放资金，7天后系统将自动放款。</div>
+                    </div>` : ''}
+
+                    <div style="font-size:0.9rem; color:var(--dark); font-weight:700; margin-top:1rem; padding-top:1rem; border-top:1px dashed #eef2f6;">
+                        <i class="fas fa-user-circle" style="color:var(--primary);"></i> 卖家: ${item.seller_name || 'UoA Seller'} 
+                        <span style="font-weight:500; color:var(--muted); font-size:0.8rem; margin-left:5px;">(${item.seller_id})</span>
+                    </div>
                 </div>`;
             
             let btns = '';
-            if(item.status === 'available' && item.seller_id !== user.email) btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="execFlow('mar', 'reserved')">Reserve & Secure Funds in Escrow <i class="fas fa-lock"></i></button>`;
-            if(item.status === 'reserved' && item.buyer_id === user.email) btns = `<button class="btn" style="background:var(--primary); padding:1.4rem 3rem;" onclick="execFlow('mar', 'completed')">Confirm Receipt & Release Funds <i class="fas fa-handshake"></i></button>`;
-            if(item.seller_id === user.email && item.status !== 'completed') btns += `<button class="btn btn-danger" onclick="execFlow('mar', 'available')">Cancel & Relist</button>`;
+            if(item.status === 'available' && item.seller_id !== user.email) btns = `<button class="btn" style="background:var(--success); padding:1.4rem 3rem;" onclick="execFlow('mar', 'reserved')">Reserve & Secure Funds <i class="fas fa-lock"></i></button>`;
+            
+            if(item.status === 'reserved' && item.seller_id === user.email) {
+                btns = `<div style="display:flex; gap:10px; width:100%;">
+                            <input type="text" id="escrow_input" placeholder="输入买家提供的 6 位核销码" style="flex:1; margin:0; text-align:center; font-weight:800; letter-spacing:2px;">
+                            <button class="btn" style="background:var(--primary);" onclick="verifyEscrow('${item._id}')">确认核销收款 <i class="fas fa-handshake"></i></button>
+                        </div>`;
+            }
+            if(item.seller_id === user.email && (item.status === 'available' || item.status === 'reserved')) btns += `<button class="btn btn-danger" style="margin-top:10px; width:100%;" onclick="execFlow('mar', 'available')">Cancel & Relist</button>`;
+            
+            if(item.status === 'completed' && item.buyer_id === user.email) {
+                btns = `
+                <div style="width:100%; background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #eef2f6;">
+                    <h4 style="margin-top:0; color:var(--dark);">为卖家评分</h4>
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <select id="review_score" style="width:120px; font-size:1rem; padding:0.5rem;"><option value="5">⭐⭐⭐⭐⭐ 5</option><option value="4">⭐⭐⭐⭐ 4</option><option value="3">⭐⭐⭐ 3</option><option value="2">⭐⭐ 2</option><option value="1">⭐ 1</option></select>
+                        <input type="text" id="review_text" placeholder="商品符合描述吗？写句评价..." style="flex:1; margin:0;">
+                    </div>
+                    <button class="btn" style="width:100%; background:var(--success);" onclick="submitRating('${item._id}', '${item.seller_id}', 'mar')">提交评价并归档 <i class="fas fa-check-double"></i></button>
+                </div>`;
+            } else if (item.status === 'reviewed') {
+                btns = `<span style="font-size:0.9rem; color:var(--success); font-weight:800; text-transform:uppercase;"><i class="fas fa-check-double"></i> 交易已归档并评价</span>`;
+            }
+
             f.innerHTML = btns || `<span style="font-size:0.9rem; color:var(--muted); font-weight:800; text-transform:uppercase;">Read-Only Mode</span>`;
             
         } else if (type === 'for') {
@@ -723,6 +777,18 @@
                 </div>
             `).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">No points earned yet. Complete a logistics task to earn!</div>';
 
+            const revList = document.getElementById('rev_list');
+            revList.innerHTML = (u.reviews || []).slice().reverse().map(r => `
+                <div style="padding:1.2rem; border-bottom:1px solid #eef2f6;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <b style="color:var(--dark);"><i class="fas fa-user-circle"></i> ${r.reviewer}</b>
+                        <span style="color:var(--warning); font-size:0.9rem;">${'⭐'.repeat(r.score)}</span>
+                    </div>
+                    <div style="color:var(--text); font-size:0.95rem;">${r.text}</div>
+                    <div style="color:var(--muted); font-size:0.75rem; margin-top:5px;">${new Date(r.date).toLocaleString()}</div>
+                </div>
+            `).join('') || '<div style="padding:2rem; text-align:center; color:var(--muted);">暂无评价 (No reviews yet).</div>';
+
             const resT = await fetch('/api/user/dashboard', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:user.email})});
             const dT = await resT.json();
             
@@ -750,7 +816,7 @@
             };
 
             renderKB('log', 'pend', ['pending'], tasksArray); renderKB('log', 'prog', ['assigned'], tasksArray); renderKB('log', 'hist', ['completed', 'reviewed'], tasksArray);
-            renderKB('mar', 'pend', ['available'], marketArray); renderKB('mar', 'prog', ['reserved'], marketArray); renderKB('mar', 'hist', ['completed'], marketArray);
+            renderKB('mar', 'pend', ['available'], marketArray); renderKB('mar', 'prog', ['reserved'], marketArray); renderKB('mar', 'hist', ['completed', 'reviewed'], marketArray);
 
             document.getElementById('col_for_list').innerHTML = postsArray.map(p => `
                 <div class="card" style="padding:1.5rem; margin-bottom:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.02); cursor:pointer; transition:0.3s;" onclick="openMasterModal('for', '${p._id}')" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#eef2f6'">
@@ -770,7 +836,10 @@
     async function submitLogistics(e) {
         e.preventDefault(); if(markers.length < 2) return alert("Please map locations.");
         const f = new FormData();
-        f.append('publisher_id', user.email); f.append('from_addr', markers[0].getLatLng().lat+','+markers[0].getLatLng().lng+'@@'+document.getElementById('p_from').value); f.append('to_addr', markers[1].getLatLng().lat+','+markers[1].getLatLng().lng+'@@'+document.getElementById('p_to').value);
+        f.append('publisher_id', user.email); 
+        f.append('publisher_name', user.anonymous_name);
+        f.append('from_addr', markers[0].getLatLng().lat+','+markers[0].getLatLng().lng+'@@'+document.getElementById('p_from').value); 
+        f.append('to_addr', markers[1].getLatLng().lat+','+markers[1].getLatLng().lng+'@@'+document.getElementById('p_to').value);
         f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1] || ''); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
         Array.from(document.getElementById('p_file').files).forEach(x=>f.append('images', x));
         document.querySelector('#form_logistics button[type="submit"]').innerText = "Broadcasting...";
@@ -781,7 +850,9 @@
 
     async function submitMarket(e) {
         e.preventDefault(); const f = new FormData();
-        f.append('seller_id', user.email); f.append('title', document.getElementById('m_title').value); f.append('price', document.getElementById('m_price').value); f.append('condition', document.getElementById('m_cond').value); f.append('location', document.getElementById('m_loc').value); f.append('description', document.getElementById('m_desc').value);
+        f.append('seller_id', user.email); 
+        f.append('seller_name', user.anonymous_name);
+        f.append('title', document.getElementById('m_title').value); f.append('price', document.getElementById('m_price').value); f.append('condition', document.getElementById('m_cond').value); f.append('location', document.getElementById('m_loc').value); f.append('description', document.getElementById('m_desc').value);
         Array.from(document.getElementById('m_file').files).forEach(x=>f.append('images', x));
         document.querySelector('#form_market button[type="submit"]').innerText = "Listing...";
         await fetch('/api/market/create', {method:'POST', body:f}); 
@@ -799,7 +870,46 @@
         document.getElementById('f_content').value = ""; switchHall('forum'); navigate('hall');
     }
 
-    // ======================= 8. AUTHENTICATION =======================
+    // ======================= 8. ADVANCED ACTIONS & AUTH =======================
+    async function verifyEscrow(itemId) {
+        const code = document.getElementById('escrow_input').value;
+        if(!code || code.length !== 6) return alert("请输入完整的 6 位核销码");
+        
+        const res = await fetch('/api/market/verify-escrow', { 
+            method:'POST', headers:{'Content-Type':'application/json'}, 
+            body:JSON.stringify({ item_id: itemId, code, seller_id: user.email }) 
+        });
+        const d = await res.json();
+        if(d.success) {
+            alert("✅ 核销成功！资金已划转。");
+            document.getElementById('masterModal').style.display = 'none'; 
+            navigate('profile');
+        } else {
+            alert("❌ " + d.msg);
+        }
+    }
+
+    async function submitRating(itemId, targetEmail, type) {
+        const score = document.getElementById('review_score').value;
+        const text = document.getElementById('review_text').value || "Great experience! 靠谱！";
+        
+        document.querySelector('#mod_footer button').innerText = "提交中...";
+        
+        const res = await fetch('/api/user/rate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ target_email: targetEmail, score, text, item_id: itemId, type, reviewer_name: user.anonymous_name })
+        });
+        
+        if(res.ok) {
+            alert("✅ 评价提交成功！信用系统已更新。");
+            document.getElementById('masterModal').style.display = 'none';
+            loadProfileData(); 
+        } else {
+            alert("评价提交失败，请重试。");
+        }
+    }
+
     async function sendCode() {
         const email = document.getElementById('r_email').value; if(!email) return alert("Email required");
         const btn = document.getElementById('btnSendCode'); btn.innerText = "Sending...";
