@@ -831,7 +831,12 @@
             let btns = '';
             if(item.status === 'available' && item.seller_id !== user.email) btns = `<button class="btn" style="background:var(--success); padding:1.2rem;" onclick="execFlow('mar', 'reserved')">Reserve Item (Pay Offline)</button>`;
             if(item.status === 'reserved' && item.seller_id === user.email) btns = `<div style="display:flex; gap:10px;"><input type="text" id="escrow_input" placeholder="6-digit code" style="flex:1; text-align:center; font-weight:800; letter-spacing:2px;"><button class="btn" onclick="verifyEscrow('${item._id}')">Verify</button></div>`;
-            if(item.seller_id === user.email && ['available','reserved'].includes(item.status)) btns += `<button class="btn btn-danger" onclick="execFlow('mar', 'available')">Cancel</button>`;
+          if(item.seller_id === user.email && ['available','reserved'].includes(item.status)) {
+                if (item.status === 'reserved') {
+                    btns += `<button class="btn btn-outline" style="margin-top:10px;" onclick="execFlow('mar', 'available')">取消预留 (Cancel Reserve)</button>`;
+                }
+                btns += `<button class="btn btn-danger" style="margin-top:10px;" onclick="deleteItem('mar', '${item._id}')">彻底下架 (Delete)</button>`;
+            }
             if(item.status === 'completed' && item.buyer_id === user.email) btns = renderRatingUI(item._id, item.seller_id, 'mar', 'Seller');
             f.innerHTML = btns || `<span style="font-weight:800; color:var(--muted);">Read-Only</span>`;
         }
