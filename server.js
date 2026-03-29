@@ -265,6 +265,30 @@ app.post('/api/forum/delete', async (req, res) => {
     }
 });
 
+// 新增：物流任务删除
+app.post('/api/task/delete', async (req, res) => {
+    try { await Task.findByIdAndDelete(req.body.id); res.json({ success: true }); } 
+    catch (e) { res.status(500).json({ success: false, msg: e.message }); }
+});
+
+// 新增：二手市场删除
+app.post('/api/market/delete', async (req, res) => {
+    try { await MarketItem.findByIdAndDelete(req.body.id); res.json({ success: true }); } 
+    catch (e) { res.status(500).json({ success: false, msg: e.message }); }
+});
+
+// 新增：租房信息删除
+app.post('/api/flatting/delete', async (req, res) => {
+    try { await Flatting.findByIdAndDelete(req.body.id); res.json({ success: true }); } 
+    catch (e) { res.status(500).json({ success: false, msg: e.message }); }
+});
+
+// 新增：组局撤销/删除
+app.post('/api/teamup/delete', async (req, res) => {
+    try { await TeamUp.findByIdAndDelete(req.body.id); res.json({ success: true }); } 
+    catch (e) { res.status(500).json({ success: false, msg: e.message }); }
+});
+
 app.post('/api/forum/interact', async (req, res) => {
     const { post_id, action, email } = req.body;
     const p = await ForumPost.findById(post_id);
