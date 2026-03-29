@@ -219,11 +219,7 @@ app.post('/api/flatting/toggle', async (req, res) => {
     res.json({ success: true });
 });
 
-app.post('/api/teamup/create', upload.array('images', 5), async (req, res) => {
-    const u = await User.findOne({ email: req.body.initiator_id });
-    await new TeamUp({ ...req.body, initiator_rating: u.rating_avg, img_url: JSON.stringify(req.files.map(f=>f.path)) }).save();
-    res.json({ success: true });
-});
+api/teamup/create
 
 app.post('/api/teamup/join', async (req, res) => {
     const { team_id, email, name } = req.body;
