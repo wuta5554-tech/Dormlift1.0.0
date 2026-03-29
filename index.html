@@ -50,7 +50,21 @@
         .tab-btn { flex: 1; min-width: 150px; padding: 1rem; text-align: center; font-weight: 800; font-size: 1.05rem; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; color: var(--muted); border: none; background: transparent; white-space: nowrap; }
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
-        
+      
+        /* Fix for Forum/Buzz Image Layouts */
+.f-images { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+    gap: 12px; 
+    margin-top: 15px; 
+}
+.f-images img { 
+    width: 100%; 
+    height: 140px; 
+    object-fit: cover; 
+    border-radius: 12px; 
+    border: 1px solid #eef2f6; 
+}
         /* 🚨 終極佈局修復：解決 Kanban 變白或重疊 🚨 */
         .tab-content { display: none !important; } 
         .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
@@ -353,32 +367,32 @@
             <form id="form_teamup" onsubmit="submitTeamUp(event)">
                 <div class="form-grid">
                     <div><label>Event / Buy Title</label><input type="text" id="tu_title" placeholder="e.g. Uber to Airport" required></div>
-                    <div><label>Category (活动分类)</label>
+                    <div><label>Category </label>
                         <select id="tu_cat" style="border-color:var(--team); color:var(--team); font-weight:700;">
-                            <option value="Carpool">🚗 Carpool (拼车/出行)</option><option value="GroupBuy">🛍️ Group Buy (拼单/团购)</option>
-                            <option value="Sports">🏃‍♂️ Sports (运动/户外)</option><option value="Study">📚 Study (自习/课业)</option><option value="Social">🎮 Social (社交)</option>
+                            <option value="Carpool">🚗 Carpool </option><option value="GroupBuy">🛍️ Group Buy </option>
+                            <option value="Sports">🏃‍♂️ Sports </option><option value="Study">📚 Study </option><option value="Social">🎮 Social (社交)</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-grid">
-                    <div><label>Min Members (成团底线)</label><input type="number" id="tu_min" min="2" required></div>
-                    <div><label>Max Members (人数上限)</label><input type="number" id="tu_max" min="2" required></div>
+                    <div><label>Min Members </label><input type="number" id="tu_min" min="2" required></div>
+                    <div><label>Max Members </label><input type="number" id="tu_max" min="2" required></div>
                 </div>
                 <div class="form-grid">
                     <div><label>Meeting Time / Deadline</label><input type="datetime-local" id="tu_time" required></div>
-                    <div><label>Location (集合地)</label><input type="text" id="tu_loc" required></div>
+                    <div><label>Location </label><input type="text" id="tu_loc" required></div>
                 </div>
                 <div class="form-grid">
-                    <div><label>Est. Cost (预估花费)</label><input type="text" id="tu_cost" placeholder="e.g. $15 或 AA" required></div>
-                    <div><label>Min Credit Required (信用要求)</label>
+                    <div><label>Est. Cost </label><input type="text" id="tu_cost" placeholder="e.g. $15 或 AA" required></div>
+                    <div><label>Min Credit Required </label>
                         <select id="tu_credit" style="color:var(--danger); font-weight:800;">
-                            <option value="0">0 (所有人可进)</option><option value="4.0">4.0+ ⭐ (基本靠谱)</option>
-                            <option value="4.5">4.5+ ⭐ (绝对优质)</option><option value="4.8">4.8+ ⭐ (完美信用)</option>
+                            <option value="0">0 (All)</option><option value="4.0">4.0+ ⭐ (Basically reliable)</option>
+                            <option value="4.5">4.5+ ⭐ (high-quality)</option><option value="4.8">4.8+ ⭐ (Perfect Credit)</option>
                         </select>
                     </div>
                 </div>
                 <label>Description & Requirements</label><textarea id="tu_desc" rows="3" required></textarea>
-                <label>Cover Photo (海报/商品图)</label><input type="file" id="tu_file" multiple accept="image/*" required onchange="previewFiles(event, 'tu_preview')"><div id="tu_preview" class="thumb-strip"></div>
+                <label>Cover Photo (Posters/Product Images)</label><input type="file" id="tu_file" multiple accept="image/*" required onchange="previewFiles(event, 'tu_preview')"><div id="tu_preview" class="thumb-strip"></div>
                 <button type="submit" class="btn" style="width:100%; padding:1.2rem; background:var(--team); margin-top:1rem;">Initiate Team-Up <i class="fas fa-users"></i></button>
             </form>
         </div>
