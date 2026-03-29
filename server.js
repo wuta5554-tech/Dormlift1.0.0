@@ -218,6 +218,28 @@ app.post('/api/flatting/toggle', async (req, res) => {
     await item.save();
     res.json({ success: true });
 });
+app.post('/api/teamup/create', upload.array('images', 5), async (req, res) => {
+    try {
+        const u = await User.findOne({ email: req.body.initiator_id.toLowerCase() }); 
+        let bodyData = { ...req.body };
+        
+        // 修复之前提到的 undefined 报错：将字符串转回真正的数组
+        if (typeof bodyData.joined_members === 'string') {
+            bodyData.joined_members = JSON.parse(bodyData.joined_members);
+        }
+        
+        await new TeamUp({ 
+            ...bodyData, 
+            initiator_rating: u ? u.rating_avg : 5.0, 
+            img_url: JSON.stringify(req.files ? req.files.map(f => f.path) : []) 
+        }).save();
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error("TeamUp Create Error:", error);
+        res.status(500).json({ success: false, msg: error.message || "Failed to create Team-Up." });
+    }
+});
 
 app.post('/api/teamup/join', async (req, res) => {
     const { team_id, email, name } = req.body;
