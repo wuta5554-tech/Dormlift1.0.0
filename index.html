@@ -51,17 +51,21 @@
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
       
-        /* Fix for Forum/Buzz Image Layouts */
+/* --- Fix for Campus Buzz Image Layouts --- */
 .f-images { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+    /* Automatically adds columns as needed, with a minimum size of 100px.
+       It will stack images to the next row if the width is exceeded. */
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
     gap: 12px; 
     margin-top: 15px; 
+    overflow: hidden; /* Extra safety to prevent overflow */
 }
+
 .f-images img { 
     width: 100%; 
-    height: 140px; 
-    object-fit: cover; 
+    height: 120px; /* Force a consistent height for all images in the grid */
+    object-fit: cover; /* Crop the image to fill the space without distortion */
     border-radius: 12px; 
     border: 1px solid #eef2f6; 
 }
