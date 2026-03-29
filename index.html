@@ -884,8 +884,39 @@
         renderThreadedComments(item.comments || []); document.getElementById('masterModal').style.display = 'flex';
     }
 
-    function renderRatingUI(id, target, type, role) { return `<div style="background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #eef2f6; width:100%;"><h4 style="margin-top:0;">Rate ${role}</h4><div style="display:flex; gap:10px; margin-bottom:10px;"><select id="review_score" style="width:80px;"><option value="5">5 ⭐</option><option value="4">4 ⭐</option><option value="3">3 ⭐</option><option value="2">2 ⭐</option><option value="1">1 ⭐</option></select><input type="text" id="review_text" placeholder="Write a review..." style="flex:1; margin:0;"></div><button class="btn" style="width:100%; background:var(--success);" onclick="submitRating('${id}', '${target}', '${type}')">Submit & Archive</button></div>`; }
+   // 全局变量，记录当前选择的星级（默认 5 星）
+    window.currentReviewScore = 5;
 
+    // 动态点亮星星的交互函数
+    function setRating(val) {
+        window.currentReviewScore = val;
+        document.querySelectorAll('.star-btn').forEach(el => {
+            if (parseInt(el.getAttribute('data-val')) <= val) {
+                el.classList.remove('far'); // 移除空心
+                el.classList.add('fas');    // 添加实心
+            } else {
+                el.classList.remove('fas'); // 移除实心
+                el.classList.add('far');    // 添加空心
+            }
+        });
+    }
+
+    // 渲染带有星星点击 UI 的评价面板
+    function renderRatingUI(id, target, type, role) { 
+        window.currentReviewScore = 5; // 每次打开重置为 5 星
+        return `
+        <div style="background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #eef2f6; width:100%;">
+            <h4 style="margin-top:0;">Rate ${role}</h4>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:15px;">
+                <div id="star_container" style="color:var(--warning); font-size:2rem; cursor:pointer; display:flex; gap:5px;">
+                    ${[1,2,3,4,5].map(i => `<i class="fas fa-star star-btn" data-val="${i}" onclick="setRating(${i})"></i>`).join('')}
+                </div>
+                <input type="text" id="review_text" placeholder="Write a review... (Optional)" style="width:100%; margin:0;">
+            </div>
+            <button class="btn" style="width:100%; background:var(--success);" onclick="submitRating('${id}', '${target}', '${type}')">Submit & Archive</button>
+        </div>`; 
+    }   
+    
     function renderThreadedComments(comments) {
         const area = document.getElementById('mod_comments'); const parents = comments.filter(c => !c.parentId);
         area.innerHTML = parents.map(p => {
@@ -917,11 +948,35 @@
         const res = await fetch('/api/market/verify-escrow', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ item_id: itemId, code, seller_id: user.email }) });
         const d = await res.json(); if(d.success) { alert("✅ Verified!"); document.getElementById('masterModal').style.display = 'none'; navigate('profile'); } else alert("❌ " + d.msg);
     }
-    async function submitRating(itemId, targetEmail, type) {
-        const score = document.getElementById('review_score').value; const text = document.getElementById('review_text').value || "Great!";
-        const res = await fetch('/api/user/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target_email: targetEmail, score, text, item_id: itemId, type, reviewer_name: user.anonymous_name }) });
-        if(res.ok) { alert("✅ Rating submitted!"); document.getElementById('masterModal').style.display = 'none'; loadProfileData(); } else alert("Error.");
+  async function submitRating(itemId, targetEmail, type) {
+        const score = window.currentReviewScore || 5; 
+        const text = document.getElementById('review_text').value || "Great peer!";
+        
+        // 防御性检查：防止找不到对方账号
+        if (!targetEmail || targetEmail === 'undefined') {
+            return alert("❌ System Error: Cannot find target user to rate.");
+        }
+
+        try {
+            const res = await fetch('/api/user/rate', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ target_email: targetEmail, score, text, item_id: itemId, type, reviewer_name: user.anonymous_name }) 
+            });
+            const d = await res.json();
+            
+            if(res.ok && d.success) { 
+                alert("✅ Rating submitted!"); 
+                document.getElementById('masterModal').style.display = 'none'; 
+                loadProfileData(); 
+            } else {
+                alert("❌ Backend Error: " + (d.msg || "Server rejected rating."));
+            }
+        } catch (err) {
+            alert("❌ Network Error: " + err.message);
+        }
     }
+    
     async function interactForum(id, action) { await fetch('/api/forum/interact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({post_id:id, action, email:user.email}) }); loadHall(); }
     async function joinTeam(id) {
         if(!user) return navigate('login'); if(!confirm("Join this Team-Up? Your contact will be shared if grouped.")) return;
