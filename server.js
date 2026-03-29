@@ -219,8 +219,6 @@ app.post('/api/flatting/toggle', async (req, res) => {
     res.json({ success: true });
 });
 
-api/teamup/create
-
 app.post('/api/teamup/join', async (req, res) => {
     const { team_id, email, name } = req.body;
     const team = await TeamUp.findById(team_id);
