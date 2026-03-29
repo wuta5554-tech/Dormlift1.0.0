@@ -595,34 +595,40 @@
     }
 
     // 渲染预览界面（带删除和排序按钮）
+ // 渲染预览界面（带删除和排序按钮 - 修复异步加载导致的排序错乱）
     function renderPreview(previewId) {
         const container = document.getElementById(previewId);
         container.innerHTML = "";
+        
+        // 1. 同步按顺序创建好所有的 DOM 占位（保证显示顺序绝对正确）
         uploadQueue[previewId].forEach((file, index) => {
+            const div = document.createElement('div');
+            div.style.cssText = "position:relative; display:inline-block; margin-right:12px; flex-shrink:0;";
+            
+            // 左右排序按钮
+            let sortBtns = `
+                <div style="position:absolute; bottom:5px; left:5px; display:flex; gap:5px; z-index:10;">
+                    ${index > 0 ? `<button type="button" onclick="event.preventDefault(); moveUploadFile('${previewId}', ${index}, -1)" style="background:rgba(0,0,0,0.7); color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer;"><i class="fas fa-chevron-left"></i></button>` : ''}
+                    ${index < uploadQueue[previewId].length - 1 ? `<button type="button" onclick="event.preventDefault(); moveUploadFile('${previewId}', ${index}, 1)" style="background:rgba(0,0,0,0.7); color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer;"><i class="fas fa-chevron-right"></i></button>` : ''}
+                </div>
+            `;
+
+            // 图片标签先空着 src，给个专门的 ID
+            div.innerHTML = `
+                <img id="img_${previewId}_${index}" class="thumb-img" style="margin:0; border-radius:12px; border:2px solid #e2e8f0; width:120px; height:120px; object-fit:cover;">
+                <div onclick="event.preventDefault(); removeUploadFile('${previewId}', ${index})" style="position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; width:24px; height:24px; border-radius:50%; text-align:center; line-height:24px; font-size:12px; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.3); z-index:10;"><i class="fas fa-times"></i></div>
+                ${sortBtns}
+            `;
+            container.appendChild(div);
+
+            // 2. 异步读取图片文件，读取完成后精准填入对应 index 的坑位
             const reader = new FileReader();
             reader.onload = ev => {
-                const div = document.createElement('div');
-                div.style.cssText = "position:relative; display:inline-block; margin-right:12px; flex-shrink:0;";
-                
-                // 左右排序按钮
-                let sortBtns = `
-                    <div style="position:absolute; bottom:5px; left:5px; display:flex; gap:5px; z-index:10;">
-                        ${index > 0 ? `<button type="button" onclick="moveUploadFile('${previewId}', ${index}, -1)" style="background:rgba(0,0,0,0.7); color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer;"><i class="fas fa-chevron-left"></i></button>` : ''}
-                        ${index < uploadQueue[previewId].length - 1 ? `<button type="button" onclick="moveUploadFile('${previewId}', ${index}, 1)" style="background:rgba(0,0,0,0.7); color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer;"><i class="fas fa-chevron-right"></i></button>` : ''}
-                    </div>
-                `;
-
-                div.innerHTML = `
-                    <img src="${ev.target.result}" class="thumb-img" style="margin:0; border-radius:12px; border:2px solid #e2e8f0;">
-                    <div onclick="removeUploadFile('${previewId}', ${index})" style="position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; width:24px; height:24px; border-radius:50%; text-align:center; line-height:24px; font-size:12px; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.3); z-index:10;"><i class="fas fa-times"></i></div>
-                    ${sortBtns}
-                `;
-                container.appendChild(div);
+                document.getElementById(`img_${previewId}_${index}`).src = ev.target.result;
             };
             reader.readAsDataURL(file);
         });
     }
-
     // 删除单张图片
     function removeUploadFile(previewId, index) {
         uploadQueue[previewId].splice(index, 1);
