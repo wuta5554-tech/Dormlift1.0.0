@@ -290,17 +290,19 @@ app.post('/api/teamup/delete', async (req, res) => {
 });
 
 // ==========================================
-// 新增：信用评价与结算系统 (解决 Submit 报错)
+// 信用评价与结算系统 (加强版)
 // ==========================================
 app.post('/api/user/rate', async (req, res) => {
     try {
         const { target_email, score, text, item_id, type, reviewer_name } = req.body;
         
+        if (!target_email) return res.status(400).json({ success: false, msg: "Missing target email data from frontend." });
+
         // 1. 查找被评价的用户
         const targetUser = await User.findOne({ email: target_email.toLowerCase() });
-        if (!targetUser) return res.status(404).json({ success: false, msg: "User not found" });
+        if (!targetUser) return res.status(404).json({ success: false, msg: "Target user account no longer exists in DB." });
 
-        // 2. 将新评价存入该用户的评价记录中
+        // 2. 将新评价存入记录
         const numericScore = parseFloat(score);
         targetUser.reviews.push({ 
             reviewer: reviewer_name, 
@@ -309,12 +311,12 @@ app.post('/api/user/rate', async (req, res) => {
             date: new Date() 
         });
         
-        // 3. 重新计算该用户的动态平均信用分 (⭐)
+        // 3. 重新计算平均分
         const totalScore = targetUser.reviews.reduce((sum, r) => sum + r.score, 0);
         targetUser.rating_avg = totalScore / targetUser.reviews.length;
         await targetUser.save();
 
-        // 4. 将对应的订单状态升级为 'reviewed' (已评价并归档)，这会让评分按钮消失！
+        // 4. 将对应的订单状态升级为 'reviewed'
         if (type === 'log') {
             await Task.findByIdAndUpdate(item_id, { status: 'reviewed' });
         } else if (type === 'mar') {
