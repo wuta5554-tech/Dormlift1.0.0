@@ -51,24 +51,42 @@
         .tab-btn:hover { background: #f8fafc; color: var(--dark); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 10px rgba(79,70,229,0.3); }
       
-/* --- Fix for Campus Buzz Image Layouts --- */
+/* --- Campus Buzz 图片九宫格动态布局 --- */
 .f-images { 
     display: grid; 
-    /* Automatically adds columns as needed, with a minimum size of 100px.
-       It will stack images to the next row if the width is exceeded. */
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
-    gap: 12px; 
-    margin-top: 15px; 
-    overflow: hidden; /* Extra safety to prevent overflow */
+    gap: 8px; /* 图片之间的间距 */
+    margin-top: 12px; 
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 .f-images img { 
     width: 100%; 
-    height: 120px; /* Force a consistent height for all images in the grid */
-    object-fit: cover; /* Crop the image to fill the space without distortion */
-    border-radius: 12px; 
-    border: 1px solid #eef2f6; 
+    object-fit: cover; 
+    border-radius: 8px; 
+    border: 1px solid #eef2f6;
+    cursor: pointer; /* 鼠标放上去变成小手，提示可点击 */
+    transition: transform 0.2s;
 }
+
+.f-images img:hover { transform: scale(1.02); }
+
+/* 1张图：占据全宽，限制最大高度 */
+.img-count-1 { grid-template-columns: 1fr; }
+.img-count-1 img { max-height: 280px; }
+
+/* 2张图：均分两列 */
+.img-count-2 { grid-template-columns: repeat(2, 1fr); }
+.img-count-2 img { height: 160px; }
+
+/* 3张图：均分三列 */
+.img-count-3 { grid-template-columns: repeat(3, 1fr); }
+.img-count-3 img { height: 120px; }
+
+/* 4张及以上（如6, 9）：使用经典三列九宫格排版 */
+.img-count-4 { grid-template-columns: repeat(3, 1fr); }
+.img-count-4 img { height: 120px; }
+        
         /* 🚨 終極佈局修復：解決 Kanban 變白或重疊 🚨 */
         .tab-content { display: none !important; } 
         .tab-content.active { display: block !important; animation: fadeIn 0.3s ease forwards; }
@@ -695,9 +713,27 @@
                 </div>`;
             }).join('') || '<p style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--muted);">No active team-ups.</p>';
 
-            // Forum
-            document.getElementById('list_forum').innerHTML = state.for.map(f => `<div class="forum-card"><div class="f-header"><div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div><div style="font-size:0.85rem; color:var(--muted);">${new Date(f.created_at).toLocaleString()}</div></div><div class="f-content">${f.content}</div><div class="f-images">${JSON.parse(f.img_url).map(u=>`<img src="${u}">`).join('')}</div><div class="f-actions"><button class="btn btn-outline btn-sm" style="${user&&f.likes.includes(user.email)?'background:var(--primary);color:white;border-color:var(--primary);':''}" onclick="interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button><button class="btn btn-outline btn-sm" onclick="openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button></div></div>`).join('') || '<p style="text-align:center; padding:3rem; color:var(--muted);">No buzz yet.</p>';
-        } catch(e) { console.log(e); }
+            // Forum (增强版：九宫格 + 点击详情)
+            document.getElementById('list_forum').innerHTML = state.for.map(f => {
+                const imgs = JSON.parse(f.img_url) || [];
+                let imgClass = imgs.length === 1 ? 'img-count-1' : (imgs.length === 2 ? 'img-count-2' : (imgs.length === 3 ? 'img-count-3' : 'img-count-4'));
+                const imgHtml = imgs.length > 0 ? `<div class="f-images ${imgClass}">${imgs.map(u => `<img src="${u}">`).join('')}</div>` : '';
+
+                return `
+                <div class="forum-card" onclick="openMasterModal('for', '${f._id}')">
+                    <div class="f-header" style="display:flex; justify-content:space-between;">
+                        <div class="f-author"><i class="fas fa-user-circle"></i> ${f.author_name}</div>
+                        <div style="font-size:0.85rem; color:var(--muted);">${new Date(f.created_at).toLocaleString()}</div>
+                    </div>
+                    <div class="f-content" style="margin: 10px 0;">${f.content}</div>
+                    ${imgHtml}
+                    <div class="f-actions" style="margin-top:15px; display:flex; gap:10px;">
+                        <button class="btn btn-outline btn-sm" style="${user && f.likes.includes(user.email) ? 'background:var(--primary);color:white;border-color:var(--primary);' : ''}" onclick="event.stopPropagation(); interactForum('${f._id}', 'like')"><i class="fas fa-heart"></i> ${f.likes.length}</button>
+                        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); openMasterModal('for', '${f._id}')"><i class="fas fa-comment"></i> Discuss (${f.comments.length})</button>
+                    </div>
+                </div>`;
+            }).join('') || '<p style="text-align:center; padding:3rem; color:var(--muted);">No buzz yet.</p>';
+            } catch(e) { console.log(e); }
     }
 
     // ======================= MASTER MODAL =======================
@@ -1031,5 +1067,12 @@
 
     navigate('home');
 </script>
+    
+    <div id="buzzDetailModal">
+    <div id="buzzDetailContent">
+        <span id="closeBuzzDetail">&times;</span>
+        <div id="buzzDetailHeader"></div> <div id="buzzDetailText"></div>   <div id="buzzDetailImages"></div> <div id="buzzDetailComments"></div> </div>
+</div>
+    
 </body>
 </html>
