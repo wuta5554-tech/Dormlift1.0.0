@@ -111,7 +111,8 @@
         .team-progress-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; margin: 12px 0; overflow: hidden; }
         .team-progress-fill { height: 100%; background: linear-gradient(90deg, #ec4899, #f43f5e); transition: width 0.5s ease; }
 
-        .forum-feed { max-width: 750px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        /* 校园八卦：响应式卡片排版，自动填满屏幕宽度 */
+        .forum-feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; align-items: start; width: 100%; max-width: 100%; }
         .forum-card { background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #eef2f6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
 
         /* KANBAN & FORMS */
