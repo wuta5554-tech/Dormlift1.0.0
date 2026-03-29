@@ -1041,6 +1041,53 @@
             if(document.getElementById('p_medals')) document.getElementById('p_medals').innerText = u.medal_points || 0;
             if(document.getElementById('p_rating')) document.getElementById('p_rating').innerText = (u.rating_avg || 5.0).toFixed(1);
 
+            // =====================================
+            // 新增：渲染 Credit Score 评价历史记录
+            // =====================================
+            const revList = document.getElementById('rev_list');
+            if(revList) {
+                const reviews = u.reviews || [];
+                if(reviews.length === 0) {
+                    revList.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--muted);">No reviews yet. Complete tasks to earn credit!</div>';
+                } else {
+                    // 倒序排列，最新的评价在最上面
+                    revList.innerHTML = [...reviews].reverse().map(r => {
+                        let stars = '';
+                        for(let i=1; i<=5; i++) stars += `<i class="${i <= r.score ? 'fas' : 'far'} fa-star"></i>`;
+                        return `
+                        <div style="padding:15px; border-bottom:1px solid #eef2f6; display:flex; flex-direction:column; gap:8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-weight:bold; font-size:0.95rem;"><i class="fas fa-user-circle text-muted"></i> ${r.reviewer || 'Peer'}</span>
+                                <span style="color:var(--warning); font-size:0.85rem;">${stars}</span>
+                            </div>
+                            <div style="font-size:0.95rem; color:#333;">"${r.text || 'Great experience!'}"</div>
+                            <div style="font-size:0.75rem; color:var(--muted);">🗓️ ${new Date(r.date).toLocaleDateString()}</div>
+                        </div>`;
+                    }).join('');
+                }
+            }
+
+            // =====================================
+            // 新增：渲染 Medal Points 积分流水账
+            // =====================================
+            const ptsList = document.getElementById('pts_list');
+            if(ptsList) {
+                const ph = u.point_history || [];
+                if(ph.length === 0) {
+                    ptsList.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--muted);">No point history yet.</div>';
+                } else {
+                    ptsList.innerHTML = [...ph].reverse().map(p => `
+                        <div style="padding:15px; border-bottom:1px solid #eef2f6; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <b style="color:var(--dark); font-size:0.95rem;">${p.desc}</b><br>
+                                <small style="color:var(--muted);">🗓️ ${new Date(p.date).toLocaleString()}</small>
+                            </div>
+                            <div style="color:var(--success); font-weight:900; font-size:1.2rem;">+${p.points} 🏅</div>
+                        </div>
+                    `).join('');
+                }
+            }
+            
             // 3. 獲取 Dashboard 聚合數據
             const resT = await fetch('/api/user/dashboard', {
                 method: 'POST',
