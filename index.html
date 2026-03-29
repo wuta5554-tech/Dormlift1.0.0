@@ -576,9 +576,66 @@
         });
     }
     
-    function previewFiles(e, id) {
-        const s = document.getElementById(id); s.innerHTML = "";
-        Array.from(e.target.files).slice(0, 5).forEach(f => { const r = new FileReader(); r.onload = ev => s.innerHTML += `<img src="${ev.target.result}" class="thumb-img">`; r.readAsDataURL(f); });
+   // 1. 全局图片上传队列
+    let uploadQueue = {};
+
+    // 2. 增强版图片预览与队列管理
+    function previewFiles(e, previewId) {
+        if (!uploadQueue[previewId]) uploadQueue[previewId] = [];
+        
+        // 追加新图片，并限制最多 5 张
+        const newFiles = Array.from(e.target.files);
+        uploadQueue[previewId] = [...uploadQueue[previewId], ...newFiles].slice(0, 5);
+        
+        // 关键修复：移除原生必填校验，防止提交时因 input 清空而报错
+        e.target.removeAttribute('required'); 
+        
+        renderPreview(previewId);
+        e.target.value = ''; // 清空原生 input，允许下次继续追加哪怕是同一张图片
+    }
+
+    // 渲染预览界面（带删除和排序按钮）
+    function renderPreview(previewId) {
+        const container = document.getElementById(previewId);
+        container.innerHTML = "";
+        uploadQueue[previewId].forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const div = document.createElement('div');
+                div.style.cssText = "position:relative; display:inline-block; margin-right:12px; flex-shrink:0;";
+                
+                // 左右排序按钮
+                let sortBtns = `
+                    <div style="position:absolute; bottom:5px; left:5px; display:flex; gap:5px; z-index:10;">
+                        ${index > 0 ? `<button type="button" onclick="moveUploadFile('${previewId}', ${index}, -1)" style="background:rgba(0,0,0,0.7); color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer;"><i class="fas fa-chevron-left"></i></button>` : ''}
+                        ${index < uploadQueue[previewId].length - 1 ? `<button type="button" onclick="moveUploadFile('${previewId}', ${index}, 1)" style="background:rgba(0,0,0,0.7); color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer;"><i class="fas fa-chevron-right"></i></button>` : ''}
+                    </div>
+                `;
+
+                div.innerHTML = `
+                    <img src="${ev.target.result}" class="thumb-img" style="margin:0; border-radius:12px; border:2px solid #e2e8f0;">
+                    <div onclick="removeUploadFile('${previewId}', ${index})" style="position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; width:24px; height:24px; border-radius:50%; text-align:center; line-height:24px; font-size:12px; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.3); z-index:10;"><i class="fas fa-times"></i></div>
+                    ${sortBtns}
+                `;
+                container.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // 删除单张图片
+    function removeUploadFile(previewId, index) {
+        uploadQueue[previewId].splice(index, 1);
+        renderPreview(previewId);
+    }
+
+    // 左右移动排序
+    function moveUploadFile(previewId, index, dir) {
+        const arr = uploadQueue[previewId];
+        const temp = arr[index];
+        arr[index] = arr[index + dir];
+        arr[index + dir] = temp;
+        renderPreview(previewId);
     }
 
     async function deleteBuzz(id) {
@@ -983,28 +1040,40 @@
         }
     }
 
-    // ======================= POSTING ENGINES =======================
+// ======================= POSTING ENGINES =======================
     async function submitLogistics(e) {
         e.preventDefault(); if(markers.length < 2) return alert("Map locations."); const f = new FormData();
         f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name);
         f.append('from_addr', markers[0].getLatLng().lat+','+markers[0].getLatLng().lng+'@@'+document.getElementById('p_from').value); 
         f.append('to_addr', markers[1].getLatLng().lat+','+markers[1].getLatLng().lng+'@@'+document.getElementById('p_to').value);
         f.append('move_date', document.getElementById('p_date').value.split('T')[0]); f.append('move_time', document.getElementById('p_date').value.split('T')[1]||''); f.append('reward', document.getElementById('p_reward').value); f.append('items_desc', document.getElementById('p_desc').value); f.append('task_scale', document.getElementById('p_scale').value); f.append('has_elevator', document.getElementById('p_elevator').checked);
-        Array.from(document.getElementById('p_file').files).forEach(x=>f.append('images', x));
+        
+        (uploadQueue['p_preview'] || []).forEach(x=>f.append('images', x)); // 从队列读取图片
+        
         document.querySelector('#form_logistics button').innerText = "Broadcasting..."; await fetch('/api/task/create', {method:'POST', body:f}); 
-        document.querySelector('#form_logistics button').innerHTML = 'Broadcast Logistics Task <i class="fas fa-paper-plane"></i>'; switchHall('logistics'); navigate('hall');
+        document.querySelector('#form_logistics button').innerHTML = 'Broadcast Logistics Task <i class="fas fa-paper-plane"></i>'; 
+        uploadQueue['p_preview']=[]; document.getElementById('p_preview').innerHTML=""; // 发布成功后清空队列
+        switchHall('logistics'); navigate('hall');
     }
     
     async function submitMarket(e) {
-        e.preventDefault(); const f = new FormData(); f.append('seller_id', user.email); f.append('seller_name', user.anonymous_name);
+        e.preventDefault(); 
+        if(!uploadQueue['m_preview'] || uploadQueue['m_preview'].length === 0) return alert("Please upload at least one photo.");
+        const f = new FormData(); f.append('seller_id', user.email); f.append('seller_name', user.anonymous_name);
         ['title','price','cond','loc','desc'].forEach(k=>f.append(k==='cond'?'condition':(k==='loc'?'location':(k==='desc'?'description':k)), document.getElementById(`m_${k}`).value));
-        Array.from(document.getElementById('m_file').files).forEach(x=>f.append('images', x));
+        
+        (uploadQueue['m_preview'] || []).forEach(x=>f.append('images', x));
+        
         document.querySelector('#form_market button').innerText = "Listing..."; await fetch('/api/market/create', {method:'POST', body:f}); 
-        document.querySelector('#form_market button').innerHTML = 'List Item in Market <i class="fas fa-store"></i>'; switchHall('market'); navigate('hall');
+        document.querySelector('#form_market button').innerHTML = 'List Item in Market <i class="fas fa-store"></i>'; 
+        uploadQueue['m_preview']=[]; document.getElementById('m_preview').innerHTML=""; 
+        switchHall('market'); navigate('hall');
     }
     
     async function submitFlatting(e) {
-        e.preventDefault(); const btn = document.querySelector('#form_flatting button'); btn.innerText = "Locating Map & Publishing...";
+        e.preventDefault(); 
+        if(!uploadQueue['fl_preview'] || uploadQueue['fl_preview'].length === 0) return alert("Please upload at least one photo.");
+        const btn = document.querySelector('#form_flatting button'); btn.innerText = "Locating Map & Publishing...";
         let locStr = document.getElementById('fl_loc').value; let coords = null;
         if(markerFlat) {
             coords = `${markerFlat.getLatLng().lat},${markerFlat.getLatLng().lng}`;
@@ -1014,25 +1083,39 @@
         
         const f = new FormData(); f.append('publisher_id', user.email); f.append('publisher_name', user.anonymous_name); if(coords) f.append('coords', coords);
         ['title','price','type','date','loc','desc','layout','bath','pref'].forEach(k=>{ const mapKey = {price:'rent_price',type:'room_type',date:'available_date',loc:'location',desc:'description',layout:'house_layout',bath:'bathroom_type',pref:'preferences'}[k]||k; f.append(mapKey, document.getElementById(`fl_${k}`).value); });
-        Array.from(document.getElementById('fl_file').files).forEach(x=>f.append('images', x));
+        
+        (uploadQueue['fl_preview'] || []).forEach(x=>f.append('images', x));
+        
         await fetch('/api/flatting/create', {method:'POST', body:f}); 
-        btn.innerHTML = 'Publish Housing <i class="fas fa-home"></i>'; switchHall('flatting'); navigate('hall');
+        btn.innerHTML = 'Publish Housing <i class="fas fa-home"></i>'; 
+        uploadQueue['fl_preview']=[]; document.getElementById('fl_preview').innerHTML=""; 
+        switchHall('flatting'); navigate('hall');
     }
     
     async function submitTeamUp(e) {
-        e.preventDefault(); const btn = document.querySelector('#form_teamup button'); btn.innerText = "Initiating..."; 
+        e.preventDefault(); 
+        if(!uploadQueue['tu_preview'] || uploadQueue['tu_preview'].length === 0) return alert("Please upload a cover photo.");
+        const btn = document.querySelector('#form_teamup button'); btn.innerText = "Initiating..."; 
         const f = new FormData(); f.append('initiator_id', user.email); f.append('initiator_name', user.anonymous_name); f.append('joined_members', JSON.stringify([{email: user.email, name: user.anonymous_name}]));
         ['title','cat','min','max','time','loc','desc','cost','credit'].forEach(k=>{ const mapKey = {cat:'category', min:'min_members', max:'max_members', time:'meet_time', loc:'location', desc:'description', cost:'estimated_cost', credit:'min_credit_req'}[k]||k; f.append(mapKey, document.getElementById(`tu_${k}`).value); });
-        Array.from(document.getElementById('tu_file').files).forEach(x=>f.append('images', x));
+        
+        (uploadQueue['tu_preview'] || []).forEach(x=>f.append('images', x));
+        
         const res = await fetch('/api/teamup/create', {method:'POST', body:f}); const d = await res.json();
-        btn.innerHTML = 'Initiate Team-Up <i class="fas fa-users"></i>'; if(!d.success) { alert("❌ " + d.msg); return; } switchHall('teamup'); navigate('hall');
+        btn.innerHTML = 'Initiate Team-Up <i class="fas fa-users"></i>'; if(!d.success) { alert("❌ " + d.msg); return; } 
+        uploadQueue['tu_preview']=[]; document.getElementById('tu_preview').innerHTML=""; 
+        switchHall('teamup'); navigate('hall');
     }
     
     async function submitForum(e) {
         e.preventDefault(); const f = new FormData(); f.append('author_id', user.email); f.append('author_name', user.anonymous_name); f.append('content', document.getElementById('f_content').value);
-        Array.from(document.getElementById('f_file').files).forEach(x=>f.append('images', x));
+        
+        (uploadQueue['f_preview'] || []).forEach(x=>f.append('images', x));
+        
         document.querySelector('#form_forum button').innerText = "Posting..."; await fetch('/api/forum/create', {method:'POST', body:f}); 
-        document.querySelector('#form_forum button').innerHTML = 'Post to Buzz <i class="fas fa-fire"></i>'; document.getElementById('f_content').value = ""; switchHall('forum'); navigate('hall');
+        document.querySelector('#form_forum button').innerHTML = 'Post to Buzz <i class="fas fa-fire"></i>'; document.getElementById('f_content').value = ""; 
+        uploadQueue['f_preview']=[]; document.getElementById('f_preview').innerHTML=""; 
+        switchHall('forum'); navigate('hall');
     }
 
     // ======================= AUTH & DEV =======================
