@@ -989,19 +989,23 @@
             });
             const dT = await resT.json();
 
-            // 4. 看板渲染器 (解決 Pending0 顯示重疊的問題)
+// 4. 看板渲染器 (解决 Pending0 显示重叠及弹窗打不开的问题)
             const renderKB = (prefix, col, validStatuses, listArray = []) => {
                 const elCnt = document.getElementById(`cnt_${prefix}_${col}`);
                 const elCol = document.getElementById(`col_${prefix}_${col}`);
                 if (!elCnt || !elCol) return;
 
                 const fList = (listArray || []).filter(t => validStatuses.includes(t.status));
-                elCnt.innerText = fList.length; // 只改數字
+                elCnt.innerText = fList.length; 
+                
+                // 核心修复：把看板的缩写前缀映射到正确的弹窗类型
+                const modalTypeMap = { 'log': 'log', 'mar': 'mar', 'fl': 'flat', 'tu': 'team' };
+                const modalType = modalTypeMap[prefix];
                 
                 elCol.innerHTML = fList.map(t => {
                     const isOwner = (t.publisher_id || t.seller_id || t.initiator_id || t.author_id) === safeEmail;
                     return `
-                        <div class="kanban-card" onclick="openMasterModal('${prefix}', '${t._id}')">
+                        <div class="kanban-card" onclick="openMasterModal('${modalType}', '${t._id}')">
                             <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                                 <span class="kb-role-tag" style="background:${isOwner?'#e0e7ff':'#f1f5f9'}; color:${isOwner?'#4f46e5':'#64748b'};">${isOwner?'Owner':'Joined'}</span>
                                 <span style="font-size:0.7rem; color:var(--muted);">${new Date(t.created_at).toLocaleDateString()}</span>
@@ -1024,14 +1028,14 @@
             renderKB('tu', 'gather', ['gathering'], dT.teamups);
             renderKB('tu', 'comp', ['completed', 'failed'], dT.teamups);
 
-            // 5. 渲染 My Buzz
+// 5. 渲染 My Buzz (修复点击详情)
             const bzCol = document.getElementById('col_bz_all');
             const bzCnt = document.getElementById('cnt_bz_all');
             if (bzCol && bzCnt) {
                 const posts = dT.posts || [];
                 bzCnt.innerText = posts.length;
                 bzCol.innerHTML = posts.map(f => `
-                    <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; text-align:left; box-shadow:none;">
+                    <div class="forum-card" style="margin-bottom:1rem; border:1px solid #eef2f6; text-align:left; box-shadow:none; cursor:pointer;" onclick="openMasterModal('for', '${f._id}')">
                         <div style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">${new Date(f.created_at).toLocaleString()}</div>
                         <div style="font-size:0.95rem; font-weight:500;">${f.content || ''}</div>
                         <div style="margin-top:10px; border-top:1px solid #f8fafc; padding-top:8px;">
